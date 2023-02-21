@@ -7,6 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="BotConfig.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="BotConfig.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DSharpPlus" Version="4.3.0" />
     <PackageReference Include="DSharpPlus.CommandsNext" Version="4.3.0" />
     <PackageReference Include="DSharpPlus.Interactivity" Version="4.3.0" />
@@ -16,8 +26,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\TheGoodFramework\TheGoodFramework.CA.Domain\TheGoodFramework.CA.Domain.csproj" />
-    <ProjectReference Include="..\..\TheGoodFramework\TheGoodFramework.Extensions\TheGoodFramework.Extensions.csproj" />
+    <ProjectReference Include="..\TheGoodFramework\TheGoodFramework.CA.Domain\TheGoodFramework.CA.Domain.csproj" />
+    <ProjectReference Include="..\TheGoodFramework\TheGoodFramework.Extensions\TheGoodFramework.Extensions.csproj" />
   </ItemGroup>
 
 </Project>

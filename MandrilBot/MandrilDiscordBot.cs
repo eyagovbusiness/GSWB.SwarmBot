@@ -41,7 +41,7 @@ namespace MandrilBot
 
             await Client.ConnectAsync();
 
-            await Task.Delay(-1);
+            //await Task.Delay(-1);
 
         }
 

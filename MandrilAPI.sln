@@ -9,9 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MandrilBot", "MandrilBot\Ma
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TheGoodFramework", "TheGoodFramework", "{0848298D-5AAC-4467-B70E-EFBC23254DFF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheGoodFramework.CA.Domain", "..\TheGoodFramework\TheGoodFramework.CA.Domain\TheGoodFramework.CA.Domain.csproj", "{CFDDA308-1A45-4FFB-8AE5-E5A9BF6146FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheGoodFramework.CA.Domain", "TheGoodFramework\TheGoodFramework.CA.Domain\TheGoodFramework.CA.Domain.csproj", "{CFDDA308-1A45-4FFB-8AE5-E5A9BF6146FF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheGoodFramework.Extensions", "..\TheGoodFramework\TheGoodFramework.Extensions\TheGoodFramework.Extensions.csproj", "{C34A2274-FE77-4AF0-A118-F54A24442E4E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheGoodFramework.Extensions", "TheGoodFramework\TheGoodFramework.Extensions\TheGoodFramework.Extensions.csproj", "{C34A2274-FE77-4AF0-A118-F54A24442E4E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

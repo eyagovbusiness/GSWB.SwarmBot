@@ -78,58 +78,6 @@ namespace MandrilBot
 
         }
 
-        /// <summary>
-        /// Commands this discord bot add a given list of users to a given category channel and all inner channels. 
-        /// </summary>
-        /// <param name="aBot">Current discord bot that will execute the commands.</param>
-        /// <param name="aCategoryId">Id of the category channel</param>
-        /// /// <param name="aUserFullHandleList">List of discord full handles</param>
-        /// <returns><see cref="Result"/> with information about success or fail on this operation.</returns>
-        public static async Task<Result> AddUserListToChannel(this MandrilDiscordBot aBot, ulong aChannelId, string[] aUserFullHandleList)
-        {
-            try
-            {
-                var lGuildRes = await TryGetDiscordGuildFromConfigAsync(aBot);
-                if (!lGuildRes.IsSuccess)
-                    return Result.Failure(lGuildRes.Error);
-
-                var lChannelRes = await aBot.TryGetDiscordChannelAsync(aChannelId);
-                if (!lChannelRes.IsSuccess)
-                    return Result.Failure(lChannelRes.Error);
-
-                var lMemberListRes = await lGuildRes?.Value.TryGetGuildMemberListFromHandlesAsync(aUserFullHandleList);
-                if (!lMemberListRes.IsSuccess)
-                    return Result.Failure(lMemberListRes.Error);
-
-                var lOverWriteBuilderList = lMemberListRes.Value
-                    .Select(x => new DiscordOverwriteBuilder(x).Allow(Permissions.AccessChannels | Permissions.UseVoice))
-                    .ToList();//Materialize list to avoid double materializing below 
-
-                //As far as lChannelRes.Value.PermissionOverwrites is write-only, we have to copy current channel's overwrites and add them to the new ones we want to add.
-                await lChannelRes.Value.PermissionOverwrites.ParallelForEachAsync(
-                    _maxDegreeOfParallelism,
-                    x => lOverWriteBuilderList.GetAddTask(
-                            (x.Type == OverwriteType.Member
-                                ? new DiscordOverwriteBuilder(x.GetMemberAsync().Result)
-                                : new DiscordOverwriteBuilder(x.GetRoleAsync().Result))
-                            .FromAsync(x)));
-
-                lOverWriteBuilderList.Reverse();
-
-                //we override the overrites with our new ones plus the already existing ones as we aded them to lOverWriteBuilderList below.
-                await lChannelRes.Value.ModifyAsync(x => x.PermissionOverwrites = lOverWriteBuilderList);
-                await lChannelRes.Value.Children.ParallelForEachAsync(_maxDegreeOfParallelism,
-                    x => x.ModifyAsync(x => x.PermissionOverwrites = lOverWriteBuilderList));
-                return Result.Success();
-            }
-            catch (Exception)
-            {
-                //Add logging the exception
-                return Result.Failure(DiscordBotErrors.BadRequest);
-            }
-
-        }
-
         #endregion
 
         #region Roles
@@ -354,9 +302,57 @@ namespace MandrilBot
 
         }
 
-        #endregion
+        /// <summary>
+        /// Commands this discord bot add a given list of users to a given category channel and all inner channels. 
+        /// </summary>
+        /// <param name="aBot">Current discord bot that will execute the commands.</param>
+        /// <param name="aCategoryId">Id of the category channel</param>
+        /// /// <param name="aUserFullHandleList">List of discord full handles</param>
+        /// <returns><see cref="Result"/> with information about success or fail on this operation.</returns>
+        public static async Task<Result> AddUserListToChannel(this MandrilDiscordBot aBot, ulong aChannelId, string[] aUserFullHandleList)
+        {
+            try
+            {
+                var lGuildRes = await TryGetDiscordGuildFromConfigAsync(aBot);
+                if (!lGuildRes.IsSuccess)
+                    return Result.Failure(lGuildRes.Error);
 
-        #region Commands
+                var lChannelRes = await aBot.TryGetDiscordChannelAsync(aChannelId);
+                if (!lChannelRes.IsSuccess)
+                    return Result.Failure(lChannelRes.Error);
+
+                var lMemberListRes = await lGuildRes?.Value.TryGetGuildMemberListFromHandlesAsync(aUserFullHandleList);
+                if (!lMemberListRes.IsSuccess)
+                    return Result.Failure(lMemberListRes.Error);
+
+                var lOverWriteBuilderList = lMemberListRes.Value
+                    .Select(x => new DiscordOverwriteBuilder(x).Allow(Permissions.AccessChannels | Permissions.UseVoice))
+                    .ToList();//Materialize list to avoid double materializing below 
+
+                //As far as lChannelRes.Value.PermissionOverwrites is write-only, we have to copy current channel's overwrites and add them to the new ones we want to add.
+                await lChannelRes.Value.PermissionOverwrites.ParallelForEachAsync(
+                    _maxDegreeOfParallelism,
+                    x => lOverWriteBuilderList.GetAddTask(
+                            (x.Type == OverwriteType.Member
+                                ? new DiscordOverwriteBuilder(x.GetMemberAsync().Result)
+                                : new DiscordOverwriteBuilder(x.GetRoleAsync().Result))
+                            .FromAsync(x)));
+
+                lOverWriteBuilderList.Reverse();
+
+                //we override the overrites with our new ones plus the already existing ones as we aded them to lOverWriteBuilderList below.
+                await lChannelRes.Value.ModifyAsync(x => x.PermissionOverwrites = lOverWriteBuilderList);
+                await lChannelRes.Value.Children.ParallelForEachAsync(_maxDegreeOfParallelism,
+                    x => x.ModifyAsync(x => x.PermissionOverwrites = lOverWriteBuilderList));
+                return Result.Success();
+            }
+            catch (Exception)
+            {
+                //Add logging the exception
+                return Result.Failure(DiscordBotErrors.BadRequest);
+            }
+
+        }
 
         #endregion
 

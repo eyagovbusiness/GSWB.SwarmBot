@@ -1,5 +1,8 @@
 {
-
+  "Token": "MTA3NDY3ODExMDk5MTE2MzQwMg.G5Sgcr.q9WFDUW2bfRIf27ipvNoqiKAwRBm9hlOUQVA3M",
+  "Secret": "MLbUk3fGo4fbHMDl2hLlb7cqWF4mxmhe",
+  "GuildId": 1075122834155769866,
+  "Prefix": "?",
   "Serilog": {
     "Using": [ "Serilog.Sinks.Console", "Serilog.Sinks.File" ],
     "MinimumLevel": "Debug",
