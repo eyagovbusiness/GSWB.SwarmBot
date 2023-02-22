@@ -285,7 +285,7 @@ namespace MandrilBot
                     return Result.Failure(lGuildRes.Error);
 
                 var lChannelRes = await TryGetDiscordChannelAsync(aBot, aEventCategorylId);
-                if (lChannelRes == null)
+                if (!lChannelRes.IsSuccess)
                     return Result.Failure(lChannelRes.Error);
 
                 await lChannelRes.Value.Children.ParallelForEachAsync(
@@ -332,11 +332,7 @@ namespace MandrilBot
                 //As far as lChannelRes.Value.PermissionOverwrites is write-only, we have to copy current channel's overwrites and add them to the new ones we want to add.
                 await lChannelRes.Value.PermissionOverwrites.ParallelForEachAsync(
                     _maxDegreeOfParallelism,
-                    x => lOverWriteBuilderList.GetAddTask(
-                            (x.Type == OverwriteType.Member
-                                ? new DiscordOverwriteBuilder(x.GetMemberAsync().Result)
-                                : new DiscordOverwriteBuilder(x.GetRoleAsync().Result))
-                            .FromAsync(x)));
+                    x => lOverWriteBuilderList.UpdateBuilderOverwrites(x));
 
                 lOverWriteBuilderList.Reverse();
 
@@ -362,7 +358,7 @@ namespace MandrilBot
         {
             try
             {
-                var lGuild = await aBot.Client?.GetGuildAsync(aBot._config.GuildId);
+                var lGuild = await aBot.Client?.GetGuildAsync(aBot._config.DiscordTargetGuildId);
                 return lGuild == null
                     ? Result.Failure<DiscordGuild>(DiscordBotErrors.Guild.NotFoundId)
                     : Result.Success(lGuild);
@@ -470,6 +466,35 @@ namespace MandrilBot
                 return Result.Success<IEnumerable<DiscordMember>>(lSelectedMemberList);
             }
             catch { return Result.Failure<IEnumerable<DiscordMember>>(DiscordBotErrors.BadRequest); }
+        }
+
+        /// <summary>
+        /// Returns a Task that adds to this list of DiscordOverwriteBuilder a new builder from a current DiscordOverwrite.
+        /// </summary>
+        /// <param name="aDiscordOverwriteBuilderList">List of DiscordOverwriteBuilder.</param>
+        /// <param name="aDiscordOverwrite">Current DiscordOverwrite applied to create the new builder from.</param>
+        /// <returns>Task that will update this list from a given DiscordOverwrite.</returns>
+        internal static async Task UpdateBuilderOverwrites(this List<DiscordOverwriteBuilder> aDiscordOverwriteBuilderList, DiscordOverwrite aDiscordOverwrite)
+        {
+            switch (aDiscordOverwrite.Type)
+            {
+                case OverwriteType.Member:
+                    {
+                        var lMember = await aDiscordOverwrite.GetMemberAsync();
+                        var lDiscordOverwriteMemberBuilder = new DiscordOverwriteBuilder(lMember);
+                        var lNewDiscordMemberOverwrite = await lDiscordOverwriteMemberBuilder.FromAsync(aDiscordOverwrite);
+                        aDiscordOverwriteBuilderList.Add(lNewDiscordMemberOverwrite);
+                    }
+                    break;
+                case OverwriteType.Role:
+                    {
+                        var lRole = await aDiscordOverwrite.GetRoleAsync();
+                        var lDiscordOverwriteRoleBuilder = new DiscordOverwriteBuilder(lRole);
+                        var lNewDiscordRoleOverwrite = await lDiscordOverwriteRoleBuilder.FromAsync(aDiscordOverwrite);
+                        aDiscordOverwriteBuilderList.Add(lNewDiscordRoleOverwrite);
+                    }
+                    break;
+            }
         }
 
         #endregion

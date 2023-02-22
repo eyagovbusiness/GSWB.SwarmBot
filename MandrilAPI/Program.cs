@@ -1,13 +1,17 @@
+using MandrilAPI.Configuration;
 using MandrilBot;
 
 namespace MandrilAPI
 {
     public class Program
     {
-        public static void Main(string[] args)
+
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            //Sets-up the discord bot 
+            await builder.SetDiscordBotConfiguration();
             // Add services to the container.
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -16,15 +20,10 @@ namespace MandrilAPI
             builder.Services.AddMediatR(cfg =>
             {
                 cfg.RegisterServicesFromAssembly(typeof(Controllers.MandrilController).Assembly);
-            });
-            builder.Services.AddSingleton<MandrilDiscordBot>();
+            });    
 
             var app = builder.Build();
 
-            //After building the app, start running async the discord bot and continue 
-            app.Services.GetService<MandrilDiscordBot>()?.RunAsync();
-
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
@@ -36,5 +35,7 @@ namespace MandrilAPI
             app.MapControllers();
             app.Run();
         }
+
+
     }
 }
