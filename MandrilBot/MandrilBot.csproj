@@ -7,16 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="BotConfig.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="BotConfig.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="DSharpPlus" Version="4.3.0">
       <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
@@ -24,6 +14,8 @@
     <PackageReference Include="DSharpPlus.Interactivity" Version="4.3.0">
       <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>

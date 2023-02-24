@@ -269,7 +269,7 @@ namespace MandrilBot
 
         internal static async Task<Result<DiscordGuild>> TryGetDiscordGuildFromConfigAsync(this MandrilDiscordBot aBot)
         {
-            var lGuild = await aBot.Client?.GetGuildAsync(aBot._config.DiscordTargetGuildId);
+            var lGuild = await aBot.Client?.GetGuildAsync(aBot._botConfiguration.DiscordTargetGuildId);
             return lGuild == null
                 ? Result.Failure<DiscordGuild>(DiscordBotErrors.Guild.NotFoundId)
                 : Result.Success(lGuild);

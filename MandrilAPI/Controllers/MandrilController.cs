@@ -12,13 +12,10 @@ namespace MandrilAPI.Controllers
     [Route("[controller]")]
     public class MandrilController : ControllerBase
     {
-
-        private readonly ILogger<MandrilController> _logger;
         private readonly IMediator _mediator;
 
-        public MandrilController(ILogger<MandrilController> logger, IMediator aMediator)
+        public MandrilController(IMediator aMediator)
         {
-            _logger = logger;
             _mediator = aMediator;
         }
 

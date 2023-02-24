@@ -1,25 +1,26 @@
 ﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace MandrilBot
 {
     public class MandrilDiscordBot
     {
-        internal BotConfigJson _config;
+        //private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger _logger;
+        private readonly ILoggerFactory _loggerFactory;
+        internal BotConfigJson _botConfiguration;
+
         public DiscordClient Client { get; private set; }
         public CommandsNextExtension Commands { get; private set; }
 
-        private MandrilDiscordBot(BotConfigJson aBotConfig)
+        public MandrilDiscordBot(/*IServiceProvider aServiceProvider,*/ IConfiguration aConfiguration, ILoggerFactory aLoggerFactory)
         {
-            _config = aBotConfig;
-
-        }
-        public static async Task<MandrilDiscordBot> CreateAsync(BotConfigJson aBotConfig)
-        {
-            MandrilDiscordBot lNewDiscordBot = new MandrilDiscordBot(aBotConfig);
-            await lNewDiscordBot.RunAsync();
-            return lNewDiscordBot;
+            //_serviceProvider = aServiceProvider;
+            _logger = aLoggerFactory.CreateLogger(typeof(MandrilDiscordBot));
+            _botConfiguration = aConfiguration.Get<BotConfigJson>();
+            _loggerFactory = aLoggerFactory;
         }
 
         public async Task RunAsync()
@@ -28,11 +29,11 @@ namespace MandrilBot
             {
                 var config = new DiscordConfiguration
                 {
-
-                    Token = _config.MandrilBotToken,
+                    LoggerFactory = _loggerFactory,
+                    MinimumLogLevel = LogLevel.Error,
+                    Token = _botConfiguration.MandrilBotToken,
                     TokenType = TokenType.Bot,
                     AutoReconnect = true,
-                    MinimumLogLevel = LogLevel.Error,
                     Intents = DiscordIntents.MessageContents
                               | DiscordIntents.GuildMessages
                               | DiscordIntents.Guilds
@@ -48,7 +49,7 @@ namespace MandrilBot
 
                 var lCommandsConfig = new CommandsNextConfiguration
                 {
-                    StringPrefixes = new string[] { _config.Prefix },
+                    StringPrefixes = new string[] { _botConfiguration.Prefix },
                     EnableDms = false,
                     EnableMentionPrefix = true,
                 };
@@ -59,10 +60,11 @@ namespace MandrilBot
 
                 await Client.ConnectAsync();
 
+
             }
-            catch
+            catch (Exception lException)
             {
-                //Log the exception
+                _logger.LogError(lException.ToString());
             }
 
 

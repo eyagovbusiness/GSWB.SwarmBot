@@ -1,23 +1,25 @@
-using MandrilAPI.Configuration;
+using MandrilBot;
 using TheGoodFramework.CA.Application;
 
 namespace MandrilAPI
 {
     public class Program
     {
-
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
-            var lWebApplication = await WebApplicationAbstraction.CreateCustomWebApplicationAsync(
-            async(aWebHostBuilderAction) =>
+            var lWebApplication = WebApplicationAbstraction.CreateCustomWebApplication(
+            aWebHostBuilderAction =>
             {
-                await aWebHostBuilderAction.SetDiscordBotConfiguration();
+                //Singleton MandrilDiscordBot shared by all the services.
+                aWebHostBuilderAction.Services.AddSingleton<MandrilDiscordBot>();
+                //Depends on MandrilDiscordBot, creates the singleton instance and start connection asynchronously in the background.
+                aWebHostBuilderAction.Services.AddHostedService<MandrilDiscordBotBackgroundStart>();
+                //Implements CQRS pattern, depends on MandrilDiscordBot
                 aWebHostBuilderAction.Services.AddMediatR(cfg =>
                 {
                     cfg.RegisterServicesFromAssembly(typeof(Controllers.MandrilController).Assembly);
                 });
             });
-
             lWebApplication.CustomRun();
         }
     }
