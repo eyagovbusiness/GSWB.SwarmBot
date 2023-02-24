@@ -1,8 +1,6 @@
 ﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System.Text;
 
 namespace MandrilBot
 {
@@ -30,12 +28,13 @@ namespace MandrilBot
             {
                 var config = new DiscordConfiguration
                 {
+
                     Token = _config.MandrilBotToken,
                     TokenType = TokenType.Bot,
                     AutoReconnect = true,
-                    MinimumLogLevel = LogLevel.Debug,
-                    Intents = DiscordIntents.MessageContents 
-                              | DiscordIntents.GuildMessages 
+                    MinimumLogLevel = LogLevel.Error,
+                    Intents = DiscordIntents.MessageContents
+                              | DiscordIntents.GuildMessages
                               | DiscordIntents.Guilds
                               | DiscordIntents.GuildVoiceStates
                               | DiscordIntents.GuildPresences
@@ -46,7 +45,7 @@ namespace MandrilBot
                 //Client.Ready += Client_Ready;
                 //Client.VoiceStateUpdated += Client_VoiceStateUpdated;
                 //Client.PresenceUpdated += Client_PresenceUpdated;
-                
+
                 var lCommandsConfig = new CommandsNextConfiguration
                 {
                     StringPrefixes = new string[] { _config.Prefix },

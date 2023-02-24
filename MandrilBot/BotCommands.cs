@@ -1,11 +1,6 @@
 ﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MandrilBot
 {
@@ -23,9 +18,9 @@ namespace MandrilBot
                                         .FirstOrDefault(x => x.Type == DSharpPlus.ChannelType.Voice))
                                      .ConfigureAwait(false);
             }
-            catch(BadRequestException) 
-            { 
-                await aCommandContext.Channel.SendMessageAsync("Please, be connected to any voice channel in this server before reporting for service :)"); 
+            catch (BadRequestException)
+            {
+                await aCommandContext.Channel.SendMessageAsync("Please, be connected to any voice channel in this server before reporting for service :)");
             }
 
         }
