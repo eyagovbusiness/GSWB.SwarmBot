@@ -7,8 +7,8 @@ namespace MandrilAPI.Handlers
 {
     public class AssignRoleToMemberHandler : IRequestHandler<AssignRoleToMemberCommand, Result>
     {
-        private readonly MandrilDiscordBot _mandtrilDiscordBot;
-        public AssignRoleToMemberHandler(MandrilDiscordBot aMandrilDiscordBot)
+        private readonly IMandrilDiscordBot _mandtrilDiscordBot;
+        public AssignRoleToMemberHandler(IMandrilDiscordBot aMandrilDiscordBot)
         {
             _mandtrilDiscordBot = aMandrilDiscordBot;
         }

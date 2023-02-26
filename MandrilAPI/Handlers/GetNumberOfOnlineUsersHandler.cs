@@ -7,8 +7,8 @@ namespace MandrilAPI.Handlers
 {
     public class GetNumberOfOnlineUsersHandler : IRequestHandler<GetNumberOfOnlineUsersQuery, Result<int>>
     {
-        private readonly MandrilDiscordBot _mandtrilDiscordBot;
-        public GetNumberOfOnlineUsersHandler(MandrilDiscordBot aMandrilDiscordBot)
+        private readonly IMandrilDiscordBot _mandtrilDiscordBot;
+        public GetNumberOfOnlineUsersHandler(IMandrilDiscordBot aMandrilDiscordBot)
         {
             _mandtrilDiscordBot = aMandrilDiscordBot;
         }

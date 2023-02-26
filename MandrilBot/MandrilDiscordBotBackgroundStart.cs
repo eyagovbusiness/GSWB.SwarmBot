@@ -10,8 +10,8 @@ namespace MandrilBot
         => _serviceProvider = aServiceProvider;
         protected override async Task ExecuteAsync(CancellationToken aStoppingToken)
         {
-            var lDiscordBotService = _serviceProvider.GetRequiredService<MandrilDiscordBot>();
-            await lDiscordBotService.RunAsync();
+            var lDiscordBotService = _serviceProvider.GetRequiredService<IMandrilDiscordBot>();
+            await lDiscordBotService.StartAsync();
             await StopAsync(default);
         }
     }

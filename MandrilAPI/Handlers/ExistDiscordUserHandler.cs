@@ -7,8 +7,8 @@ namespace MandrilAPI.Handlers
 {
     public class ExistDiscordUserHandler : IRequestHandler<ExistDiscordUserQuery, Result<bool>>
     {
-        private readonly MandrilDiscordBot _mandtrilDiscordBot;
-        public ExistDiscordUserHandler(MandrilDiscordBot aMandrilDiscordBot)
+        private readonly IMandrilDiscordBot _mandtrilDiscordBot;
+        public ExistDiscordUserHandler(IMandrilDiscordBot aMandrilDiscordBot)
         {
             _mandtrilDiscordBot = aMandrilDiscordBot;
         }

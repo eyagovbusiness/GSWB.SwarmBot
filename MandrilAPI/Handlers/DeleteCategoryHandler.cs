@@ -7,8 +7,8 @@ namespace MandrilAPI.Handlers
 {
     public class DeleteCategoryHandler : IRequestHandler<DeleteCategoryCommand, Result>
     {
-        private readonly MandrilDiscordBot _mandtrilDiscordBot;
-        public DeleteCategoryHandler(MandrilDiscordBot aMandrilDiscordBot)
+        private readonly IMandrilDiscordBot _mandtrilDiscordBot;
+        public DeleteCategoryHandler(IMandrilDiscordBot aMandrilDiscordBot)
         {
             _mandtrilDiscordBot = aMandrilDiscordBot;
         }

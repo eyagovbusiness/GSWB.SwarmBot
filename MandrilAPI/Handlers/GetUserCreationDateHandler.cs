@@ -7,8 +7,8 @@ namespace MandrilAPI.Handlers
 {
     public class GetUserCreationDateHandler : IRequestHandler<GetUserCreationDateQuery, Result<DateTimeOffset>>
     {
-        private readonly MandrilDiscordBot _mandtrilDiscordBot;
-        public GetUserCreationDateHandler(MandrilDiscordBot aMandrilDiscordBot)
+        private readonly IMandrilDiscordBot _mandtrilDiscordBot;
+        public GetUserCreationDateHandler(IMandrilDiscordBot aMandrilDiscordBot)
         {
             _mandtrilDiscordBot = aMandrilDiscordBot;
         }

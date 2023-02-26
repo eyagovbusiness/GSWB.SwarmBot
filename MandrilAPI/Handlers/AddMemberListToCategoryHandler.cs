@@ -7,8 +7,8 @@ namespace MandrilAPI.Handlers
 {
     public class AddMemberListToCategoryHandler : IRequestHandler<AddMemberListToCategoryCommand, Result>
     {
-        private readonly MandrilDiscordBot _mandtrilDiscordBot;
-        public AddMemberListToCategoryHandler(MandrilDiscordBot aMandrilDiscordBot)
+        private readonly IMandrilDiscordBot _mandtrilDiscordBot;
+        public AddMemberListToCategoryHandler(IMandrilDiscordBot aMandrilDiscordBot)
         {
             _mandtrilDiscordBot = aMandrilDiscordBot;
         }

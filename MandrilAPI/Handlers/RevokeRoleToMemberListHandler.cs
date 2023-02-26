@@ -7,8 +7,8 @@ namespace MandrilAPI.Handlers
 {
     public class RevokeRoleToMemberListHandler : IRequestHandler<RevokeRoleToMemberListCommand, Result>
     {
-        private readonly MandrilDiscordBot _mandtrilDiscordBot;
-        public RevokeRoleToMemberListHandler(MandrilDiscordBot aMandrilDiscordBot)
+        private readonly IMandrilDiscordBot _mandtrilDiscordBot;
+        public RevokeRoleToMemberListHandler(IMandrilDiscordBot aMandrilDiscordBot)
         {
             _mandtrilDiscordBot = aMandrilDiscordBot;
         }

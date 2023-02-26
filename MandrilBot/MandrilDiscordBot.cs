@@ -5,15 +5,15 @@ using Microsoft.Extensions.Logging;
 
 namespace MandrilBot
 {
-    public class MandrilDiscordBot
+    public partial class MandrilDiscordBot : IMandrilDiscordBot
     {
         //private readonly IServiceProvider _serviceProvider;
         private readonly ILogger _logger;
         private readonly ILoggerFactory _loggerFactory;
         internal BotConfigJson _botConfiguration;
 
-        public DiscordClient Client { get; private set; }
-        public CommandsNextExtension Commands { get; private set; }
+        internal DiscordClient Client { get; private set; }
+        internal CommandsNextExtension Commands { get; private set; }
 
         public MandrilDiscordBot(/*IServiceProvider aServiceProvider,*/ IConfiguration aConfiguration, ILoggerFactory aLoggerFactory)
         {
@@ -23,7 +23,7 @@ namespace MandrilBot
             _loggerFactory = aLoggerFactory;
         }
 
-        public async Task RunAsync()
+        public async Task StartAsync()
         {
             try
             {

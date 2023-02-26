@@ -7,8 +7,8 @@ namespace MandrilAPI.Handlers
 {
     public class CreateCategoryFromTemplateHandler : IRequestHandler<CreateCategoryFromTemplateCommand, Result<string>>
     {
-        private readonly MandrilDiscordBot _mandtrilDiscordBot;
-        public CreateCategoryFromTemplateHandler(MandrilDiscordBot aMandrilDiscordBot)
+        private readonly IMandrilDiscordBot _mandtrilDiscordBot;
+        public CreateCategoryFromTemplateHandler(IMandrilDiscordBot aMandrilDiscordBot)
         {
             _mandtrilDiscordBot = aMandrilDiscordBot;
         }
