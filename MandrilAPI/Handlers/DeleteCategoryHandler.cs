@@ -13,10 +13,9 @@ namespace MandrilAPI.Handlers
             _mandtrilDiscordBot = aMandrilDiscordBot;
         }
 
-        public Task<Result> Handle(DeleteCategoryCommand aRequest, CancellationToken aCancellationToken)
+        public async Task<Result> Handle(DeleteCategoryCommand aRequest, CancellationToken aCancellationToken)
         {
-            Task<Result> task = Task.Run(async () => await _mandtrilDiscordBot.DeleteCategoryFromId(aRequest.CategoryId));
-            return Task.FromResult(task.Result);
+            return await _mandtrilDiscordBot.DeleteCategoryFromId(aRequest.CategoryId, aCancellationToken);
 
         }
 

@@ -13,9 +13,9 @@ namespace MandrilAPI.Handlers
             _mandtrilDiscordBot = aMandrilDiscordBot;
         }
 
-        public Task<Result<bool>> Handle(IsUserVerifiedQuery aRequest, CancellationToken aCancellationToken)
+        public async Task<Result<bool>> Handle(IsUserVerifiedQuery aRequest, CancellationToken aCancellationToken)
         {
-            return _mandtrilDiscordBot.IsUserVerified(aRequest.UserId);
+            return await _mandtrilDiscordBot.IsUserVerified(aRequest.UserId, aCancellationToken);
         }
 
     }

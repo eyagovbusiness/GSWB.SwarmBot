@@ -8,7 +8,9 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "https://localhost:7000;http://localhost:5229"
+      "applicationUrl": "https://localhost:7000;http://localhost:5229",
+      "nativeDebugging": true,
+      "sqlDebugging": true
     },
     "IIS Express": {
       "commandName": "IISExpress",
@@ -16,31 +18,33 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "nativeDebugging": true,
+      "sqlDebugging": true
     },
     "Docker": {
       "commandName": "Docker",
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger/index.html",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
       "publishAllPorts": true,
       "useSSL": false,
       "httpPort": 7001,
-      "sslPort": 7000,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      "sslPort": 7000
     },
     "Docker-Prod": {
       "commandName": "Docker",
       "launchBrowser": true,
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger/index.html",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production"
+      },
       "publishAllPorts": true,
       "useSSL": false,
       "httpPort": 7001,
-      "sslPort": 7000,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Production"
-      }
+      "sslPort": 7000
     }
   },
   "$schema": "https://json.schemastore.org/launchsettings.json",

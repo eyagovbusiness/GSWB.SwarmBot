@@ -3,12 +3,12 @@ using TheGoodFramework.CA.Domain.Primitives.Result;
 
 namespace MandrilAPI.Commands
 {
-    public class AssignRoleToUserListCommand : IRequest<Result>
+    public class AssignRoleToMemberListCommand : IRequest<Result>
     {
         public ulong RoleId { get; set; }
         public string[] FullDiscordIdentifierList { get; set; }
 
-        public AssignRoleToUserListCommand(ulong aRoleId, string[] aFullDiscordIdentifierList)
+        public AssignRoleToMemberListCommand(ulong aRoleId, string[] aFullDiscordIdentifierList)
         {
             RoleId = aRoleId;
             FullDiscordIdentifierList = aFullDiscordIdentifierList;

@@ -13,9 +13,9 @@ namespace MandrilAPI.Handlers
             _mandtrilDiscordBot = aMandrilDiscordBot;
         }
 
-        public Task<Result<bool>> Handle(ExistDiscordUserQuery aRequest, CancellationToken aCancellationToken)
+        public async Task<Result<bool>> Handle(ExistDiscordUserQuery aRequest, CancellationToken aCancellationToken)
         {
-            return _mandtrilDiscordBot.ExistUser(aRequest.UserId);
+            return await _mandtrilDiscordBot.ExistUser(aRequest.UserId, aCancellationToken);
         }
 
     }

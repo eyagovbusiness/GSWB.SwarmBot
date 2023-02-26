@@ -13,9 +13,9 @@ namespace MandrilAPI.Handlers
             _mandtrilDiscordBot = aMandrilDiscordBot;
         }
 
-        public Task<Result<int>> Handle(GetNumberOfOnlineUsersQuery aRequest, CancellationToken aCancellationToken)
+        public async Task<Result<int>> Handle(GetNumberOfOnlineUsersQuery aRequest, CancellationToken aCancellationToken)
         {
-            return _mandtrilDiscordBot.GetNumberOfOnlineUsers();
+            return await _mandtrilDiscordBot.GetNumberOfOnlineUsers(aCancellationToken);
         }
 
     }

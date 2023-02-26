@@ -3,12 +3,12 @@ using TheGoodFramework.CA.Domain.Primitives.Result;
 
 namespace MandrilAPI.Commands
 {
-    public class AddUserListToCategoryCommand : IRequest<Result>
+    public class AddMemberListToCategoryCommand : IRequest<Result>
     {
         public ulong CategoryId { get; set; }
         public string[] UserFullHandleList { get; set; }
 
-        public AddUserListToCategoryCommand(ulong aCategoryId, string[] aUserFullHandleList)
+        public AddMemberListToCategoryCommand(ulong aCategoryId, string[] aUserFullHandleList)
         {
             CategoryId = aCategoryId;
             UserFullHandleList = aUserFullHandleList;

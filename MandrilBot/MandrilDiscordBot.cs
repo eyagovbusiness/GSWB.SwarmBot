@@ -49,7 +49,7 @@ namespace MandrilBot
 
                 var lCommandsConfig = new CommandsNextConfiguration
                 {
-                    StringPrefixes = new string[] { _botConfiguration.Prefix },
+                    StringPrefixes = new string[] { _botConfiguration.BotCommandPrefix },
                     EnableDms = false,
                     EnableMentionPrefix = true,
                 };
@@ -82,7 +82,7 @@ namespace MandrilBot
 
         //private Task Client_Ready(DiscordClient sender, DSharpPlus.EventArgs.ReadyEventArgs e)
         //{
-        //    throw new NotImplementedException();
+        //    throw new NotImplementedException()
         //}
 
         //private async Task<BotConfigJson> UpdateBotConfig()

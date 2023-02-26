@@ -13,9 +13,9 @@ namespace MandrilAPI.Handlers
             _mandtrilDiscordBot = aMandrilDiscordBot;
         }
 
-        public Task<Result<DateTimeOffset>> Handle(GetUserCreationDateQuery aRequest, CancellationToken aCancellationToken)
+        public async Task<Result<DateTimeOffset>> Handle(GetUserCreationDateQuery aRequest, CancellationToken aCancellationToken)
         {
-            return _mandtrilDiscordBot.GetUserCreationDate(aRequest.UserId);
+            return await _mandtrilDiscordBot.GetUserCreationDate(aRequest.UserId, aCancellationToken);
         }
 
     }

@@ -11,7 +11,7 @@ namespace MandrilBot
         public string MandrilBotToken { get; set; }
         [JsonProperty("DiscordTargetGuildId")]
         public ulong DiscordTargetGuildId { get; set; }
-        [JsonProperty("Prefix")]
-        public string Prefix { get; set; }
+        [JsonProperty("BotCommandPrefix")]
+        public string BotCommandPrefix { get; set; }
     }
 }

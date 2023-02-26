@@ -24,5 +24,37 @@ namespace MandrilBot
             }
 
         }
+
+        [Command("members")]
+        public async Task GetMemberList(CommandContext aCommandContext)
+        {
+            try
+            {
+                await aCommandContext.Channel.DeleteMessagesAsync(await aCommandContext.Channel.GetMessagesAsync());
+                var lMemberList = await aCommandContext.Guild
+                                         .GetAllMembersAsync()
+                                         .ConfigureAwait(false);
+                var lString = Utf8Json.JsonSerializer.ToJsonString(lMemberList.Select(x => $"{x.Username}#{x.Discriminator}").ToArray());
+                await aCommandContext.Channel.SendMessageAsync(lString);
+            }
+            catch (BadRequestException)
+            {
+                await aCommandContext.Channel.SendMessageAsync("Something fucked up!");
+            }
+
+        }
+        [Command("clear")]
+        public async Task Clear(CommandContext aCommandContext)
+        {
+            try
+            {
+                await aCommandContext.Channel.DeleteMessagesAsync(await aCommandContext.Channel.GetMessagesAsync());
+            }
+            catch (BadRequestException)
+            {
+                await aCommandContext.Channel.SendMessageAsync("Something fucked up!");
+            }
+
+        }
     }
 }

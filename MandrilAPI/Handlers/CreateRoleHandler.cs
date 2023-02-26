@@ -13,11 +13,9 @@ namespace MandrilAPI.Handlers
             _mandtrilDiscordBot = aMandrilDiscordBot;
         }
 
-        public Task<Result<string>> Handle(CreateRoleCommand aRequest, CancellationToken aCancellationToken)
+        public async Task<Result<string>> Handle(CreateRoleCommand aRequest, CancellationToken aCancellationToken)
         {
-            Task<Result<ulong>> task = Task.Run(async () => await _mandtrilDiscordBot.CreateRole(aRequest.RoleName));
-            return Task.FromResult(task.Result.GetConverted<string>());
-
+            return (await _mandtrilDiscordBot.CreateRole(aRequest.RoleName, aCancellationToken)).ToString();
         }
 
     }

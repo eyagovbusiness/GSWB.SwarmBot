@@ -13,11 +13,9 @@ namespace MandrilAPI.Handlers
             _mandtrilDiscordBot = aMandrilDiscordBot;
         }
 
-        public Task<Result<string>> Handle(CreateCategoryFromTemplateCommand aRequest, CancellationToken aCancellationToken)
+        public async Task<Result<string>> Handle(CreateCategoryFromTemplateCommand aRequest, CancellationToken aCancellationToken)
         {
-            Task<Result<ulong>> task = Task.Run(async () => await _mandtrilDiscordBot.CreateCategoryFromTemplate(aRequest.CategoryChannelTemplate));
-            return Task.FromResult(task.Result.GetConverted<string>());
-
+            return (await _mandtrilDiscordBot.CreateCategoryFromTemplate(aRequest.CategoryChannelTemplate, aCancellationToken)).ToString();
         }
 
     }
