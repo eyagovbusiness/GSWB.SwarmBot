@@ -1,7 +1,7 @@
 ﻿using MandrilAPI.Queries;
 using MandrilBot;
 using MediatR;
-using TheGoodFramework.CA.Domain.Primitives.Result;
+using TGF.CA.Domain.Primitives.Result;
 
 namespace MandrilAPI.Handlers
 {

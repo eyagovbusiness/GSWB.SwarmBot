@@ -4,7 +4,7 @@ using MandrilBot;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using TheGoodFramework.CA.Domain.Primitives.Result;
+using TGF.CA.Domain.Primitives.Result;
 
 namespace MandrilAPI.Controllers
 {

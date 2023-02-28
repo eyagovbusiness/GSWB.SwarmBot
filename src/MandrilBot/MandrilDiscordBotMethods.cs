@@ -1,7 +1,7 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
-using TheGoodFramework.CA.Domain.Primitives.Result;
-using TheGoodFramework.Common.Extensions;
+using TGF.CA.Domain.Primitives.Result;
+using TGF.Common.Extensions;
 
 namespace MandrilBot
 {

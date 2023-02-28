@@ -1,5 +1,5 @@
 using MandrilBot;
-using TheGoodFramework.CA.Application;
+using TGF.CA.Application;
 
 namespace MandrilAPI
 {

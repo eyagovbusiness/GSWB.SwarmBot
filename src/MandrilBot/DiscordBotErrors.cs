@@ -1,4 +1,4 @@
-﻿using TheGoodFramework.CA.Domain.Primitives;
+﻿using TGF.CA.Domain.Primitives;
 
 namespace MandrilBot
 {
