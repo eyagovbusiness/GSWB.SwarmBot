@@ -19,8 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TheGoodFramework\TheGoodFramework.CA.Domain\TheGoodFramework.CA.Domain.csproj" />
-    <ProjectReference Include="..\TheGoodFramework\TheGoodFramework.Extensions\TheGoodFramework.Common.Extensions.csproj" />
+    <ProjectReference Include="..\..\TheGoodFramework\src\CleanArchitecture\TheGoodFramework.CA.Domain\TGF.CA.Domain.csproj" />
+    <ProjectReference Include="..\..\TheGoodFramework\src\CleanArchitecture\TheGoodFramework.CA.Presentation\TGF.CA.Presentation.csproj" />
+    <ProjectReference Include="..\..\TheGoodFramework\src\Common\TheGoodFramework.Common.Extensions\TGF.Common.Extensions.csproj" />
   </ItemGroup>
 
 </Project>

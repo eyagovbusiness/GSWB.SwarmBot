@@ -7,10 +7,10 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7000;http://localhost:5229",
-      "nativeDebugging": true,
-      "sqlDebugging": true
+      "useSSL": false,
+      "httpPort": 7001,
+      "sslPort": 7000
     },
     "IIS Express": {
       "commandName": "IISExpress",
