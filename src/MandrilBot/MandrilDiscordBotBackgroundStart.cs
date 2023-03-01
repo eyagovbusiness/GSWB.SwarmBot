@@ -3,6 +3,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace MandrilBot
 {
+    /// <summary>
+    /// BackgroundService to start asynchronously in the background the connection of the internal configured bot with Discord.
+    /// </summary>
     public class MandrilDiscordBotBackgroundStart : BackgroundService
     {
         private readonly IServiceProvider _serviceProvider;

@@ -4,6 +4,9 @@ using DSharpPlus.Exceptions;
 
 namespace MandrilBot
 {
+    /// <summary>
+    /// Class with definition of the Discord bot commands that can be used to interact with the bot from Discord.
+    /// </summary>
     internal class BotCommands : BaseCommandModule
     {
         [Command("start-service")]
@@ -43,6 +46,7 @@ namespace MandrilBot
             }
 
         }
+
         [Command("clear")]
         public async Task Clear(CommandContext aCommandContext)
         {

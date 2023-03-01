@@ -5,9 +5,11 @@ using Microsoft.Extensions.Logging;
 
 namespace MandrilBot
 {
+    /// <summary>
+    /// Class designed as a service to provide comminication with an internal Discord bot in this service, with functionality accessible through the public interface.
+    /// </summary>
     public partial class MandrilDiscordBot : IMandrilDiscordBot
     {
-        //private readonly IServiceProvider _serviceProvider;
         private readonly ILogger _logger;
         private readonly ILoggerFactory _loggerFactory;
         internal BotConfigJson _botConfiguration;
@@ -15,14 +17,17 @@ namespace MandrilBot
         internal DiscordClient Client { get; private set; }
         internal CommandsNextExtension Commands { get; private set; }
 
-        public MandrilDiscordBot(/*IServiceProvider aServiceProvider,*/ IConfiguration aConfiguration, ILoggerFactory aLoggerFactory)
+        public MandrilDiscordBot(IConfiguration aConfiguration, ILoggerFactory aLoggerFactory)
         {
-            //_serviceProvider = aServiceProvider;
             _logger = aLoggerFactory.CreateLogger(typeof(MandrilDiscordBot));
             _botConfiguration = aConfiguration.Get<BotConfigJson>();
             _loggerFactory = aLoggerFactory;
         }
 
+        /// <summary>
+        /// Attempts asynchronously to establish the connection of the internal configured bot with Discord.
+        /// </summary>
+        /// <returns>awaitable <see cref="Task"/></returns>
         public async Task StartAsync()
         {
             try
@@ -55,19 +60,15 @@ namespace MandrilBot
                 };
 
                 Commands = Client.UseCommandsNext(lCommandsConfig);
-
                 Commands.RegisterCommands<BotCommands>();
 
                 await Client.ConnectAsync();
 
-
             }
             catch (Exception lException)
             {
-                _logger.LogError(lException.ToString());
+                _logger.LogError("An error occurred while attempting to start the Discord bot client: ", lException.ToString());
             }
-
-
         }
 
         //private Task Client_PresenceUpdated(DiscordClient sender, DSharpPlus.EventArgs.PresenceUpdateEventArgs e)
@@ -84,27 +85,5 @@ namespace MandrilBot
         //{
         //    throw new NotImplementedException()
         //}
-
-        //private async Task<BotConfigJson> UpdateBotConfig()
-        //{
-        //    var lJson = string.Empty;
-        //    var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-        //    string lBotConfigPath = string.Empty;
-        //    if (env == "Production")
-        //        lBotConfigPath = "BotConfig.json";
-        //    if (env == "Development")
-        //        lBotConfigPath = "../src/MandrilBot/BotConfig.json";
-
-        //    using (var lFileStream = File.OpenRead(lBotConfigPath))
-        //    {
-        //        using (var lStreamReader = new StreamReader(lFileStream, new UTF8Encoding(false)))
-        //        {
-        //            lJson = await lStreamReader.ReadToEndAsync().ConfigureAwait(false);
-        //        }
-        //    }
-        //    var lConfigJson = JsonConvert.DeserializeObject<BotConfigJson>(lJson);
-        //    return lConfigJson;
-        //} 
-
     }
 }

@@ -7,7 +7,7 @@ using TGF.Common.Extensions;
 namespace MandrilBot
 {
     /// <summary>
-    /// Extension methods to support MandrilDiscordBot public methods
+    /// Internal extension methods to support MandrilDiscordBot public methods
     /// </summary>
     internal static class MandrilDiscordBotExtensions
     {
