@@ -29,6 +29,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
+      "applicationUrl": ";http://localhost:7001",
       "publishAllPorts": true,
       "useSSL": false,
       "httpPort": 7001,

@@ -8,18 +8,24 @@ namespace MandrilAPI
         public static void Main(string[] args)
         {
             var lWebApplication = WebApplicationAbstraction.CreateCustomWebApplication(
-            aWebHostBuilderAction =>
+            aWebHostBuilder =>
             {
+                aWebHostBuilder.Services
+                                .AddHealthChecks()
+                                .AddCheck<MandrilBotHealthCheck>(nameof(MandrilBotHealthCheck));
+
                 //Singleton MandrilDiscordBot shared by all the services.Services will acess only through the interface protecting the class.
-                aWebHostBuilderAction.Services.AddSingleton<IMandrilDiscordBot, MandrilDiscordBot>();
+                aWebHostBuilder.Services.AddSingleton<IMandrilDiscordBot, MandrilDiscordBot>();
                 //Depends on MandrilDiscordBot, creates the singleton instance and start connection asynchronously in the background.
-                aWebHostBuilderAction.Services.AddHostedService<MandrilDiscordBotBackgroundStart>();
+                aWebHostBuilder.Services.AddHostedService<MandrilDiscordBotBackgroundStart>();
                 //Implements CQRS pattern, depends on MandrilDiscordBot
-                aWebHostBuilderAction.Services.AddMediatR(cfg =>
+                aWebHostBuilder.Services.AddMediatR(cfg =>
                 {
                     cfg.RegisterServicesFromAssembly(typeof(Controllers.MandrilController).Assembly);
                 });
+
             });
+
             lWebApplication.CustomRun();
         }
     }
