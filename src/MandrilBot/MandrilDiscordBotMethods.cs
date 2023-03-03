@@ -161,18 +161,36 @@ namespace MandrilBot
         /// </summary>
         /// <param name="aBot">Current discord bot that will execute the commands.</param>
         /// <param name="aRoleName">string that will name the new Role.</param>
-        /// <returns><see cref="Result{ulong}"/> with information about success or fail on this operation and the Id of the new Role if succeed.</returns>
-        public async Task<Result<ulong>> CreateRole(string aRoleName, CancellationToken aCancellationToken = default)
+        /// <returns><see cref="Result{string}"/> with information about success or fail on this operation and the Id of the new Role if succeed.</returns>
+        public async Task<Result<string>> CreateRole(string aRoleName, CancellationToken aCancellationToken = default)
         {
             var lGuildRes = await this.TryGetDiscordGuildFromConfigAsync(aCancellationToken);
             if (!lGuildRes.IsSuccess)
-                return Result.Failure<ulong>(lGuildRes.Error);
+                return Result.Failure<string>(lGuildRes.Error);
 
             var lRole = await lGuildRes.Value.CreateRoleAsync(aRoleName, aCancellationToken);
             if (lRole == null)
-                return Result.Failure<ulong>(DiscordBotErrors.Role.RoleNotCreated);
+                return Result.Failure<string>(DiscordBotErrors.Role.RoleNotCreated);
 
-            return Result.Success(lRole.Id);
+            return Result.Success(lRole.Id.ToString());
+
+        }
+
+        /// <summary>
+        /// Commands this discord bot to create a new Role in the context server.
+        /// </summary>
+        /// <param name="aBot">Current discord bot that will execute the commands.</param>
+        /// <param name="aRoleName">string that will name the new Role.</param>
+        /// <returns><see cref="Result"/> with information about success or fail on this operation and the Id of the new Role if succeed.</returns>
+        public async Task<Result> DeleteRole(ulong aRoleId, CancellationToken aCancellationToken = default)
+        {
+            var lGuildRes = await this.TryGetDiscordGuildFromConfigAsync(aCancellationToken);
+            if (!lGuildRes.IsSuccess)
+                return Result.Failure<string>(lGuildRes.Error);
+
+            await lGuildRes.Value.Roles.FirstOrDefault(r => r.Key == aRoleId).Value.DeleteAsync();
+
+            return Result.Success();
 
         }
 

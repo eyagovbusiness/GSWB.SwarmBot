@@ -80,7 +80,7 @@ namespace MandrilAPI.Controllers
         }
 
         [HttpPut("AssignRoleToMemberList")]
-        public async Task<Result> PostRoleToMemberList(ulong aRoleId, string[] aFullDiscordHandleList, CancellationToken aCancellationToken)
+        public async Task<Result> PutRoleToMemberList(ulong aRoleId, string[] aFullDiscordHandleList, CancellationToken aCancellationToken)
         {
             return await _mediator.Send(new AssignRoleToMemberListCommand(aRoleId, aFullDiscordHandleList), aCancellationToken);
         }
@@ -105,6 +105,12 @@ namespace MandrilAPI.Controllers
         public async Task<Result> PostDeleteCategory(ulong aCategoryId, CancellationToken aCancellationToken)
         {
             return await _mediator.Send(new DeleteCategoryCommand(aCategoryId), aCancellationToken);
+        }
+
+        [HttpDelete("DeleteRole")]
+        public async Task<Result> DeleteRole(ulong aRoleId, CancellationToken aCancellationToken)
+        {
+            return await _mediator.Send(new DeleteRoleCommand(aRoleId), aCancellationToken);
         }
 
         #endregion

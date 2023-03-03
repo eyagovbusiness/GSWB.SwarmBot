@@ -7,7 +7,7 @@ using TGF.Common.Extensions;
 namespace MandrilBot
 {
     /// <summary>
-    /// Internal extension methods to support MandrilDiscordBot public methods
+    /// Internal extension methods to support MandrilDiscordBot public methods.
     /// </summary>
     internal static class MandrilDiscordBotExtensions
     {
@@ -118,12 +118,11 @@ namespace MandrilBot
         {
             aCancellationToken.ThrowIfCancellationRequested();
 
-            //TEST
-            //if (aMemberFullHandleList.First() == "All")
-            //{
-            //    var w = await aGuild.GetAllMembersAsync();
-            //    return Result.Success(w.ToArray() as IEnumerable<DiscordMember>);
-            //}
+            if (aMemberFullHandleList.First() == "All")
+            {
+                var lAllGuilMemberList = await aGuild.GetAllMembersAsync();
+                return Result.Success(lAllGuilMemberList.ToArray() as IEnumerable<DiscordMember>);
+            }
 
             var lDiscordHandleParts = aMemberFullHandleList
                 .Union(aMemberFullHandleList)

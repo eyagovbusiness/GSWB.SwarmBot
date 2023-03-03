@@ -55,10 +55,16 @@ namespace MandrilBot
         /// <summary>
         /// Commands this discord bot to create a new Role in the context server.
         /// </summary>
-        /// <param name="aBot">Current discord bot that will execute the commands.</param>
         /// <param name="aRoleName">string that will name the new Role.</param>
-        /// <returns><see cref="Result{ulong}"/> with information about success or fail on this operation and the Id of the new Role if succeed.</returns>
-        Task<Result<ulong>> CreateRole(string aRoleName, CancellationToken aCancellationToken = default);
+        /// <returns><see cref="Result{string}"/> with information about success or fail on this operation and the Id of the new Role if succeed.</returns>
+        Task<Result<string>> CreateRole(string aRoleName, CancellationToken aCancellationToken = default);
+
+        /// <summary>
+        /// Commands this discord bot to delete a given Role in the context server.
+        /// </summary>
+        /// <param name="aRoleId">string that represents the name the Role to delete.</param>
+        /// <returns><see cref="Result"/> with information about success or fail on this operation.</returns>
+        Task<Result> DeleteRole(ulong aRoleId, CancellationToken aCancellationToken = default);
 
         /// <summary>
         /// Commands this discord bot delete a given category channel and all inner channels. 
