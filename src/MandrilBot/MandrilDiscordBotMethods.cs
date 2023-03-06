@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using TGF.CA.Domain.Primitives;
 using TGF.CA.Domain.Primitives.Result;
 using TGF.Common.Extensions;
+using static MandrilBot.DiscordBotErrors;
 
 namespace MandrilBot
 {
@@ -260,11 +261,12 @@ namespace MandrilBot
             if (!lGuildRes.IsSuccess)
                 return Result.Failure<string>(lGuildRes.Error);
 
-            return Result.Success(
-                (await lGuildRes.Value.GetChannelsAsync())
+            var lExistingCategory = (await lGuildRes.Value.GetChannelsAsync())
                 .FirstOrDefault(channel => channel.IsCategory
-                                && channel.Name == aDiscordCategoryName)
-                .Id.ToString());
+                                && channel.Name == aDiscordCategoryName);
+
+            return Result.Success(lExistingCategory == null ? default : lExistingCategory.Id.ToString());
+
         }
 
         /// <summary>

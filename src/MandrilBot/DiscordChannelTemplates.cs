@@ -4,30 +4,34 @@ using System.Text.Json.Serialization;
 namespace MandrilBot
 {
     [JsonObject]
-    public struct CategoryChannelTemplate
+    public class CategoryChannelTemplate
     {
+        public CategoryChannelTemplate(){ }
+
         [JsonPropertyName("ChannelType")]
-        internal readonly DSharpPlus.ChannelType ChannelType => DSharpPlus.ChannelType.Category;
+        public DSharpPlus.ChannelType ChannelType { get; private set; } = DSharpPlus.ChannelType.Category;
 
         [JsonPropertyName("Name")]
-        public string Name;
+        public string Name { get; set; }
 
         [JsonPropertyName("ChannelList")]
-        public ChannelTemplate[] ChannelList;
+        public ChannelTemplate[] ChannelList { get; set; }
 
         [JsonPropertyName("Position")]
-        public int? Position;
+        public int? Position { get; set; }
     }
     [JsonObject]
-    public struct ChannelTemplate
+    public class ChannelTemplate
     {
+        public ChannelTemplate() { }
+
         [JsonPropertyName("ChannelType")]
-        public DSharpPlus.ChannelType ChannelType;
+        public DSharpPlus.ChannelType ChannelType { get; set; }
 
         [JsonPropertyName("Name")]
-        public string Name;
+        public string Name { get; set; }
 
         [JsonPropertyName("Position")]
-        public int? Position;
+        public int? Position { get; set; }
     }
 }
