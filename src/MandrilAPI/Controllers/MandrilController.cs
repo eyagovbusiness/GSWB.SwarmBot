@@ -45,6 +45,12 @@ namespace MandrilAPI.Controllers
             return await _mediator.Send(new GetNumberOfOnlineUsersQuery(), aCancellationToken);
         }
 
+        [HttpGet("GetExistingCategoryId")]
+        public async Task<Result<string>> GetExistingCategoryId(string aCategoryName, CancellationToken aCancellationToken)
+        {
+            return await _mediator.Send(new GetExistingCategoryIdQuery(aCategoryName), aCancellationToken);
+        }
+
 
         #endregion
 
@@ -96,6 +102,12 @@ namespace MandrilAPI.Controllers
         {
             return await _mediator.Send(new AddMemberListToCategoryCommand(aCategoryId, aUserFullHandleList), aCancellationToken);
         }
+
+        //[HttpPut("UpdateCategoryFromTemplate")]
+        //public async Task<Result> UpdateCategoryFromTemplate(ulong aCategoryId, CategoryChannelTemplate aTemplate, CancellationToken aCancellationToken)
+        //{
+        //    return await _mediator.Send(new AddMemberListToCategoryCommand(aCategoryId, aTemplate), aCancellationToken);
+        //}
 
         #endregion
 

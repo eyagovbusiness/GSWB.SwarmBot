@@ -5,7 +5,7 @@ namespace MandrilAPI.Queries
 {
     public class ExistDiscordUserQuery : IRequest<Result<bool>>
     {
-        public ulong UserId { get; set; }
+        public ulong UserId { get; private set; }
 
         public ExistDiscordUserQuery(ulong aUserId)
         {

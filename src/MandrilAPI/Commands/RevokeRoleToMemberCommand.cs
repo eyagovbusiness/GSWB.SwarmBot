@@ -5,8 +5,8 @@ namespace MandrilAPI.Commands
 {
     public class RevokeRoleToMemberCommand : IRequest<Result>
     {
-        public ulong RoleId { get; set; }
-        public string FullDiscordIdentifier { get; set; }
+        public ulong RoleId { get; private set; }
+        public string FullDiscordIdentifier { get; private set; }
 
         public RevokeRoleToMemberCommand(ulong aRoleId, string aFullDiscordIdentifier)
         {

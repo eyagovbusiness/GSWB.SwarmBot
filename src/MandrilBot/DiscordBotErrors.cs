@@ -54,6 +54,9 @@ namespace MandrilBot
             public static Error NotFoundId => new Error(
                 "Channel.NotFound",
                 "The channel with the specified ChannelId was not found.");
+            public static Error NotFoundName => new Error(
+                "Channel.NotFound",
+                "The channel with the specified name was not found.");
 
         }
         public static class Guild

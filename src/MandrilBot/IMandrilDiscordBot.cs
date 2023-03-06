@@ -53,6 +53,23 @@ namespace MandrilBot
         Task<Result<ulong>> CreateCategoryFromTemplate(CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default);
 
         /// <summary>
+        /// Gets a valid Id from <see cref="DiscordChannel"/> that is category if exist.
+        /// </summary>
+        /// <param name="aDiscordCategoryName"></param>
+        /// <param name="aCancellationToken"></param>
+        /// <returns><see cref="ulong"/> with valid DiscordChannel Id or default ulong value.</returns>
+        Task<Result<string>> GetExistingCategoryId(string aDiscordCategoryName, CancellationToken aCancellationToken = default);
+
+        /// <summary>
+        /// Synchronizes an existing <see cref="DiscordChannel"/> with the given <see cref="CategoryChannelTemplate"/> template, removing not matching channels and adding missing ones.
+        /// </summary>
+        /// <param name="aDiscordCategoryId"></param>
+        /// <param name="aCategoryChannelTemplate"></param>
+        /// <param name="aCancellationToken"></param>
+        /// <returns>awaitable <see cref="Task"/> with <see cref="Result"/> informing about success or failure in operation.</returns>
+        Task<Result> SyncExistingCategoryWithTemplate(ulong aDiscordCategoryId, CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default);
+
+        /// <summary>
         /// Commands this discord bot to create a new Role in the context server.
         /// </summary>
         /// <param name="aRoleName">string that will name the new Role.</param>

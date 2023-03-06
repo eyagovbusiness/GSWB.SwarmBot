@@ -5,8 +5,8 @@ namespace MandrilAPI.Commands
 {
     public class AddMemberListToCategoryCommand : IRequest<Result>
     {
-        public ulong CategoryId { get; set; }
-        public string[] UserFullHandleList { get; set; }
+        public ulong CategoryId { get; private set; }
+        public string[] UserFullHandleList { get; private set; }
 
         public AddMemberListToCategoryCommand(ulong aCategoryId, string[] aUserFullHandleList)
         {

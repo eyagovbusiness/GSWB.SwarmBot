@@ -5,7 +5,7 @@ namespace MandrilAPI.Queries
 {
     public class IsUserVerifiedQuery : IRequest<Result<bool>>
     {
-        public ulong UserId { get; set; }
+        public ulong UserId { get; private set; }
 
         public IsUserVerifiedQuery(ulong aUserId)
         {

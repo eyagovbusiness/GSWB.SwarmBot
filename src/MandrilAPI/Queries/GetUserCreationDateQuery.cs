@@ -5,7 +5,7 @@ namespace MandrilAPI.Queries
 {
     public class GetUserCreationDateQuery : IRequest<Result<DateTimeOffset>>
     {
-        public ulong UserId { get; set; }
+        public ulong UserId { get; private set; }
 
         public GetUserCreationDateQuery(ulong aUserId)
         {

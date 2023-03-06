@@ -5,8 +5,8 @@ namespace MandrilAPI.Commands
 {
     public class AssignRoleToMemberListCommand : IRequest<Result>
     {
-        public ulong RoleId { get; set; }
-        public string[] FullDiscordIdentifierList { get; set; }
+        public ulong RoleId { get; private set; }
+        public string[] FullDiscordIdentifierList { get; private set; }
 
         public AssignRoleToMemberListCommand(ulong aRoleId, string[] aFullDiscordIdentifierList)
         {

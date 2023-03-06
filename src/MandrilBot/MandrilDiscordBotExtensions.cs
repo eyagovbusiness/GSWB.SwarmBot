@@ -172,6 +172,54 @@ namespace MandrilBot
 
         }
 
+        /// <summary>
+        ///  Performs removal tasks to synchronize a given <see cref="DiscordChannel"/> category internal channels to match a given <see cref="CategoryChannelTemplate"/> template.
+        /// </summary>
+        /// <param name="aDiscordCategory">Discord channel Category</param>
+        /// <param name="aCategoryChannelTemplate">Template of the category.</param>
+        /// <param name="aMaxDegreeOfParallelism">Max degree of parallelism to use in this method</param>
+        /// <param name="aCancellationToken">Dancellation token.</param>
+        /// <returns>awaitable <see cref="Task"/></returns>
+        internal static async Task SyncExistingCategoryWithTemplate_Delete(this DiscordChannel aDiscordCategory, CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
+        {
+            var lDeleteChannelList = aDiscordCategory.Children
+                    .Where(channel => !aCategoryChannelTemplate.ChannelList
+                                                                .Any(template => template.Name == channel.Name))
+                    .ToList();
+
+            aCancellationToken.ThrowIfCancellationRequested();
+            await lDeleteChannelList.ParallelForEachAsync(
+                  MandrilDiscordBot._maxDegreeOfParallelism,
+                  channel => channel.DeleteAsync("This channel's category was assigned to an event and this channel did not match the template."),
+                  aCancellationToken);
+        }
+
+        /// <summary>
+        ///  Performs creation tasks to synchronize a given <see cref="DiscordChannel"/> category internal channels to match a given <see cref="CategoryChannelTemplate"/> template.
+        /// </summary>
+        /// <param name="aDiscordCategory">Discord channel Category</param>
+        /// <param name="aCategoryChannelTemplate">Template of the category.</param>
+        /// <param name="aMaxDegreeOfParallelism">Max degree of parallelism to use in this method</param>
+        /// <param name="aCancellationToken">Dancellation token.</param>
+        /// <returns>awaitable <see cref="Task"/></returns>
+        internal static async Task SyncExistingCategoryWithTemplate_Create(this DiscordChannel aDiscordCategory, CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
+        {
+
+            var lMissingTemplateList = aCategoryChannelTemplate.ChannelList
+                                       .Where(template => aDiscordCategory.Children
+                                                                          .All(channel => channel.Name != template.Name));
+
+
+            if (!lMissingTemplateList.Any())
+                return;
+
+            aCancellationToken.ThrowIfCancellationRequested();
+            await lMissingTemplateList.ParallelForEachAsync(
+                  MandrilDiscordBot._maxDegreeOfParallelism,
+                  template => aDiscordCategory.Guild.CreateChannelAsync(template.Name, template.ChannelType, parent: aDiscordCategory, reason: "A Category channel was assigned to an event and this channel was missing according to the template."),
+                  aCancellationToken);
+        }
+
         #endregion
 
     }

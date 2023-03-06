@@ -1,6 +1,8 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System.Security.Cryptography;
+using TGF.CA.Domain.Primitives;
 using TGF.CA.Domain.Primitives.Result;
 using TGF.Common.Extensions;
 
@@ -8,9 +10,7 @@ namespace MandrilBot
 {
     public partial class MandrilDiscordBot : IMandrilDiscordBot
     {
-        private static readonly byte _maxDegreeOfParallelism = Convert.ToByte(Math.Ceiling(Environment.ProcessorCount * 0.75));
-
-        #region Verify
+        internal static readonly byte _maxDegreeOfParallelism = Convert.ToByte(Math.Ceiling(Environment.ProcessorCount * 0.75));
 
         /// <summary>
         /// Gets a HealthCheck information about this service by attempting to fetch the target discord guild through the bot client.
@@ -40,6 +40,8 @@ namespace MandrilBot
             return HealthCheckResult.Unhealthy("MandrilDiscordBot service is down at th moment, could not fetch guild preview.");
 
         }
+
+        #region UserVerify
 
         /// <summary>
         /// Commands this discord bot to get if exist a user account with the given Id.
@@ -233,17 +235,59 @@ namespace MandrilBot
             if (!lEveryoneRoleRes.IsSuccess)
                 return Result.Failure<ulong>(lEveryoneRoleRes.Error);
 
-
             var lMakePrivateDiscordOverwriteBuilder = new DiscordOverwriteBuilder[] { new DiscordOverwriteBuilder(lEveryoneRoleRes.Value).Deny(Permissions.AccessChannels) };
             aCancellationToken.ThrowIfCancellationRequested();
             var lNewCategory = await lGuildRes.Value.CreateChannelCategoryAsync(aCategoryChannelTemplate.Name, lMakePrivateDiscordOverwriteBuilder);
-
+            await lGuildRes.Value.GetChannelsAsync();
             await aCategoryChannelTemplate.ChannelList.ParallelForEachAsync(
                 _maxDegreeOfParallelism,
                 x => lGuildRes.Value.CreateChannelAsync(x.Name, x.ChannelType, position: x.Position, parent: lNewCategory, overwrites: lMakePrivateDiscordOverwriteBuilder),
                 aCancellationToken);
 
             return Result.Success(lNewCategory.Id);
+
+        }
+
+        /// <summary>
+        /// Gets a valid Id from <see cref="DiscordChannel"/> that is category if exist.
+        /// </summary>
+        /// <param name="aDiscordCategoryName"></param>
+        /// <param name="aCancellationToken"></param>
+        /// <returns><see cref="ulong"/> with valid DiscordChannel Id or default ulong value.</returns>
+        public async Task<Result<string>> GetExistingCategoryId(string aDiscordCategoryName, CancellationToken aCancellationToken = default)
+        {
+            var lGuildRes = await this.TryGetDiscordGuildFromConfigAsync(aCancellationToken);
+            if (!lGuildRes.IsSuccess)
+                return Result.Failure<string>(lGuildRes.Error);
+
+            return Result.Success(
+                (await lGuildRes.Value.GetChannelsAsync())
+                .FirstOrDefault(channel => channel.IsCategory
+                                && channel.Name == aDiscordCategoryName)
+                .Id.ToString());
+        }
+
+        /// <summary>
+        /// Synchronizes an existing <see cref="DiscordChannel"/> with the given <see cref="CategoryChannelTemplate"/> template, removing not matching channels and adding missing ones.
+        /// </summary>
+        /// <param name="aDiscordCategoryId"></param>
+        /// <param name="aCategoryChannelTemplate"></param>
+        /// <param name="aCancellationToken"></param>
+        /// <returns>awaitable <see cref="Task"/> with <see cref="Result"/> informing about success or failure in operation.</returns>
+        public async Task<Result> SyncExistingCategoryWithTemplate(ulong aDiscordCategoryId, CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
+        {
+            var lGuildRes = await this.TryGetDiscordGuildFromConfigAsync(aCancellationToken);
+            if (!lGuildRes.IsSuccess)
+                return Result.Failure(lGuildRes.Error);
+
+            var lExistingCategory = lGuildRes.Value.GetChannel(aDiscordCategoryId);
+            if(lExistingCategory == null)
+                return Result.Failure(DiscordBotErrors.Channel.NotFoundId);
+
+            await lExistingCategory.SyncExistingCategoryWithTemplate_Delete(aCategoryChannelTemplate, aCancellationToken);
+            await lExistingCategory.SyncExistingCategoryWithTemplate_Create(aCategoryChannelTemplate, aCancellationToken);
+
+            return Result.Success();
 
         }
 
@@ -313,5 +357,6 @@ namespace MandrilBot
         }
 
         #endregion
+
     }
 }
