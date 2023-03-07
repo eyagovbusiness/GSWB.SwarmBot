@@ -1,6 +1,5 @@
 using MandrilBot;
 using System.Net;
-using TGF.CA.Domain.Primitives;
 
 namespace Mandril.API.IntegrationTests
 {
@@ -31,7 +30,7 @@ namespace Mandril.API.IntegrationTests
             var lExpectedStatusCode = HttpStatusCode.OK;
 
             //CreateNewRole
-            var lCreateRoleRply= await TestCommon._httpClient.PostAsync("/Mandril/CreateRole?aRoleName=IntegrationTestRole", default);
+            var lCreateRoleRply = await TestCommon._httpClient.PostAsync("/Mandril/CreateRole?aRoleName=IntegrationTestRole", default);
             var lCreateRoleResult = await TestCommon.AssertResponseWithContentAsync(lCreateRoleRply, lExpectedStatusCode, (ResultStruct<string> lRes) => lRes.isSuccess && lRes.value != null);
 
             //AssignRoleToAllMembers

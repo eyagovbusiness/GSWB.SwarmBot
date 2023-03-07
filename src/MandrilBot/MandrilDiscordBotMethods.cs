@@ -1,11 +1,8 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using System.Security.Cryptography;
-using TGF.CA.Domain.Primitives;
 using TGF.CA.Domain.Primitives.Result;
 using TGF.Common.Extensions;
-using static MandrilBot.DiscordBotErrors;
 
 namespace MandrilBot
 {
@@ -283,7 +280,7 @@ namespace MandrilBot
                 return Result.Failure(lGuildRes.Error);
 
             var lExistingCategory = lGuildRes.Value.GetChannel(aDiscordCategoryId);
-            if(lExistingCategory == null)
+            if (lExistingCategory == null)
                 return Result.Failure(DiscordBotErrors.Channel.NotFoundId);
 
             await lExistingCategory.SyncExistingCategoryWithTemplate_Delete(aCategoryChannelTemplate, aCancellationToken);

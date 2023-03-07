@@ -6,7 +6,7 @@ namespace MandrilBot
     [JsonObject]
     public class CategoryChannelTemplate
     {
-        public CategoryChannelTemplate(){ }
+        public CategoryChannelTemplate() { }
 
         [JsonPropertyName("ChannelType")]
         public DSharpPlus.ChannelType ChannelType { get; private set; } = DSharpPlus.ChannelType.Category;

@@ -3,7 +3,6 @@ using MandrilAPI.Queries;
 using MandrilBot;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using TGF.CA.Domain.Primitives.Result;
 
 namespace MandrilAPI.Controllers
