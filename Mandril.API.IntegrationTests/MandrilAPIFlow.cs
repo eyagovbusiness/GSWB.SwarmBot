@@ -9,18 +9,27 @@ namespace Mandril.API.IntegrationTests
     /// </summary>
     public class MandrilAPIFlow
     {
+
         [Test]
-        public async Task GetNumberOfUsersOnline()
+        public async Task GetUserExist_ThenGetNumberOfUsersOnline_ThenGetUserCreationDate_ThenGetUserIsVerified()
         {
             var lExpectedStatusCode = HttpStatusCode.OK;
+
+            //GetUserExist
+            var lGetUserExistRply = await TestCommon._httpClient.GetAsync($"/Mandril/GetUserExist?aUserId={1074678110991163402}");
+            await TestCommon.AssertResponseWithContentAsync(lGetUserExistRply, lExpectedStatusCode, (ResultStruct<bool> lRes) => lRes.isSuccess && lRes.value);
+
+            //GetUserIsVerified
+            var lGetUserIsVerifiedRply = await TestCommon._httpClient.GetAsync($"/Mandril/GetUserIsVerified?aUserId={1074678110991163402}");
+            await TestCommon.AssertResponseWithContentAsync(lGetUserIsVerifiedRply, lExpectedStatusCode, (ResultStruct<bool> lRes) => lRes.isSuccess && !lRes.value);
+
+            //GetUserCreationDate
+            var lGetUserCreationDateRply = await TestCommon._httpClient.GetAsync($"/Mandril/GetUserCreationDate?aUserId={1074678110991163402}");
+            await TestCommon.AssertResponseWithContentAsync(lGetUserCreationDateRply, lExpectedStatusCode, (ResultStruct<DateTimeOffset> lRes) => lRes.isSuccess && lRes.value > DateTimeOffset.MinValue && lRes.value < DateTimeOffset.MaxValue);
 
             //GetNumberOfUsersOnline
             var lGetNumberOfUsersOnlineRply = await TestCommon._httpClient.GetAsync("/Mandril/GetNumberOfOnlineUsers");
             await TestCommon.AssertResponseWithContentAsync(lGetNumberOfUsersOnlineRply, lExpectedStatusCode, (ResultStruct<int> lRes) => lRes.isSuccess && lRes.value >= 0);
-
-            //GetNumberOfUsersOnline
-            var lResponse = await TestCommon._httpClient.GetAsync($"/Mandril/GetUserCreationDate?aUserId={1074678110991163402}");
-            await TestCommon.AssertResponseWithContentAsync(lResponse, lExpectedStatusCode, (ResultStruct<DateTimeOffset> lRes) => lRes.isSuccess && lRes.value != null);
 
         }
 
@@ -77,5 +86,6 @@ namespace Mandril.API.IntegrationTests
             await TestCommon.AssertResponseWithContentAsync(lDeleteCategoryRply, lExpectedStatusCode, (ResultStruct lRes) => lRes.isSuccess);
 
         }
+
     }
 }

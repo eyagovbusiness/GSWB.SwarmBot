@@ -24,9 +24,11 @@ namespace Mandril.API.IntegrationTests
             var lContent = await System.Text.Json.JsonSerializer.DeserializeAsync<T>(
                 await response.Content.ReadAsStreamAsync());
 
-            Assert.That(aResponseValidationFunc.Invoke(lContent));
+            Assert.That(lContent != null && aResponseValidationFunc.Invoke(lContent));
 
+            #pragma warning disable CS8603 // Possible null reference return.
             return lContent;
+            #pragma warning restore CS8603 // Possible null reference return.
         }
 
 

@@ -318,8 +318,6 @@ namespace MandrilBot
         /// <summary>
         /// Commands this discord bot add a given list of users to a given category channel and all inner channels. 
         /// </summary>
-        /// <param name="aBot">Current discord bot that will execute the commands.</param>
-        /// <param name="aCategoryId">Id of the category channel</param>
         /// /// <param name="aUserFullHandleList">List of discord full handles</param>
         /// <returns><see cref="Result"/> with information about success or fail on this operation.</returns>
         public async Task<Result> AddMemberListToChannel(ulong aChannelId, string[] aUserFullHandleList, CancellationToken aCancellationToken = default)
