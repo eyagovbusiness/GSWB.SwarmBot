@@ -50,7 +50,7 @@ namespace MandrilBot
         /// <param name="aBot">Current discord bot that will execute the commands.</param>
         /// <param name="aEventCategoryChannelTemplate"><see cref="EventCategoryChannelTemplate"/> template to follow on creating the new category.</param>
         /// <returns><see cref="Result"/> with information about success or fail on this operation.</returns>
-        Task<Result<ulong>> CreateCategoryFromTemplate(CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default);
+        Task<Result<string>> CreateCategoryFromTemplate(CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default);
 
         /// <summary>
         /// Gets a valid Id from <see cref="DiscordChannel"/> that is category if exist.

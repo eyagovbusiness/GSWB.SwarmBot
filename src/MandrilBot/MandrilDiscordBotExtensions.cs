@@ -47,7 +47,7 @@ namespace MandrilBot
 
             var lChannel = lGuildRes.Value?.GetChannel(aChannelId);
             return lChannel == null
-                ? Result.Failure<DiscordChannel>(DiscordBotErrors.Role.NotFoundId)
+                ? Result.Failure<DiscordChannel>(DiscordBotErrors.Channel.NotFoundId)
                 : Result.Success(lChannel);
 
         }
@@ -63,7 +63,7 @@ namespace MandrilBot
             var lAllMemberList = await lGuildRes.Value?.GetAllMembersAsync();
             var lMember = lAllMemberList?.FirstOrDefault(x => x.Username == lDiscordHandleParts[0] && x.Discriminator == lDiscordHandleParts[1]);
             return lMember == null
-                ? Result.Failure<DiscordMember>(DiscordBotErrors.Role.NotFoundId)
+                ? Result.Failure<DiscordMember>(DiscordBotErrors.Member.NotFoundHandle)
             : Result.Success(lMember);
 
         }

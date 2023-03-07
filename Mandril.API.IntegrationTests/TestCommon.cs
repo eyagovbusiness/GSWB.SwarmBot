@@ -16,7 +16,7 @@ namespace Mandril.API.IntegrationTests
 
         public static async Task<T> AssertResponseWithContentAsync<T>(
             HttpResponseMessage response, System.Net.HttpStatusCode expectedStatusCode,
-            T expectedContent)
+            Func<T, bool> aResponseValidationFunc)
         {
             AssertCommonResponseParts(response, expectedStatusCode);
             Assert.That(response.Content.Headers.ContentType?.MediaType, Is.EqualTo(_jsonMediaType));
@@ -24,10 +24,11 @@ namespace Mandril.API.IntegrationTests
             var lContent = await System.Text.Json.JsonSerializer.DeserializeAsync<T>(
                 await response.Content.ReadAsStreamAsync());
 
-            Assert.That(expectedContent, Is.EqualTo(lContent));
+            Assert.That(aResponseValidationFunc.Invoke(lContent));
 
             return lContent;
         }
+
 
         public static void AssertCommonResponseParts(
             HttpResponseMessage response, System.Net.HttpStatusCode expectedStatusCode)

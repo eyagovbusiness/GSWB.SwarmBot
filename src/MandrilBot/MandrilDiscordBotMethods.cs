@@ -226,15 +226,15 @@ namespace MandrilBot
         /// <param name="aBot">Current discord bot that will execute the commands.</param>
         /// <param name="aEventCategoryChannelTemplate"><see cref="EventCategoryChannelTemplate"/> template to follow on creating the new category.</param>
         /// <returns><see cref="Result"/> with information about success or fail on this operation.</returns>
-        public async Task<Result<ulong>> CreateCategoryFromTemplate(CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
+        public async Task<Result<string>> CreateCategoryFromTemplate(CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
         {
             var lGuildRes = await this.TryGetDiscordGuildFromConfigAsync(aCancellationToken);
             if (!lGuildRes.IsSuccess)
-                return Result.Failure<ulong>(lGuildRes.Error);
+                return Result.Failure<string>(lGuildRes.Error);
 
             var lEveryoneRoleRes = await this.TryGetDiscordRoleAsync(lGuildRes.Value.Id, aCancellationToken);
             if (!lEveryoneRoleRes.IsSuccess)
-                return Result.Failure<ulong>(lEveryoneRoleRes.Error);
+                return Result.Failure<string>(lEveryoneRoleRes.Error);
 
             var lMakePrivateDiscordOverwriteBuilder = new DiscordOverwriteBuilder[] { new DiscordOverwriteBuilder(lEveryoneRoleRes.Value).Deny(Permissions.AccessChannels) };
             aCancellationToken.ThrowIfCancellationRequested();
@@ -245,7 +245,7 @@ namespace MandrilBot
                 x => lGuildRes.Value.CreateChannelAsync(x.Name, x.ChannelType, position: x.Position, parent: lNewCategory, overwrites: lMakePrivateDiscordOverwriteBuilder),
                 aCancellationToken);
 
-            return Result.Success(lNewCategory.Id);
+            return Result.Success(lNewCategory.Id.ToString());
 
         }
 

@@ -15,7 +15,7 @@ namespace MandrilAPI.Handlers
 
         public async Task<Result<string>> Handle(CreateCategoryFromTemplateCommand aRequest, CancellationToken aCancellationToken)
         {
-            return (await _mandtrilDiscordBot.CreateCategoryFromTemplate(aRequest.CategoryChannelTemplate, aCancellationToken)).ToString();
+            return await _mandtrilDiscordBot.CreateCategoryFromTemplate(aRequest.CategoryChannelTemplate, aCancellationToken);
         }
 
     }

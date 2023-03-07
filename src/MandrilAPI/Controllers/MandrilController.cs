@@ -63,10 +63,9 @@ namespace MandrilAPI.Controllers
         }
 
         [HttpPost("CreateCategoryFromTemplate")]
-        public async Task<Result<string>> PostCreateCategoryFromTemplate(string aCategoryTemplateString, CancellationToken aCancellationToken)
+        public async Task<Result<string>> PostCreateCategoryFromTemplate([FromBody] CategoryChannelTemplate aTemplate, CancellationToken aCancellationToken)
         {
-            var lCategoryChannelTemplate = JsonConvert.DeserializeObject<CategoryChannelTemplate>(aCategoryTemplateString);
-            return await _mediator.Send(new CreateCategoryFromTemplateCommand(lCategoryChannelTemplate), aCancellationToken);
+            return await _mediator.Send(new CreateCategoryFromTemplateCommand(aTemplate), aCancellationToken);
         }
 
         #endregion
@@ -98,13 +97,13 @@ namespace MandrilAPI.Controllers
         }
 
         [HttpPut("AddMemberListToCategory")]
-        public async Task<Result> PutAddMemberListToCategory(ulong aCategoryId, [FromBody]string[] aUserFullHandleList, CancellationToken aCancellationToken)
+        public async Task<Result> PutAddMemberListToCategory(ulong aCategoryId, string[] aUserFullHandleList, CancellationToken aCancellationToken)
         {
             return await _mediator.Send(new AddMemberListToCategoryCommand(aCategoryId, aUserFullHandleList), aCancellationToken);
         }
 
         [HttpPut("UpdateCategoryFromTemplate")]
-        public async Task<Result> UpdateCategoryFromTemplate([FromQuery]ulong aCategoryId, [FromBody]CategoryChannelTemplate aTemplate, CancellationToken aCancellationToken)
+        public async Task<Result> UpdateCategoryFromTemplate(ulong aCategoryId, CategoryChannelTemplate aTemplate, CancellationToken aCancellationToken)
         {
             return await _mediator.Send(new UpdateCategoryFromTemplateCommand(aCategoryId, aTemplate), aCancellationToken);
         }
