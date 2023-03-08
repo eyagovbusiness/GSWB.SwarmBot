@@ -65,12 +65,12 @@ namespace Mandril.API.IntegrationTests
             var lCreateRoleRply = await TestCommon._httpClient.PostAsync("/Mandril/CreateRole?aRoleName=IntegrationTestRoleSingle", default);
             var lCreateRoleRes = await TestCommon.AssertResponseWithContentAsync(lCreateRoleRply, lExpectedStatusCode, (ResultStruct<string> lRes) => lRes.isSuccess && lRes.value != null);
 
-            //AssignRoleToAllMembers
-            var lAssignRoleToMemberListRply = await TestCommon._httpClient.PutAsync($"/Mandril/AssignRoleToMember?aRoleId={lCreateRoleRes.value}&aFullDiscordHandle=MandrilBot#0739", TestCommon.GetJsonStringContent(""));
+            //AssignRoleToMember
+            var lAssignRoleToMemberListRply = await TestCommon._httpClient.PutAsync($"/Mandril/AssignRoleToMember?aRoleId={lCreateRoleRes.value}&aFullDiscordHandle=MandrilBot%230739", TestCommon.GetJsonStringContent(""));
             _ = await TestCommon.AssertResponseWithContentAsync(lAssignRoleToMemberListRply, lExpectedStatusCode, (ResultStruct lRes) => lRes.isSuccess);
 
-            //ThenRevokeRoleToAllMembers
-            var lRevokeRoleRply = await TestCommon._httpClient.PutAsync($"/Mandril/RevokeRoleToMember?aRoleId={lCreateRoleRes.value}&aFullDiscordHandle=MandrilBot#0739", TestCommon.GetJsonStringContent(""));
+            //ThenRevokeRoleToMember
+            var lRevokeRoleRply = await TestCommon._httpClient.PutAsync($"/Mandril/RevokeRoleToMember?aRoleId={lCreateRoleRes.value}&aFullDiscordHandle=MandrilBot%230739", TestCommon.GetJsonStringContent(""));
             _ = await TestCommon.AssertResponseWithContentAsync(lRevokeRoleRply, lExpectedStatusCode, (ResultStruct lRes) => lRes.isSuccess);
 
             //DeleteRole
