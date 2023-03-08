@@ -6,7 +6,12 @@ namespace Mandril.API.IntegrationTests
     internal static class TestHelpers
     {
         internal static Random _random = new Random();
-        internal static CategoryChannelTemplate GetCategoryChannelTemplateSample()
+
+        private static ChannelType GetRandomVoiceOrTextType()
+        {
+            return _random.Next(2) > 0 ? ChannelType.Text : ChannelType.Voice;
+        }
+        private static ChannelTemplate[] GetChannelTemplateSampleList()
         {
             int lRandomSampleSize = _random.Next(2, 10);
 
@@ -15,30 +20,34 @@ namespace Mandril.API.IntegrationTests
             for (int i = 0; i < lRandomSampleSize; i++)
             {
                 ChannelTemplate lChannelTemplate = new ChannelTemplate();
-                lChannelTemplate.ChannelType = _random.Next(2) > 0 ? ChannelType.Text : ChannelType.Voice;
+                lChannelTemplate.ChannelType = GetRandomVoiceOrTextType();
                 lChannelTemplate.Position = i;
                 lChannelTemplate.Name = "TestChannel" + i;
                 lChannelTemplateList[i] = lChannelTemplate;
             }
-
+            return lChannelTemplateList;
+        }
+        internal static CategoryChannelTemplate GetCategoryChannelTemplateSample()
+        {
             return new CategoryChannelTemplate()
             {
                 Name = "TestingCategory",
                 Position = 0,
-                ChannelList = lChannelTemplateList
+                ChannelList = GetChannelTemplateSampleList()
 
             };
         }
-        internal static void RandomModifyTemplate()
+        internal static void RandomModifyTemplate(this CategoryChannelTemplate aCategoryChannelTemplate)
         {
-            //var lChannelTemplate = new ChannelTemplate()
-            //{
+            var lModifyIndex = _random.Next(aCategoryChannelTemplate.ChannelList.Count());
+            (aCategoryChannelTemplate.ChannelList as ChannelTemplate[])[lModifyIndex] = 
+            new ChannelTemplate()
+            {
+                Name = "ModifiedAddedChannel",
+                Position = aCategoryChannelTemplate.ChannelList.Max(channel => channel.Position) + 1,
+                ChannelType = GetRandomVoiceOrTextType()
+            };
 
-            //};
-            //return new CategoryChannelTemplate()
-            //{
-
-            //};
         }
     }
 }
