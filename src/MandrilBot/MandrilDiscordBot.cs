@@ -35,7 +35,6 @@ namespace MandrilBot
                 var config = new DiscordConfiguration
                 {
                     LoggerFactory = _loggerFactory,
-                    MinimumLogLevel = LogLevel.Error,
                     Token = _botConfiguration.MandrilBotToken,
                     TokenType = TokenType.Bot,
                     AutoReconnect = true,

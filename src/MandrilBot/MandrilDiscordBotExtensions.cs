@@ -209,7 +209,6 @@ namespace MandrilBot
                                        .Where(template => aDiscordCategory.Children
                                                                           .All(channel => channel.Name != template.Name));
 
-
             if (!lMissingTemplateList.Any())
                 return;
 

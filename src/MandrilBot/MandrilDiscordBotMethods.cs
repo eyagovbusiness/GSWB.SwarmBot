@@ -236,7 +236,7 @@ namespace MandrilBot
             var lMakePrivateDiscordOverwriteBuilder = new DiscordOverwriteBuilder[] { new DiscordOverwriteBuilder(lEveryoneRoleRes.Value).Deny(Permissions.AccessChannels) };
             aCancellationToken.ThrowIfCancellationRequested();
             var lNewCategory = await lGuildRes.Value.CreateChannelCategoryAsync(aCategoryChannelTemplate.Name, lMakePrivateDiscordOverwriteBuilder);
-            await lGuildRes.Value.GetChannelsAsync();
+
             await aCategoryChannelTemplate.ChannelList.ParallelForEachAsync(
                 _maxDegreeOfParallelism,
                 x => lGuildRes.Value.CreateChannelAsync(x.Name, x.ChannelType, position: x.Position, parent: lNewCategory, overwrites: lMakePrivateDiscordOverwriteBuilder),
@@ -345,6 +345,7 @@ namespace MandrilBot
                 aCancellationToken);
 
             //We override the overrites with our new ones plus the already existing ones as we aded them to lOverWriteBuilderList below.
+            await lChannelRes.Value.ModifyAsync(x => x.PermissionOverwrites = lOverWriteBuilderList);
             await lChannelRes.Value.Children.ParallelForEachAsync(
                 _maxDegreeOfParallelism,
                 x => x.ModifyAsync(x => x.PermissionOverwrites = lOverWriteBuilderList),
