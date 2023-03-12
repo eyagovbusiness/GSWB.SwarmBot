@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using TGF.Common.Extensions;
 
@@ -30,7 +31,7 @@ namespace MandrilBot.News
             private readonly string _citizensPath;
             private readonly DiscordChannel _devTrackerNewsChannel;
             private readonly HttpClient _httpClient;
-            private List<DevTrackerNewsMessage> _lastMessageList;
+            private static List<DevTrackerNewsMessage> _lastMessageList;
 
             public DevTrackerNews(DiscordChannel aDevTrackerNewsChannel, HttpClient ahttpClient, string aResourcePath, string aCitizensPath)
             {
@@ -43,7 +44,6 @@ namespace MandrilBot.News
             private async Task<List<DevTrackerNewsMessage>> GetLastMessageListAsync()
             {
                 var lHTMLdocument = await DiscordBotSCNewsExtensions.GetHTMLAsync(_resourcePath);
-
                 var lElementList = lHTMLdocument.QuerySelector("div.devtracker-list.js-devtracker-list")?.QuerySelector(".devtracker-list");
                 var lDictionaryData = lElementList.Children.Select(y => y.ToDictionary()).ToList();
 
@@ -73,8 +73,9 @@ namespace MandrilBot.News
             public async Task<List<DevTrackerNewsMessage>> GetUpdatesAsync()
             {
                 var lContentList = await GetLastMessageListAsync();
-                return lContentList.Except(_lastMessageList).ToList();
-
+                var lRes = lContentList.Except(_lastMessageList).ToList();
+                _lastMessageList = lContentList;
+                return lRes;
             }
 
             public async Task InitAsync()
@@ -86,7 +87,6 @@ namespace MandrilBot.News
             {
                 try
                 {
-
                     var lUpdateMessageList = await GetUpdatesAsync();
 
                     await lUpdateMessageList.ParallelForEachAsync(
