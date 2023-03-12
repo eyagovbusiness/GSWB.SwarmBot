@@ -1,5 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using AngleSharp;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
+using static MandrilBot.News.DiscordBotSCNews;
 
 namespace MandrilBot
 {
@@ -9,13 +12,31 @@ namespace MandrilBot
     public class MandrilDiscordBotBackgroundStart : BackgroundService
     {
         private readonly IServiceProvider _serviceProvider;
-        public MandrilDiscordBotBackgroundStart(IServiceProvider aServiceProvider)
-        => _serviceProvider = aServiceProvider;
+        private readonly Microsoft.Extensions.Configuration.IConfiguration _configuration;
+        private Timer _clock;
+        private DevTrackerNews _devTrackerNews;
+
+        public MandrilDiscordBotBackgroundStart(IServiceProvider aServiceProvider, Microsoft.Extensions.Configuration.IConfiguration aConfiguration)
+        {
+            _serviceProvider = aServiceProvider;
+            _configuration = aConfiguration;
+        }
+
         protected override async Task ExecuteAsync(CancellationToken aStoppingToken)
         {
             var lDiscordBotService = _serviceProvider.GetRequiredService<IMandrilDiscordBot>();
             await lDiscordBotService.StartAsync();
-            await StopAsync(default);
+
+            //_configuration.get
+
+            _clock = new Timer(ExecuteTickTasks, null, TimeSpan.Zero,
+                TimeSpan.FromSeconds(5));
+
+        }
+
+        private void ExecuteTickTasks(object state)
+        {
+
         }
     }
 }
