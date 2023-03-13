@@ -3,12 +3,14 @@ using AngleSharp.Html.Parser;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
+using MandrilBot.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using TGF.Common.Extensions;
 
@@ -29,16 +31,15 @@ namespace MandrilBot.News
         {
             private readonly string _resourcePath;
             private readonly string _citizensPath;
-            private readonly DiscordChannel _devTrackerNewsChannel;
-            private readonly HttpClient _httpClient;
-            private static List<DevTrackerNewsMessage> _lastMessageList;
 
-            public DevTrackerNews(DiscordChannel aDevTrackerNewsChannel, HttpClient ahttpClient, string aResourcePath, string aCitizensPath)
+            private DiscordChannel _devTrackerNewsChannel;
+            private HttpClient _httpClient;
+            private List<DevTrackerNewsMessage> _lastMessageList;
+
+            public DevTrackerNews(BotNewsConfig lBotNewsConfig)
             {
-                _resourcePath = aResourcePath;
-                _citizensPath = aCitizensPath + "/";
-                _httpClient = ahttpClient;
-                _devTrackerNewsChannel = aDevTrackerNewsChannel;
+                _resourcePath = lBotNewsConfig.DevTracker.ResourcePath;
+                _citizensPath = lBotNewsConfig.CitizensPath + "/";
             }
 
             private async Task<List<DevTrackerNewsMessage>> GetLastMessageListAsync()
@@ -63,7 +64,7 @@ namespace MandrilBot.News
                         Date = lContent[3],
                         Title = lContent[5],
                         Description = lContent[6],
-                        SourceLink = sourceDictionary["PathName"]
+                        SourceLink = sourceDictionary["PathName"][1..]
                     });
                 });
 
@@ -73,47 +74,46 @@ namespace MandrilBot.News
             public async Task<List<DevTrackerNewsMessage>> GetUpdatesAsync()
             {
                 var lContentList = await GetLastMessageListAsync();
-                var lRes = lContentList.Except(_lastMessageList).ToList();
-                _lastMessageList = lContentList;
+                var lRes = lContentList.Except(_lastMessageList)?.ToList();
+                if(lRes.Count > 0 )
+                {
+                    _lastMessageList = lContentList;
+                }
                 return lRes;
             }
 
-            public async Task InitAsync()
+            public async Task InitAsync(HttpClient aHttpClient, IMandrilDiscordBot aMandrilDiscordBot, string aChannelName)
             {
-                _ = await GetLastMessageListAsync();
+                _devTrackerNewsChannel = (await (aMandrilDiscordBot as MandrilDiscordBot).TryGetDiscordChannelAsync(aChannelName)).Value;
+                _httpClient = aHttpClient;
+                _lastMessageList = await GetLastMessageListAsync();
             }
 
             public async Task TickExecute(CancellationToken aCancellationToken)
             {
-                try
-                {
-                    var lUpdateMessageList = await GetUpdatesAsync();
+                var lUpdateMessageList = await GetUpdatesAsync();
+                if (lUpdateMessageList.IsNullOrEmpty()) return;
 
-                    await lUpdateMessageList.ParallelForEachAsync(
-                        MandrilDiscordBot._maxDegreeOfParallelism,
-                        async update => await _devTrackerNewsChannel.SendMessageAsync(new DiscordMessageBuilder()
+                await lUpdateMessageList.ParallelForEachAsync(
+                    MandrilDiscordBot._maxDegreeOfParallelism,
+                    async update => await _devTrackerNewsChannel.SendMessageAsync(new DiscordMessageBuilder()
+                    {
+                        Embed = new DiscordEmbedBuilder()
                         {
-                            Embed = new DiscordEmbedBuilder()
+                            Author = new DiscordEmbedBuilder.EmbedAuthor()
                             {
-                                Author = new DiscordEmbedBuilder.EmbedAuthor()
-                                {
-                                    Name = update.Author,
-                                    Url = _httpClient.BaseAddress + _citizensPath + update.Author,
-                                    IconUrl = _httpClient.BaseAddress + await DiscordBotSCNewsExtensions.GetCitizenImageLink(_citizensPath + update.Author),
-                                },
-                                Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail() { Height = 10, Width = 10, Url = "https://starcitizen.tools/images/thumb/0/06/Spectrum.jpg/300px-Spectrum.jpg" },
-                                Title = update.Title,
-                                Description = update.Description,
-                                Url = update.SourceLink
-                            }
-                        }),
-                        aCancellationToken
-                        );
-                }
-                catch (BadRequestException)
-                {
-                    await _devTrackerNewsChannel.SendMessageAsync("An error occurred, please notify the administrator.");
-                }
+                                Name = update.Author,
+                                Url = _httpClient.BaseAddress + _citizensPath + update.Author,
+                                IconUrl = _httpClient.BaseAddress + await DiscordBotSCNewsExtensions.GetCitizenImageLink(_citizensPath + update.Author),
+                            },
+                            Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail() { Height = 10, Width = 10, Url = "https://starcitizen.tools/images/thumb/0/06/Spectrum.jpg/300px-Spectrum.jpg" },
+                            Title = update.Title,
+                            Description = update.Description,
+                            Url = _httpClient.BaseAddress + update.SourceLink
+                        }
+                    }),
+                    aCancellationToken
+                    );
             }
 
         }

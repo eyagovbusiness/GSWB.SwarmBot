@@ -17,7 +17,8 @@ namespace MandrilAPI
                 //Singleton MandrilDiscordBot shared by all the services.Services will acess only through the interface protecting the class.
                 aWebHostBuilder.Services.AddSingleton<IMandrilDiscordBot, MandrilDiscordBot>();
                 //Depends on MandrilDiscordBot, creates the singleton instance and start connection asynchronously in the background.
-                aWebHostBuilder.Services.AddHostedService<MandrilDiscordBotBackgroundStart>();
+                aWebHostBuilder.Services.AddHostedService<MandrilDiscordBotBackgroundTasks>();
+                aWebHostBuilder.Services.AddHttpClient<MandrilDiscordBotBackgroundTasks>();
                 //Implements CQRS pattern, depends on MandrilDiscordBot
                 aWebHostBuilder.Services.AddMediatR(cfg =>
                 {

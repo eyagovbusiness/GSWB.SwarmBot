@@ -52,6 +52,20 @@ namespace MandrilBot
 
         }
 
+        internal static async Task<Result<DiscordChannel>> TryGetDiscordChannelAsync(this MandrilDiscordBot aBot, string aChannelName, CancellationToken aCancellationToken = default)
+        {
+            aCancellationToken.ThrowIfCancellationRequested();
+            var lGuildRes = await TryGetDiscordGuildFromConfigAsync(aBot);
+            if (!lGuildRes.IsSuccess)
+                return Result.Failure<DiscordChannel>(lGuildRes.Error);
+
+            var lChannel = (await lGuildRes.Value?.GetChannelsAsync()).FirstOrDefault(channel => channel.Name == aChannelName);
+            return lChannel == null
+                ? Result.Failure<DiscordChannel>(DiscordBotErrors.Channel.NotFoundName)
+                : Result.Success(lChannel);
+
+        }
+
         internal static async Task<Result<DiscordMember>> TryGetDiscordMemberAsync(this MandrilDiscordBot aBot, string aFullDiscordHandle, CancellationToken aCancellationToken = default)
         {
             aCancellationToken.ThrowIfCancellationRequested();
