@@ -45,12 +45,13 @@ namespace MandrilBot.News
             return x.Author == y.Author
                 && x.Title == y.Title
                 && x.Description == y.Description
-                && x.SourceLink == y.SourceLink;
+                && x.SourceLink == y.SourceLink
+                && x.Group == y.Group;
         }
 
         public int GetHashCode([DisallowNull] DevTrackerNewsMessage lObj)
         {
-            return HashCode.Combine(lObj.Author, lObj.Title, lObj.Description, lObj.SourceLink);
+            return HashCode.Combine(lObj.Author, lObj.Title, lObj.Description, lObj.SourceLink, lObj.Group);
         }
     }
 }

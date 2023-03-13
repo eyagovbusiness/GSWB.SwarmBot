@@ -4,7 +4,7 @@ using TGF.CA.Domain.Primitives.Result;
 namespace MandrilBot
 {
     /// <summary>
-    /// Public interfacewith the accessible methods of the MandrilDiscordBot service, providing interaction with the internal bot.
+    /// Public interface with the accessible methods of the MandrilDiscordBot service, providing interaction with the internal bot.
     /// </summary>
     public interface IMandrilDiscordBot
     {

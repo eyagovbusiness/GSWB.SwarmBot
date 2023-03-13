@@ -13,17 +13,14 @@ namespace MandrilBot.News
     /// </summary>
     internal static class DiscordBotSCNewsExtensions
     {
-        internal static readonly string _baseAddress = "https://robertsspaceindustries.com";
-        internal static readonly HttpClient _httpClient = new() { BaseAddress = new Uri(_baseAddress) };
-
         /// <summary>
         /// Returns an instance of <see cref="IHtmlDocument"/> with the HTML documment of the requiered source.
         /// </summary>
-        /// <param name="aPath"></param>
-        /// <returns>Returns an instance of <see cref="IHtmlDocument"/></returns>
-        internal static async Task<IHtmlDocument> GetHTMLAsync(string aPath)
+        /// <param name="aResourcePath">Relative path of the requiered resource.</param>
+        /// <returns>Returns an instance of <see cref="IHtmlDocument"/>.</returns>
+        internal static async Task<IHtmlDocument> GetHTMLAsync(HttpClient aHttpClient, string aResourcePath)
         {
-            var lResponse = await _httpClient.GetAsync("community/devtracker");
+            var lResponse = await aHttpClient.GetAsync(aResourcePath);
             var lStringResponse = await lResponse.Content.ReadAsStringAsync();
 
             var lParser = new HtmlParser();
@@ -31,14 +28,13 @@ namespace MandrilBot.News
         }
 
         /// <summary>
-        /// 
+        /// Gets an <see cref="string"/> representing the <see cref="Uri"/> related to the official image of the given Author.
         /// </summary>
-        /// <param name="aAuthorUrl"></param>
-        /// <returns></returns>
-        internal static async Task<string> GetCitizenImageLink(string aAuthorUrl)
+        /// <param name="aAuthorPath">Relative path of the resource of a given author.</param>
+        /// <returns><see cref="string"/> representing the <see cref="Uri"/> related to the official image of the given Author.</returns>
+        internal static async Task<string> GetCitizenImageLink(HttpClient aHttpClient, string aAuthorPath)
         {
-            HttpClient _httpClient = new() { BaseAddress = new Uri("https://robertsspaceindustries.com") };
-            var lResponse = await _httpClient.GetAsync(aAuthorUrl);
+            var lResponse = await aHttpClient.GetAsync(aAuthorPath);
             var lStringResponse = await lResponse.Content.ReadAsStringAsync();
 
             var lParser = new HtmlParser();

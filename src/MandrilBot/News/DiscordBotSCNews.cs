@@ -4,6 +4,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using MandrilBot.Configuration;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -23,22 +24,25 @@ namespace MandrilBot.News
         /// Provides all necesary logic of a service that will get the last news from the StarCitizen devtracker resource by reading the HTML and notifying the differences on Discord periodically.
         /// (Has to be like since there is not any RSS available for this resource)
         /// </summary>
-        public class DevTrackerNews
+        public class DevTrackerNews : IDiscordBotNewsService
         {
-            private readonly string _resourcePath;
-            private readonly string _citizensPath;
-            private readonly string _spectrumLogoUri;
+            private readonly BotNewsConfig _botNewsConfig;
+            private readonly HttpClient _httpClient;
 
             private DiscordChannel _devTrackerNewsChannel;
-            private HttpClient _httpClient;
             private List<DevTrackerNewsMessage> _lastMessageList;
 
-            public DevTrackerNews(BotNewsConfig lBotNewsConfig)
+            public DevTrackerNews(IConfiguration aConfiguration, HttpClient aHttpClient)
             {
-                _resourcePath = lBotNewsConfig.DevTracker.ResourcePath;
-                _citizensPath = lBotNewsConfig.CitizensPath + "/";
-                _spectrumLogoUri = lBotNewsConfig.SpectrumLogoUri;
-            }
+                var lBotNewsConfig = new BotNewsConfig();
+                aConfiguration.Bind("BotNews", lBotNewsConfig);
+
+                _botNewsConfig = lBotNewsConfig;
+                _botNewsConfig.CitizensPath += "/";
+
+                _httpClient = aHttpClient;
+                _httpClient.BaseAddress = new Uri(lBotNewsConfig.BaseResourceAddress);
+        }
 
             /// <summary>
             /// Initializes the instance of this service with the requiered missin information it requieres to start working.
@@ -47,10 +51,9 @@ namespace MandrilBot.News
             /// <param name="aMandrilDiscordBot">Reference to the Discord bot that will send the notification messages.</param>
             /// <param name="aChannelName">Name of the <see cref="DiscordChannel"/> to send the notification messages when available.</param>
             /// <returns>Awaitable <see cref="Task"/>.</returns>
-            public async Task InitAsync(HttpClient aHttpClient, IMandrilDiscordBot aMandrilDiscordBot, string aChannelName)
+            public async Task InitAsync(IMandrilDiscordBot aMandrilDiscordBot)
             {
-                _devTrackerNewsChannel = (await (aMandrilDiscordBot as MandrilDiscordBot).TryGetDiscordChannelAsync(aChannelName)).Value;
-                _httpClient = aHttpClient;
+                _devTrackerNewsChannel = (await (aMandrilDiscordBot as MandrilDiscordBot).TryGetDiscordChannelAsync(_botNewsConfig.DevTracker.DiscordChannel)).Value;
                 _lastMessageList = await GetLastMessageListAsync();
             }
 
@@ -72,12 +75,12 @@ namespace MandrilBot.News
             }
 
             /// <summary>
-            /// 
+            /// Get a List of the last Messages published in the resource of this tracker.
             /// </summary>
-            /// <returns></returns>
+            /// <returns>List of the last Messages published in the resource of this tracker.</returns>
             private async Task<List<DevTrackerNewsMessage>> GetLastMessageListAsync()
             {
-                var lHTMLdocument = await DiscordBotSCNewsExtensions.GetHTMLAsync(_resourcePath);
+                var lHTMLdocument = await DiscordBotSCNewsExtensions.GetHTMLAsync(_httpClient,_botNewsConfig.DevTracker.ResourcePath);
                 var lElementList = lHTMLdocument.QuerySelector("div.devtracker-list.js-devtracker-list")?.QuerySelector(".devtracker-list");
                 var lDictionaryData = lElementList.Children.Select(y => y.ToDictionary()).ToList();
 
@@ -95,6 +98,7 @@ namespace MandrilBot.News
                     {
                         Author = lContent[1],
                         Date = lContent[3],
+                        Group = lContent[4],
                         Title = lContent[5],
                         Description = lContent[6],
                         SourceLink = sourceDictionary["PathName"][1..]
@@ -135,11 +139,11 @@ namespace MandrilBot.News
                         Author = new DiscordEmbedBuilder.EmbedAuthor()
                         {
                             Name = aDevTrackerNewsMessage.Author,
-                            Url = _httpClient.BaseAddress + _citizensPath + aDevTrackerNewsMessage.Author,
-                            IconUrl = _httpClient.BaseAddress + await DiscordBotSCNewsExtensions.GetCitizenImageLink(_citizensPath + aDevTrackerNewsMessage.Author),
+                            Url = _httpClient.BaseAddress + _botNewsConfig.CitizensPath + aDevTrackerNewsMessage.Author,
+                            IconUrl = _httpClient.BaseAddress + await DiscordBotSCNewsExtensions.GetCitizenImageLink(_httpClient , _botNewsConfig.CitizensPath + aDevTrackerNewsMessage.Author),
                         },
-                        Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail() { Height = 10, Width = 10, Url = _spectrumLogoUri },
-                        Title = aDevTrackerNewsMessage.Group + ": " + aDevTrackerNewsMessage.Title,
+                        Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail() { Height = 10, Width = 10, Url = _botNewsConfig.SpectrumLogoUri},
+                        Title = aDevTrackerNewsMessage.Title,
                         Description = aDevTrackerNewsMessage.Description,
                         Url = _httpClient.BaseAddress + aDevTrackerNewsMessage.SourceLink,
                         Color = GetNewsMessageColor(aDevTrackerNewsMessage)
