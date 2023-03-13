@@ -1,9 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using MandrilBot.News;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
-using MandrilBot.Configuration;
 using Microsoft.Extensions.Logging;
-using MandrilBot.News;
 
 namespace MandrilBot
 {
@@ -16,7 +14,7 @@ namespace MandrilBot
         private readonly ILogger _logger;
 
         public MandrilDiscordBotBackgroundTasks(
-            IServiceProvider aServiceProvider, 
+            IServiceProvider aServiceProvider,
             ILoggerFactory aLoggerFactory)
         {
             _serviceProvider = aServiceProvider;

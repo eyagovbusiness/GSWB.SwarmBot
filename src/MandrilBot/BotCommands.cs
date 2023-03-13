@@ -1,13 +1,6 @@
-﻿using AngleSharp.Common;
-using AngleSharp.Dom;
-using AngleSharp.Html.Parser;
-using AngleSharp.Io;
-using DSharpPlus.CommandsNext;
+﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
-using MandrilBot.News;
-using System.Net;
 
 namespace MandrilBot
 {
