@@ -1,19 +1,9 @@
-﻿using Newtonsoft.Json;
-
+﻿
 namespace MandrilBot.Configuration
 {
     /// <summary>
-    /// Secret deserialization type, Secret's keys have to match JssonPropery names
+    /// Class used to deserialize needed part of appsettings.
     /// </summary>
-    //public struct BotNewsConfigJson
-    //{
-    //    [JsonProperty("MandrilBotToken")]
-    //    public string MandrilBotToken { get; set; }
-    //    [JsonProperty("DiscordTargetGuildId")]
-    //    public ulong DiscordTargetGuildId { get; set; }
-    //    [JsonProperty("BotNews")]
-    //    public BotNews BotNews { get; set; }
-    //}
     public class BotNewsConfig
     {
         public BotNewsConfig() { }
@@ -21,6 +11,10 @@ namespace MandrilBot.Configuration
         public string CitizensPath { get; set; }
         public DevTracker DevTracker { get; set; }
     }
+
+    /// <summary>
+    /// Class used to deserialize needed part of appsettings.
+    /// </summary>
     public class DevTracker
     {
         public DevTracker() { }
