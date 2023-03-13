@@ -40,7 +40,7 @@ namespace Mandril.API.IntegrationTests
         internal static void RandomModifyTemplate(this CategoryChannelTemplate aCategoryChannelTemplate)
         {
             var lModifyIndex = _random.Next(aCategoryChannelTemplate.ChannelList.Count());
-            (aCategoryChannelTemplate.ChannelList as ChannelTemplate[])[lModifyIndex] =
+            (aCategoryChannelTemplate.ChannelList as ChannelTemplate[])[lModifyIndex] = 
             new ChannelTemplate()
             {
                 Name = "ModifiedAddedChannel",

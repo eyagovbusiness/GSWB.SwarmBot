@@ -1,6 +1,18 @@
 ﻿using AngleSharp.Common;
+using AngleSharp.Html.Parser;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
+using DSharpPlus.Exceptions;
 using MandrilBot.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using TGF.Common.Extensions;
 
 namespace MandrilBot.News
@@ -57,7 +69,7 @@ namespace MandrilBot.News
                 var lRes = lContentList.Except(_lastMessageList, new DevTrackerNewsMessageComparer())?//Need to ignore Date in the except GetHash using DevTrackerNewsMessageComparer
                     .ToList();
 
-                if (lRes.Count > 0)
+                if(lRes.Count > 0 )
                     _lastMessageList = lContentList;
 
                 return lRes;

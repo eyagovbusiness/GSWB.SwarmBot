@@ -1,9 +1,9 @@
-﻿using MandrilBot.Configuration;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using static MandrilBot.News.DiscordBotSCNews;
+using MandrilBot.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace MandrilBot
 {
@@ -19,7 +19,7 @@ namespace MandrilBot
         private HttpClient _httpClient;
 
         public MandrilDiscordBotBackgroundTasks(
-            IServiceProvider aServiceProvider,
+            IServiceProvider aServiceProvider, 
             IConfiguration aConfiguration,
             HttpClient aHttpClient,
             ILoggerFactory aLoggerFactory)
@@ -57,7 +57,7 @@ namespace MandrilBot
             try
             {
                 var lBotNewsConfig = new BotNewsConfig();
-                aConfiguration.Bind("BotNews", lBotNewsConfig);
+                aConfiguration.Bind("BotNews",lBotNewsConfig);
                 _httpClient.BaseAddress = new Uri(lBotNewsConfig.BaseResourceAddress);
                 _devTrackerNews = new DevTrackerNews(lBotNewsConfig);
 

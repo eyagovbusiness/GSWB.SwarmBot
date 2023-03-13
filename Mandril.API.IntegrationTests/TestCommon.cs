@@ -26,9 +26,9 @@ namespace Mandril.API.IntegrationTests
 
             Assert.That(lContent != null && aResponseValidationFunc.Invoke(lContent));
 
-#pragma warning disable CS8603 // Possible null reference return.
+            #pragma warning disable CS8603 // Possible null reference return.
             return lContent;
-#pragma warning restore CS8603 // Possible null reference return.
+            #pragma warning restore CS8603 // Possible null reference return.
         }
 
 

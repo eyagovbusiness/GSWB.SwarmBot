@@ -1,9 +1,12 @@
 ﻿using AngleSharp.Common;
+using AngleSharp.Dom;
 using AngleSharp.Html.Parser;
+using AngleSharp.Io;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
+using System.Net;
 
 namespace MandrilBot
 {
@@ -70,7 +73,7 @@ namespace MandrilBot
             try
             {
                 var lBaseAddress = "https://robertsspaceindustries.com";
-                HttpClient _httpClient = new() { BaseAddress = new Uri(lBaseAddress) };
+                HttpClient _httpClient = new(){ BaseAddress = new Uri(lBaseAddress) };
                 var lResponse = await _httpClient.GetAsync("community/devtracker");
                 var lStringResponse = await lResponse.Content.ReadAsStringAsync();
 
@@ -105,8 +108,9 @@ namespace MandrilBot
                         },
                         Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail() { Height = 10, Width = 10, Url = "https://starcitizen.tools/images/thumb/0/06/Spectrum.jpg/300px-Spectrum.jpg" },
                         Title = lTitle,
-                        Description = lDesc,
+                        Description = lDesc,  
                         Url = lSourceLink
+                        ,Color = DiscordColor.CornflowerBlue
                     }
                 });
 
