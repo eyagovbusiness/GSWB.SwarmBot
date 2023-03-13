@@ -5,7 +5,7 @@ namespace MandrilBot.Configuration
     /// <summary>
     /// Secret deserialization type, Secret's keys have to match JssonPropery names
     /// </summary>
-    public struct BotConfigJson
+    public struct BotConfig
     {
         [JsonProperty("MandrilBotToken")]
         public string MandrilBotToken { get; set; }

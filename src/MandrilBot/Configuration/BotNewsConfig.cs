@@ -9,6 +9,7 @@ namespace MandrilBot.Configuration
         public BotNewsConfig() { }
         public string BaseResourceAddress { get; set; }
         public string CitizensPath { get; set; }
+        public string SpectrumLogoUri { get; set; }
         public DevTracker DevTracker { get; set; }
     }
 

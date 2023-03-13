@@ -18,6 +18,10 @@ namespace MandrilBot.News
         /// </summary>
         public string Date;
         /// <summary>
+        /// Group of this news(i.e: Announcements, PatchNotes, General...).
+        /// </summary>
+        public string Group;
+        /// <summary>
         /// Title of the post.
         /// </summary>
         public string Title;

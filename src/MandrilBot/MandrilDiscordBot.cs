@@ -13,7 +13,7 @@ namespace MandrilBot
     {
         private readonly ILogger _logger;
         private readonly ILoggerFactory _loggerFactory;
-        internal BotConfigJson _botConfiguration;
+        internal BotConfig _botConfiguration;
 
         internal DiscordClient Client { get; private set; }
         internal CommandsNextExtension Commands { get; private set; }
@@ -21,7 +21,7 @@ namespace MandrilBot
         public MandrilDiscordBot(IConfiguration aConfiguration, ILoggerFactory aLoggerFactory)
         {
             _logger = aLoggerFactory.CreateLogger(typeof(MandrilDiscordBot));
-            _botConfiguration = aConfiguration.Get<BotConfigJson>();
+            _botConfiguration = aConfiguration.Get<BotConfig>();
             _loggerFactory = aLoggerFactory;
         }
 

@@ -106,11 +106,11 @@ namespace MandrilBot
                             Url = $"{lBaseAddress}/{lAuthorUrl}",
                             IconUrl = $"{lBaseAddress}{await GetCitizenImage(lAuthorUrl)}",
                         },
-                        Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail() { Height = 10, Width = 10, Url = "https://starcitizen.tools/images/thumb/0/06/Spectrum.jpg/300px-Spectrum.jpg" },
+                        Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail() { Height = 10, Width = 10, Url = "w" },
                         Title = lTitle,
                         Description = lDesc,  
-                        Url = lSourceLink
-                        ,Color = DiscordColor.CornflowerBlue
+                        Url = lSourceLink,
+                        Color = DiscordColor.CornflowerBlue
                     }
                 });
 
