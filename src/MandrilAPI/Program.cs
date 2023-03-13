@@ -12,7 +12,8 @@ namespace MandrilAPI
             {
                 aWebHostBuilder.Services
                                 .AddHealthChecks()
-                                .AddCheck<MandrilBotHealthCheck>(nameof(MandrilBotHealthCheck));
+                                .AddCheck<MandrilBotHealthCheck>(nameof(MandrilBotHealthCheck))
+                                .AddCheck<MandrilAPIGeneralHealthCheck>(nameof(MandrilAPIGeneralHealthCheck));
 
                 //Singleton MandrilDiscordBot shared by all the services.Services will acess only through the interface protecting the class.
                 aWebHostBuilder.Services.AddSingleton<IMandrilDiscordBot, MandrilDiscordBot>();
