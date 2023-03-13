@@ -1,8 +1,6 @@
 using MandrilBot;
 using MandrilBot.News;
-using System.Net;
 using TGF.CA.Application;
-using static MandrilBot.News.DiscordBotSCNews;
 
 namespace MandrilAPI
 {
@@ -23,8 +21,8 @@ namespace MandrilAPI
                 aWebHostBuilder.Services.AddHostedService<MandrilDiscordBotBackgroundTasks>();
 
                 //Add news services
-                aWebHostBuilder.Services.AddSingleton<IDiscordBotNewsService, DevTrackerNews>();
-                aWebHostBuilder.Services.AddHttpClient<IDiscordBotNewsService, DevTrackerNews>();
+                aWebHostBuilder.Services.AddSingleton<IDiscordBotNewsService, DiscordBotNewsService>();
+                aWebHostBuilder.Services.AddHttpClient<IDiscordBotNewsService, DiscordBotNewsService>();
 
                 //Implements CQRS pattern, depends on MandrilDiscordBot
                 aWebHostBuilder.Services.AddMediatR(cfg =>

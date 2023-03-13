@@ -18,13 +18,11 @@ using TGF.Common.Extensions;
 
 namespace MandrilBot.News
 {
-    public class DiscordBotSCNews
-    {
         /// <summary>
         /// Provides all necesary logic of a service that will get the last news from the StarCitizen devtracker resource by reading the HTML and notifying the differences on Discord periodically.
         /// (Has to be like since there is not any RSS available for this resource)
         /// </summary>
-        public class DevTrackerNews : IDiscordBotNewsService
+        public class DiscordBotNewsService : IDiscordBotNewsService
         {
             private readonly BotNewsConfig _botNewsConfig;
             private readonly HttpClient _httpClient;
@@ -32,7 +30,7 @@ namespace MandrilBot.News
             private DiscordChannel _devTrackerNewsChannel;
             private List<DevTrackerNewsMessage> _lastMessageList;
 
-            public DevTrackerNews(IConfiguration aConfiguration, HttpClient aHttpClient)
+            public DiscordBotNewsService(IConfiguration aConfiguration, HttpClient aHttpClient)
             {
                 var lBotNewsConfig = new BotNewsConfig();
                 aConfiguration.Bind("BotNews", lBotNewsConfig);
@@ -80,7 +78,7 @@ namespace MandrilBot.News
             /// <returns>List of the last Messages published in the resource of this tracker.</returns>
             private async Task<List<DevTrackerNewsMessage>> GetLastMessageListAsync()
             {
-                var lHTMLdocument = await DiscordBotSCNewsExtensions.GetHTMLAsync(_httpClient,_botNewsConfig.DevTracker.ResourcePath);
+                var lHTMLdocument = await DiscordBotNewsExtensions.GetHTMLAsync(_httpClient,_botNewsConfig.DevTracker.ResourcePath);
                 var lElementList = lHTMLdocument.QuerySelector("div.devtracker-list.js-devtracker-list")?.QuerySelector(".devtracker-list");
                 var lDictionaryData = lElementList.Children.Select(y => y.ToDictionary()).ToList();
 
@@ -140,7 +138,7 @@ namespace MandrilBot.News
                         {
                             Name = aDevTrackerNewsMessage.Author,
                             Url = _httpClient.BaseAddress + _botNewsConfig.CitizensPath + aDevTrackerNewsMessage.Author,
-                            IconUrl = _httpClient.BaseAddress + await DiscordBotSCNewsExtensions.GetCitizenImageLink(_httpClient , _botNewsConfig.CitizensPath + aDevTrackerNewsMessage.Author),
+                            IconUrl = _httpClient.BaseAddress + await DiscordBotNewsExtensions.GetCitizenImageLink(_httpClient , _botNewsConfig.CitizensPath + aDevTrackerNewsMessage.Author),
                         },
                         Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail() { Height = 10, Width = 10, Url = _botNewsConfig.SpectrumLogoUri},
                         Title = aDevTrackerNewsMessage.Title,
@@ -169,5 +167,4 @@ namespace MandrilBot.News
 
         }
 
-    }
 }

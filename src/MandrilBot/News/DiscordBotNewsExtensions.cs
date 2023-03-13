@@ -11,7 +11,7 @@ namespace MandrilBot.News
     /// <summary>
     /// Class to provid needed common extensions to support different news alerts in Dicord about StarCitizen.
     /// </summary>
-    internal static class DiscordBotSCNewsExtensions
+    internal static class DiscordBotNewsExtensions
     {
         /// <summary>
         /// Returns an instance of <see cref="IHtmlDocument"/> with the HTML documment of the requiered source.
