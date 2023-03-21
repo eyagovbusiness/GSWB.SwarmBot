@@ -24,7 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\src\MandrilBot\MandrilBot.csproj" />
-    <ProjectReference Include="..\TheGoodFramework\src\CleanArchitecture\TheGoodFramework.CA.Domain\TGF.CA.Domain.csproj" />
+    <ProjectReference Include="..\..\TheGoodFramework\src\CleanArchitecture\TheGoodFramework.CA.Domain\TGF.CA.Domain.csproj" />
   </ItemGroup>
 
 </Project>
