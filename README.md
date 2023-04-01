@@ -11,4 +11,8 @@ The features this service can provide to a guild web application are:
 
 4-Register automatically assistance the time participation of each member in the event.
 
+5-Track news from the official star citizen webpage and post messages with the updates in a dedicated discord channel with author, link to the resource and short description of the news.
+
+6-Offer discord member verification by sending a verification code during the registration in thr webpage to verify the user is the owner of the provided discord handle during the registration.
+
 The list of features this service can perform will be extended accordingly with the new requirements the web application may need in the future.
