@@ -39,7 +39,7 @@ namespace MandrilBot
                 "Role.NotAssigned",
                 "Could not assign the specifid Role to the specified User.");
 
-            public static Error RoleNotCreated => new Error(
+            public static TGF.Common.ROP.Error RoleNotCreated => new TGF.Common.ROP.Error(
                 "Role.NotCreated",
                 "Could not create a new Role from the specifid name.");
 
@@ -64,6 +64,9 @@ namespace MandrilBot
             public static Error NotFoundId => new Error(
                 "Guild.NotFound",
                 "The guild with the specified Id was not found.");
+            public static TGF.Common.ROP.Error NotFoundIdROP => new TGF.Common.ROP.Error(
+    "Guild.NotFound",
+    "The guild with the specified Id was not found.");
 
         }
         public static class List

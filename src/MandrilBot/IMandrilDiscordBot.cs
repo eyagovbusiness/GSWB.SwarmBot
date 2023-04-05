@@ -74,7 +74,7 @@ namespace MandrilBot
         /// </summary>
         /// <param name="aRoleName">string that will name the new Role.</param>
         /// <returns><see cref="Result{string}"/> with information about success or fail on this operation and the Id of the new Role if succeed.</returns>
-        Task<Result<string>> CreateRole(string aRoleName, CancellationToken aCancellationToken = default);
+        Task<TGF.Common.ROP.Result<string>> CreateRole(string aRoleName, CancellationToken aCancellationToken = default);
 
         /// <summary>
         /// Commands this discord bot to delete a given Role in the context server.

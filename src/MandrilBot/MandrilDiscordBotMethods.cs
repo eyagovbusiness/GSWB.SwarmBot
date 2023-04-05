@@ -3,6 +3,8 @@ using DSharpPlus.Entities;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using TGF.CA.Domain.Primitives.Result;
 using TGF.Common.Extensions;
+using TGF.Common.ROP;
+using Result = TGF.CA.Domain.Primitives.Result.Result;
 
 namespace MandrilBot
 {
@@ -47,7 +49,7 @@ namespace MandrilBot
         /// <param name="aBot">Current discord bot that will execute the commands.</param>
         /// <param name="aUserId">Id of the User.</param>
         /// <returns>True if an user was found with the given Id, false otherwise</returns>
-        public async Task<Result<bool>> ExistUser(ulong aUserId, CancellationToken aCancellationToken = default)
+        public async Task<TGF.CA.Domain.Primitives.Result.Result<bool>> ExistUser(ulong aUserId, CancellationToken aCancellationToken = default)
         {
             return Result.Success(await this.GetUserAsync(aUserId, aCancellationToken) != null);
         }
@@ -58,7 +60,7 @@ namespace MandrilBot
         /// <param name="aBot">Current discord bot that will execute the commands.</param>
         /// <param name="aFullDiscordHandle">string representing the full discord Handle with format {Username}#{Discriminator} of the user.</param>
         /// <returns>true if the user has verified account, false otherwise</returns>
-        public async Task<Result<bool>> IsUserVerified(ulong aUserId, CancellationToken aCancellationToken = default)
+        public async Task<TGF.CA.Domain.Primitives.Result.Result<bool>> IsUserVerified(ulong aUserId, CancellationToken aCancellationToken = default)
         {
             var lUser = await this.GetUserAsync(aUserId, aCancellationToken);
             if (lUser == null)
@@ -73,7 +75,7 @@ namespace MandrilBot
         /// <param name="aBot">Current discord bot that will execute the commands.</param>
         /// <param name="aUserId">Id of the User.</param>
         /// <returns><see cref="DateTimeOffset"/> with the date of creation of the given user account.</returns>
-        public async Task<Result<DateTimeOffset>> GetUserCreationDate(ulong aUserId, CancellationToken aCancellationToken = default)
+        public async Task<TGF.CA.Domain.Primitives.Result.Result<DateTimeOffset>> GetUserCreationDate(ulong aUserId, CancellationToken aCancellationToken = default)
         {
             var lUser = await this.GetUserAsync(aUserId, aCancellationToken);
             if (lUser == null)
@@ -161,18 +163,20 @@ namespace MandrilBot
         /// </summary>
         /// <param name="aBot">Current discord bot that will execute the commands.</param>
         /// <param name="aRoleName">string that will name the new Role.</param>
-        /// <returns><see cref="Result{string}"/> with information about success or fail on this operation and the Id of the new Role if succeed.</returns>
-        public async Task<Result<string>> CreateRole(string aRoleName, CancellationToken aCancellationToken = default)
+        /// <returns><see cref="TGF.Common.ROP.Result{string}"/> with information about success or fail on this operation and the Id of the new Role if succeed.</returns>
+        public async Task<TGF.Common.ROP.Result<string>> CreateRole(string aRoleName, CancellationToken aCancellationToken = default)
         {
-            var lGuildRes = await this.TryGetDiscordGuildFromConfigAsync(aCancellationToken);
-            if (!lGuildRes.IsSuccess)
-                return Result.Failure<string>(lGuildRes.Error);
+            return await this.TryGetDiscordGuildFromConfigAsyncROP(aCancellationToken)
+                .Bind(x => CreateRoleAsync(x, aRoleName, aCancellationToken));
 
-            var lRole = await lGuildRes.Value.CreateRoleAsync(aRoleName, aCancellationToken);
-            if (lRole == null)
-                return Result.Failure<string>(DiscordBotErrors.Role.RoleNotCreated);
+        }
 
-            return Result.Success(lRole.Id.ToString());
+        public async Task<TGF.Common.ROP.Result<string>> CreateRoleAsync(DiscordGuild aDiscordGuild, string aRoleName, CancellationToken aCancellationToken = default)
+        {
+            var lNewRole = await aDiscordGuild.CreateRoleAsync(aRoleName, aCancellationToken);
+            return lNewRole != null
+                ? TGF.Common.ROP.Result.Success(lNewRole.Id.ToString())
+                : TGF.Common.ROP.Result.Failure<string>(DiscordBotErrors.Role.RoleNotCreated);
 
         }
 
@@ -203,7 +207,7 @@ namespace MandrilBot
         /// </summary>
         /// <param name="aBot">Current discord bot that will execute the commands.</param>
         /// <returns>true if the user has verified account, false otherwise</returns>
-        public async Task<Result<int>> GetNumberOfOnlineUsers(CancellationToken aCancellationToken = default)
+        public async Task<TGF.CA.Domain.Primitives.Result.Result<int>> GetNumberOfOnlineUsers(CancellationToken aCancellationToken = default)
         {
             var lGuildRes = await this.TryGetDiscordGuildFromConfigAsync(aCancellationToken);
             if (!lGuildRes.IsSuccess)
@@ -223,7 +227,7 @@ namespace MandrilBot
         /// <param name="aBot">Current discord bot that will execute the commands.</param>
         /// <param name="aEventCategoryChannelTemplate"><see cref="EventCategoryChannelTemplate"/> template to follow on creating the new category.</param>
         /// <returns><see cref="Result"/> with information about success or fail on this operation.</returns>
-        public async Task<Result<string>> CreateCategoryFromTemplate(CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
+        public async Task<TGF.CA.Domain.Primitives.Result.Result<string>> CreateCategoryFromTemplate(CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
         {
             var lGuildRes = await this.TryGetDiscordGuildFromConfigAsync(aCancellationToken);
             if (!lGuildRes.IsSuccess)
@@ -252,7 +256,7 @@ namespace MandrilBot
         /// <param name="aDiscordCategoryName"></param>
         /// <param name="aCancellationToken"></param>
         /// <returns><see cref="ulong"/> with valid DiscordChannel Id or default ulong value.</returns>
-        public async Task<Result<string>> GetExistingCategoryId(string aDiscordCategoryName, CancellationToken aCancellationToken = default)
+        public async Task<TGF.CA.Domain.Primitives.Result.Result<string>> GetExistingCategoryId(string aDiscordCategoryName, CancellationToken aCancellationToken = default)
         {
             var lGuildRes = await this.TryGetDiscordGuildFromConfigAsync(aCancellationToken);
             if (!lGuildRes.IsSuccess)

@@ -23,6 +23,15 @@ namespace MandrilBot
                 : Result.Success(lGuild);
 
         }
+        internal static async Task<TGF.Common.ROP.Result<DiscordGuild>> TryGetDiscordGuildFromConfigAsyncROP(this MandrilDiscordBot aBot, CancellationToken aCancellationToken = default)
+        {
+            aCancellationToken.ThrowIfCancellationRequested();
+            var lGuild = await aBot.Client?.GetGuildAsync(aBot._botConfiguration.DiscordTargetGuildId);
+            return lGuild == null
+                ? TGF.Common.ROP.Result.Failure<DiscordGuild>(DiscordBotErrors.Guild.NotFoundIdROP)
+                : TGF.Common.ROP.Result.Success(lGuild);
+
+        }
 
         internal static async Task<Result<DiscordRole>> TryGetDiscordRoleAsync(this MandrilDiscordBot aBot, ulong aRoleId, CancellationToken aCancellationToken = default)
         {

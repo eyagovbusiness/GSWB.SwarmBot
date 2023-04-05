@@ -3,7 +3,7 @@ using TGF.CA.Domain.Primitives.Result;
 
 namespace MandrilAPI.Commands
 {
-    public class CreateRoleCommand : IRequest<Result<string>>
+    public class CreateRoleCommand : IRequest<TGF.Common.ROP.Result<string>>
     {
         public string RoleName { get; private set; }
 
