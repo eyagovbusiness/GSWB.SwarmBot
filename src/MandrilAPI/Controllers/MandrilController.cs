@@ -5,7 +5,8 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Net.Mime;
-using TGF.Common.ROP;
+using TGF.Common.ROP.HttpResult;
+using TGF.Common.ROP.Result;
 
 namespace MandrilAPI.Controllers
 {
@@ -20,113 +21,111 @@ namespace MandrilAPI.Controllers
             _mediator = aMediator;
         }
 
-        //#region Get
+        #region Get
 
-        //[HttpGet("GetUserExist")]
-        //public async Task<Result<bool>> GetUserExist(ulong aUserId, CancellationToken aCancellationToken)
-        //{
-        //    return await _mediator.Send(new ExistDiscordUserQuery(aUserId), aCancellationToken);
-        //}
-
-        //[HttpGet("GetUserIsVerified")]
-        //public async Task<Result<bool>> GetUserIsVerified(ulong aUserId, CancellationToken aCancellationToken)
-        //{
-        //    return await _mediator.Send(new IsUserVerifiedQuery(aUserId), aCancellationToken);
-        //}
-
-        //[HttpGet("GetUserCreationDate")]
-        //public async Task<Result<DateTimeOffset>> GetUserCreationDate(ulong aUserId, CancellationToken aCancellationToken)
-        //{
-        //    return await _mediator.Send(new GetUserCreationDateQuery(aUserId), aCancellationToken);
-        //}
-
-        //[HttpGet("GetNumberOfOnlineUsers")]
-        //public async Task<Result<int>> GetNumberOfOnlineUsers(CancellationToken aCancellationToken)
-        //{
-        //    return await _mediator.Send(new GetNumberOfOnlineUsersQuery(), aCancellationToken);
-        //}
-
-        //[HttpGet("GetExistingCategoryId")]
-        //public async Task<Result<string>> GetExistingCategoryId(string aCategoryName, CancellationToken aCancellationToken)
-        //{
-        //    return await _mediator.Send(new GetExistingCategoryIdQuery(aCategoryName), aCancellationToken);
-        //}
+        [HttpGet("GetUserExist")]
+        [ProducesResponseType(typeof(IResult<bool>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(IResult<bool>), (int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetUserExist(ulong aUserId, CancellationToken aCancellationToken)
+            => await _mediator.Send(new ExistDiscordUserQuery(aUserId), aCancellationToken)
+                .ToActionResult();
 
 
-        //#endregion
+        [HttpGet("GetUserIsVerified")]
+        public async Task<IActionResult> GetUserIsVerified(ulong aUserId, CancellationToken aCancellationToken)
+            => await _mediator.Send(new IsUserVerifiedQuery(aUserId), aCancellationToken)
+                .ToActionResult();
+
+
+        [HttpGet("GetUserCreationDate")]
+        public async Task<IActionResult> GetUserCreationDate(ulong aUserId, CancellationToken aCancellationToken)
+            => await _mediator.Send(new GetUserCreationDateQuery(aUserId), aCancellationToken)
+                .ToActionResult();
+
+
+        [HttpGet("GetNumberOfOnlineMembers")]
+        public async Task<IActionResult> GetNumberOfOnlineMembers(CancellationToken aCancellationToken)
+            => await _mediator.Send(new GetNumberOfOnlineMembersQuery(), aCancellationToken)
+                .ToActionResult();
+
+
+        [HttpGet("GetExistingCategoryId")]
+        public async Task<IActionResult> GetExistingCategoryId(string aCategoryName, CancellationToken aCancellationToken) 
+            => await _mediator.Send(new GetExistingCategoryIdQuery(aCategoryName), aCancellationToken)
+                .ToActionResult();
+
+
+        #endregion
 
         #region Post
 
         [HttpPost("CreateRolee")]
-        [Produces(MediaTypeNames.Application.Json, Type = typeof(Result<string>))]
-        public async Task<Result<string>> PostRole(string aRoleName, CancellationToken aCancellationToken)
-        {
-            return await _mediator.Send(new CreateRoleCommand(aRoleName), aCancellationToken);
-        }
+        public async Task<IActionResult> PostRole(string aRoleName, CancellationToken aCancellationToken)
+            => await _mediator.Send(new CreateRoleCommand(aRoleName), aCancellationToken)
+                .ToActionResult();
 
-        //[HttpPost("CreateCategoryFromTemplate")]
-        //public async Task<Result<string>> PostCreateCategoryFromTemplate([FromBody] CategoryChannelTemplate aTemplate, CancellationToken aCancellationToken)
-        //{
-        //    return await _mediator.Send(new CreateCategoryFromTemplateCommand(aTemplate), aCancellationToken);
-        //}
+
+        [HttpPost("CreateCategoryFromTemplate")]
+        public async Task<IActionResult> PostCreateCategoryFromTemplate([FromBody] CategoryChannelTemplate aTemplate, CancellationToken aCancellationToken)
+            => await _mediator.Send(new CreateCategoryFromTemplateCommand(aTemplate), aCancellationToken)
+                .ToActionResult();
+
 
         #endregion
 
-        //#region Put
+        #region Put
 
-        //[HttpPut("AssignRoleToMember")]
-        //public async Task<Result> PostAssignRoleToMember(ulong aRoleId, string aFullDiscordHandle, CancellationToken aCancellationToken)
-        //{
-        //    return await _mediator.Send(new AssignRoleToMemberCommand(aRoleId, aFullDiscordHandle), aCancellationToken);
-        //}
+        [HttpPut("AssignRoleToMember")]
+        public async Task<IActionResult> PostAssignRoleToMember(ulong aRoleId, string aFullDiscordHandle, CancellationToken aCancellationToken) 
+            => await _mediator.Send(new AssignRoleToMemberCommand(aRoleId, aFullDiscordHandle), aCancellationToken)
+                .ToActionResult();
 
-        //[HttpPut("RevokeRoleToMember")]
-        //public async Task<Result> PostRevokeRoleToMember(ulong aRoleId, string aFullDiscordHandle, CancellationToken aCancellationToken)
-        //{
-        //    return await _mediator.Send(new RevokeRoleToMemberCommand(aRoleId, aFullDiscordHandle), aCancellationToken);
-        //}
 
-        //[HttpPut("AssignRoleToMemberList")]
-        //public async Task<Result> PutRoleToMemberList(ulong aRoleId, string[] aFullDiscordHandleList, CancellationToken aCancellationToken)
-        //{
-        //    return await _mediator.Send(new AssignRoleToMemberListCommand(aRoleId, aFullDiscordHandleList), aCancellationToken);
-        //}
+        [HttpPut("RevokeRoleToMember")]
+        public async Task<IActionResult> PostRevokeRoleToMember(ulong aRoleId, string aFullDiscordHandle, CancellationToken aCancellationToken)
+            => await _mediator.Send(new RevokeRoleToMemberCommand(aRoleId, aFullDiscordHandle), aCancellationToken)
+                .ToActionResult();
 
-        //[HttpPut("RevokeRoleToMemberList")]
-        //public async Task<Result> PostRevokeRoleToMemberList(ulong aRoleId, string[] aFullDiscordHandle, CancellationToken aCancellationToken)
-        //{
-        //    return await _mediator.Send(new RevokeRoleToMemberListCommand(aRoleId, aFullDiscordHandle), aCancellationToken);
-        //}
+        [HttpPut("AssignRoleToMemberList")]
+        public async Task<IActionResult> PutRoleToMemberList(ulong aRoleId, string[] aFullDiscordHandleList, CancellationToken aCancellationToken)
+            => await _mediator.Send(new AssignRoleToMemberListCommand(aRoleId, aFullDiscordHandleList), aCancellationToken)
+                .ToActionResult();
 
-        //[HttpPut("AddMemberListToCategory")]
-        //public async Task<Result> PutAddMemberListToCategory(ulong aCategoryId, string[] aUserFullHandleList, CancellationToken aCancellationToken)
-        //{
-        //    return await _mediator.Send(new AddMemberListToCategoryCommand(aCategoryId, aUserFullHandleList), aCancellationToken);
-        //}
+        [HttpPut("RevokeRoleToMemberList")]
+        public async Task<IActionResult> PostRevokeRoleToMemberList(ulong aRoleId, string[] aFullDiscordHandle, CancellationToken aCancellationToken)
+            => await _mediator.Send(new RevokeRoleToMemberListCommand(aRoleId, aFullDiscordHandle), aCancellationToken)
+                .ToActionResult();
 
-        //[HttpPut("UpdateCategoryFromTemplate")]
-        //public async Task<Result> UpdateCategoryFromTemplate(ulong aCategoryId, CategoryChannelTemplate aTemplate, CancellationToken aCancellationToken)
-        //{
-        //    return await _mediator.Send(new UpdateCategoryFromTemplateCommand(aCategoryId, aTemplate), aCancellationToken);
-        //}
 
-        //#endregion
+        [HttpPut("AddMemberListToCategory")]
+        public async Task<IActionResult> PutAddMemberListToCategory(ulong aCategoryId, string[] aUserFullHandleList, CancellationToken aCancellationToken)
+            => await _mediator.Send(new AddMemberListToCategoryCommand(aCategoryId, aUserFullHandleList), aCancellationToken)
+                .ToActionResult();
 
-        //#region Delete
 
-        //[HttpDelete("DeleteCategory")]
-        //public async Task<Result> PostDeleteCategory(ulong aCategoryId, CancellationToken aCancellationToken)
-        //{
-        //    return await _mediator.Send(new DeleteCategoryCommand(aCategoryId), aCancellationToken);
-        //}
+        [HttpPut("UpdateCategoryFromTemplate")]
+        public async Task<IActionResult> UpdateCategoryFromTemplate(ulong aCategoryId, CategoryChannelTemplate aTemplate, CancellationToken aCancellationToken)
+            => await _mediator.Send(new UpdateCategoryFromTemplateCommand(aCategoryId, aTemplate), aCancellationToken)
+                .ToActionResult();
 
-        //[HttpDelete("DeleteRole")]
-        //public async Task<Result> DeleteRole(ulong aRoleId, CancellationToken aCancellationToken)
-        //{
-        //    return await _mediator.Send(new DeleteRoleCommand(aRoleId), aCancellationToken);
-        //}
 
-        //#endregion
+        #endregion
+
+        #region Delete
+
+        [HttpDelete("DeleteCategory")]
+        public async Task<IActionResult> PostDeleteCategory(ulong aCategoryId, CancellationToken aCancellationToken)
+            => await _mediator.Send(new DeleteCategoryCommand(aCategoryId), aCancellationToken)
+                .ToActionResult();
+
+
+        [HttpDelete("DeleteRole")]
+        public async Task<IActionResult> DeleteRole(ulong aRoleId, CancellationToken aCancellationToken)
+            => await _mediator.Send(new DeleteRoleCommand(aRoleId), aCancellationToken)
+                .ToActionResult();
+
+
+        #endregion
 
     }
 }

@@ -2,21 +2,18 @@
 using MandrilBot;
 using MediatR;
 using TGF.CA.Domain.Primitives.Result;
+using TGF.Common.ROP.Result;
 
 namespace MandrilAPI.Handlers
 {
-    public class ExistDiscordUserHandler : IRequestHandler<ExistDiscordUserQuery, Result<bool>>
+    public class ExistDiscordUserHandler : IRequestHandler<ExistDiscordUserQuery, IResult<bool>>
     {
         private readonly IMandrilDiscordBot _mandtrilDiscordBot;
         public ExistDiscordUserHandler(IMandrilDiscordBot aMandrilDiscordBot)
-        {
-            _mandtrilDiscordBot = aMandrilDiscordBot;
-        }
+         => _mandtrilDiscordBot = aMandrilDiscordBot;
 
-        public async Task<Result<bool>> Handle(ExistDiscordUserQuery aRequest, CancellationToken aCancellationToken)
-        {
-            return await _mandtrilDiscordBot.ExistUser(aRequest.UserId, aCancellationToken);
-        }
+        public async Task<IResult<bool>> Handle(ExistDiscordUserQuery aRequest, CancellationToken aCancellationToken)
+            => await _mandtrilDiscordBot.ExistUser(aRequest.UserId, aCancellationToken);
 
     }
 }

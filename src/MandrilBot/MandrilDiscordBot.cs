@@ -1,7 +1,9 @@
 ﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
+using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using TGF.Common.ROP.Result;
 
 namespace MandrilBot
 {
@@ -68,6 +70,21 @@ namespace MandrilBot
             {
                 _logger.LogError("An error occurred while attempting to start the Discord bot client: ", lException.ToString());
             }
+        }
+
+        public Task<IResult<Unit>> AddMemberListToChannel(ulong aChannelId, string[] aUserFullHandleList, CancellationToken aCancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IResult<Unit>> SyncExistingCategoryWithTemplate(ulong aDiscordCategoryId, CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IResult<Unit>> DeleteCategoryFromId(ulong aEventCategorylId, CancellationToken aCancellationToken = default)
+        {
+            throw new NotImplementedException();
         }
 
         //private Task Client_PresenceUpdated(DiscordClient sender, DSharpPlus.EventArgs.PresenceUpdateEventArgs e)

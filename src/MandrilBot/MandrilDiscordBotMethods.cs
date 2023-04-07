@@ -1,10 +1,10 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
+using MediatR;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using TGF.CA.Domain.Primitives.Result;
+using System.Net;
 using TGF.Common.Extensions;
-using TGF.Common.ROP;
-using Result = TGF.CA.Domain.Primitives.Result.Result;
+using TGF.Common.ROP.Result;
 
 namespace MandrilBot
 {
@@ -46,43 +46,30 @@ namespace MandrilBot
         /// <summary>
         /// Commands this discord bot to get if exist a user account with the given Id.
         /// </summary>
-        /// <param name="aBot">Current discord bot that will execute the commands.</param>
         /// <param name="aUserId">Id of the User.</param>
         /// <returns>True if an user was found with the given Id, false otherwise</returns>
-        public async Task<TGF.CA.Domain.Primitives.Result.Result<bool>> ExistUser(ulong aUserId, CancellationToken aCancellationToken = default)
-        {
-            return Result.Success(await this.GetUserAsync(aUserId, aCancellationToken) != null);
-        }
+        public async Task<IResult<bool>> ExistUser(ulong aUserId, CancellationToken aCancellationToken = default)
+            => await GetUserAsync(aUserId, aCancellationToken)
+                    .Map(discordUser => discordUser != null);
 
         /// <summary>
         /// Commands this discord bot to get if a given user has verified account. 
         /// </summary>
-        /// <param name="aBot">Current discord bot that will execute the commands.</param>
         /// <param name="aFullDiscordHandle">string representing the full discord Handle with format {Username}#{Discriminator} of the user.</param>
         /// <returns>true if the user has verified account, false otherwise</returns>
-        public async Task<TGF.CA.Domain.Primitives.Result.Result<bool>> IsUserVerified(ulong aUserId, CancellationToken aCancellationToken = default)
-        {
-            var lUser = await this.GetUserAsync(aUserId, aCancellationToken);
-            if (lUser == null)
-                return Result.Failure<bool>(DiscordBotErrors.User.NotFoundId);
-            return Result.Success(lUser.Verified.GetValueOrDefault(false));
-
-        }
+        public async Task<IResult<bool>> IsUserVerified(ulong aUserId, CancellationToken aCancellationToken = default)
+            => await GetUserAsync(aUserId, aCancellationToken)
+                    .Map(discordUser => discordUser.Verified.GetValueOrDefault(false));
 
         /// <summary>
         /// Commands this discord bot to get the date of creation of the given user account.
         /// </summary>
-        /// <param name="aBot">Current discord bot that will execute the commands.</param>
         /// <param name="aUserId">Id of the User.</param>
         /// <returns><see cref="DateTimeOffset"/> with the date of creation of the given user account.</returns>
-        public async Task<TGF.CA.Domain.Primitives.Result.Result<DateTimeOffset>> GetUserCreationDate(ulong aUserId, CancellationToken aCancellationToken = default)
-        {
-            var lUser = await this.GetUserAsync(aUserId, aCancellationToken);
-            if (lUser == null)
-                return Result.Failure<DateTimeOffset>(DiscordBotErrors.User.NotFoundId);
-            return Result.Success(lUser.CreationTimestamp);
+        public async Task<IResult<DateTimeOffset>> GetUserCreationDate(ulong aUserId, CancellationToken aCancellationToken = default)
+        => await GetUserAsync(aUserId, aCancellationToken)
+                .Map(discordUser => discordUser.CreationTimestamp);
 
-        }
 
         #endregion
 
@@ -91,112 +78,76 @@ namespace MandrilBot
         /// <summary>
         /// Commands this discord bot to assign a given Discord Role to a given user server in this context.
         /// </summary>
-        /// <param name="aBot">Current discord bot that will execute the commands.</param>
         /// <param name="aRoleId">Id of the role to assign in this server to the user.</param>
         /// <param name="aFullDiscordHandle">string representing the full discord Handle with format {Username}#{Discriminator} of the user.</param>
         /// <returns><see cref="Result"/> with information about success or fail on this operation.</returns>
-        public async Task<Result> AssignRoleToMember(ulong aRoleId, string aFullDiscordHandle, string aReason = null, CancellationToken aCancellationToken = default)
+        public async Task<IResult<Unit>> AssignRoleToMember(ulong aRoleId, string aFullDiscordHandle, string aReason = null, CancellationToken aCancellationToken = default)
         {
-            var lRole = await this.TryGetDiscordRoleAsync(aRoleId, aCancellationToken);
-            var lMember = await this.TryGetDiscordMemberAsync(aFullDiscordHandle, aCancellationToken);
-
-            if (!lMember.IsSuccess)
-                Result.Failure(DiscordBotErrors.Member.NotFoundHandle);
-
-            await lMember.Value.GrantRoleAsync(lRole.Value, aReason, aCancellationToken);
-            return Result.Success();
+            DiscordRole lDiscordRole;
+            return await GetDiscordGuildFromConfigAsync(aCancellationToken)
+                        .Bind(discordGuild => GetDiscordRoleAtm(discordGuild, aRoleId, out lDiscordRole, aCancellationToken)
+                                             .Bind(_ => GetDiscordMemberAtmAsync(discordGuild, aFullDiscordHandle, aCancellationToken))
+                                             .Bind(discordMember => GrantRoleToMemberAtmAsync(discordMember, lDiscordRole)));
 
         }
 
         /// <summary>
         /// Commands this discord bot to assign a given Discord Role to every user in the given list from the server in this context.
         /// </summary>
-        /// <param name="aBot">Current discord bot that will execute the commands.</param>
         /// <param name="aRoleId">Id of the role to assign in this server to the users.</param>
         /// <param name="aFullHandleList">Array of string representing the full discord Handle with format {Username}#{Discriminator} of the users.</param>
         /// <returns><see cref="Result"/> with information about success or fail on this operation.</returns>
-        public async Task<Result> AssignRoleToMemberList(ulong aRoleId, string[] aFullHandleList, CancellationToken aCancellationToken = default)
+        public async Task<IResult<Unit>> AssignRoleToMemberList(ulong aRoleId, string[] aFullHandleList, CancellationToken aCancellationToken = default)
         {
             if (aFullHandleList.IsNullOrEmpty())
-                return Result.Failure(DiscordBotErrors.List.Empty);
+                return Result.Failure<Unit>(DiscordBotErrors.List.Empty);
 
-            var lTupleRes = await this.TryGetMemberListAndRoleAsync(aRoleId, aFullHandleList, aCancellationToken);
-            if (!lTupleRes.IsSuccess)
-                return Result.Failure(lTupleRes.Error);
-
-            await lTupleRes.Value.Item1.ParallelForEachAsync(
-                    _maxDegreeOfParallelism,
-                    lMember => lMember.GrantRoleAsync(lTupleRes.Value.Item2),
-                    aCancellationToken);
-
-            return Result.Success();
+            DiscordRole lDiscordRole;
+            return await GetDiscordGuildFromConfigAsync(aCancellationToken)
+                        .Bind(discordGuild => GetDiscordRoleAtm(discordGuild, aRoleId, out lDiscordRole, aCancellationToken)
+                                             .Bind(_ => GetDiscordMemberListAtmAsync(discordGuild, aFullHandleList, aCancellationToken))
+                                             .Bind(discordMemberList => GrantRoleToMemberListAtmAsync(discordMemberList, lDiscordRole)));
 
         }
 
         /// <summary>
         /// Commands this discord bot to assign a given Discord Role to every user in the given list from the server in this context.
         /// </summary>
-        /// <param name="aBot">Current discord bot that will execute the commands.</param>
         /// <param name="aRoleId">Id of the role to assign in this server to the users.</param>
         /// <param name="aFullHandleList">Array of string representing the full discord Handle with format {Username}#{Discriminator} of the users.</param>
         /// <returns><see cref="Result"/> with information about success or fail on this operation.</returns>
-        public async Task<Result> RevokeRoleToMemberList(ulong aRoleId, string[] aFullHandleList, CancellationToken aCancellationToken = default)
+        public async Task<IResult<Unit>> RevokeRoleToMemberList(ulong aRoleId, string[] aFullHandleList, CancellationToken aCancellationToken = default)
         {
             if (aFullHandleList.IsNullOrEmpty())
-                return Result.Failure(DiscordBotErrors.List.Empty);
+                return Result.Failure<Unit>(DiscordBotErrors.List.Empty);
 
-            var lTupleRes = await this.TryGetMemberListAndRoleAsync(aRoleId, aFullHandleList, aCancellationToken);
-            if (!lTupleRes.IsSuccess)
-                return Result.Failure(lTupleRes.Error);
-
-            await lTupleRes.Value.Item1.ParallelForEachAsync(
-                    _maxDegreeOfParallelism,
-                    lUser => lUser.RevokeRoleAsync(lTupleRes.Value.Item2),
-                    aCancellationToken);
-
-            return Result.Success();
+            DiscordRole lDiscordRole;
+            return await GetDiscordGuildFromConfigAsync(aCancellationToken)
+                         .Bind(discordGuild => GetDiscordRoleAtm(discordGuild, aRoleId, out lDiscordRole, aCancellationToken)
+                                               .Bind(_ => GetDiscordMemberListAtmAsync(discordGuild, aFullHandleList, aCancellationToken))
+                                               .Bind(discordMemberList => RevokeRoleToMemberListAtmAsync(discordMemberList, lDiscordRole)));
 
         }
 
         /// <summary>
         /// Commands this discord bot to create a new Role in the context server.
         /// </summary>
-        /// <param name="aBot">Current discord bot that will execute the commands.</param>
         /// <param name="aRoleName">string that will name the new Role.</param>
-        /// <returns><see cref="TGF.Common.ROP.Result{string}"/> with information about success or fail on this operation and the Id of the new Role if succeed.</returns>
-        public async Task<TGF.Common.ROP.Result<string>> CreateRole(string aRoleName, CancellationToken aCancellationToken = default)
-        {
-            return await this.TryGetDiscordGuildFromConfigAsyncROP(aCancellationToken)
-                .Bind(x => CreateRoleAsync(x, aRoleName, aCancellationToken));
+        /// <returns><see cref="IResult{string}"/> with information about success or fail on this operation and the Id of the new Role if succeed.</returns>
+        public async Task<IResult<string>> CreateRole(string aRoleName, CancellationToken aCancellationToken = default)
+            => await GetDiscordGuildFromConfigAsync(aCancellationToken)
+                    .Bind(discordGuild => CreateRoleAtmAsync(discordGuild, aRoleName, aCancellationToken));
 
-        }
-
-        public async Task<TGF.Common.ROP.Result<string>> CreateRoleAsync(DiscordGuild aDiscordGuild, string aRoleName, CancellationToken aCancellationToken = default)
-        {
-            var lNewRole = await aDiscordGuild.CreateRoleAsync(aRoleName, aCancellationToken);
-            return lNewRole != null
-                ? TGF.Common.ROP.Result.Success(lNewRole.Id.ToString())
-                : TGF.Common.ROP.Result.Failure<string>(DiscordBotErrors.Role.RoleNotCreated);
-
-        }
 
         /// <summary>
-        /// Commands this discord bot to create a new Role in the context server.
+        /// Commands this discord bot to delete a given Role in the context server.
         /// </summary>
-        /// <param name="aBot">Current discord bot that will execute the commands.</param>
-        /// <param name="aRoleName">string that will name the new Role.</param>
-        /// <returns><see cref="Result"/> with information about success or fail on this operation and the Id of the new Role if succeed.</returns>
-        public async Task<Result> DeleteRole(ulong aRoleId, CancellationToken aCancellationToken = default)
-        {
-            var lGuildRes = await this.TryGetDiscordGuildFromConfigAsync(aCancellationToken);
-            if (!lGuildRes.IsSuccess)
-                return Result.Failure<string>(lGuildRes.Error);
+        /// <param name="aRoleId">string that represents the name the Role to delete.</param>
+        /// <returns><see cref="Result"/> with information about success or fail on this operation.</returns>
+        public async Task<IResult<Unit>> DeleteRole(ulong aRoleId, CancellationToken aCancellationToken = default)
+            => await Result.CancellationTokenResultAsync(aCancellationToken).Bind(_=>GetDiscordGuildFromConfigAsync(aCancellationToken)
+                    .Bind(discordGuild => DeleteRoleAtmAsync(discordGuild, aRoleId, aCancellationToken)));
 
-            await lGuildRes.Value.Roles.FirstOrDefault(r => r.Key == aRoleId).Value.DeleteAsync();
-
-            return Result.Success();
-
-        }
 
         #endregion
 
@@ -205,48 +156,26 @@ namespace MandrilBot
         /// <summary>
         /// Commands this discord bot to get if a given user has verified account. 
         /// </summary>
-        /// <param name="aBot">Current discord bot that will execute the commands.</param>
         /// <returns>true if the user has verified account, false otherwise</returns>
-        public async Task<TGF.CA.Domain.Primitives.Result.Result<int>> GetNumberOfOnlineUsers(CancellationToken aCancellationToken = default)
-        {
-            var lGuildRes = await this.TryGetDiscordGuildFromConfigAsync(aCancellationToken);
-            if (!lGuildRes.IsSuccess)
-                return Result.Failure<int>(lGuildRes.Error);
+        public async Task<IResult<int>> GetNumberOfOnlineMembers(CancellationToken aCancellationToken = default)
+            => await GetDiscordGuildFromConfigAsync(aCancellationToken)
+                    .Bind(discordGuild => GetDiscordMemberListAtmAsync(discordGuild, new string[] { "All" }, aCancellationToken))
+                    .Map(discordMemberList => discordMemberList.Count(x => x.Presence != null
+                                                                            && x.Presence.Status == UserStatus.Online
+                                                                            && x.VoiceState?.Channel != null));
 
-            var lMemberList = await lGuildRes.Value.GetAllMembersAsync();
-            var lUserCount = lMemberList.Count(x => x.Presence != null
-                                                    && x.Presence.Status == UserStatus.Online
-                                                    && x.VoiceState?.Channel != null);
-            return Result.Success(lUserCount);
-
-        }
 
         /// <summary>
         /// Commands this discord bot to create a new category in the context server from a given template. 
         /// </summary>
-        /// <param name="aBot">Current discord bot that will execute the commands.</param>
         /// <param name="aEventCategoryChannelTemplate"><see cref="EventCategoryChannelTemplate"/> template to follow on creating the new category.</param>
         /// <returns><see cref="Result"/> with information about success or fail on this operation.</returns>
-        public async Task<TGF.CA.Domain.Primitives.Result.Result<string>> CreateCategoryFromTemplate(CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
+        public async Task<IResult<string>> CreateCategoryFromTemplate(CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
         {
-            var lGuildRes = await this.TryGetDiscordGuildFromConfigAsync(aCancellationToken);
-            if (!lGuildRes.IsSuccess)
-                return Result.Failure<string>(lGuildRes.Error);
-
-            var lEveryoneRoleRes = await this.TryGetDiscordRoleAsync(lGuildRes.Value.Id, aCancellationToken);
-            if (!lEveryoneRoleRes.IsSuccess)
-                return Result.Failure<string>(lEveryoneRoleRes.Error);
-
-            var lMakePrivateDiscordOverwriteBuilder = new DiscordOverwriteBuilder[] { new DiscordOverwriteBuilder(lEveryoneRoleRes.Value).Deny(Permissions.AccessChannels) };
-            aCancellationToken.ThrowIfCancellationRequested();
-            var lNewCategory = await lGuildRes.Value.CreateChannelCategoryAsync(aCategoryChannelTemplate.Name, lMakePrivateDiscordOverwriteBuilder);
-
-            await aCategoryChannelTemplate.ChannelList.ParallelForEachAsync(
-                _maxDegreeOfParallelism,
-                x => lGuildRes.Value.CreateChannelAsync(x.Name, x.ChannelType, position: x.Position, parent: lNewCategory, overwrites: lMakePrivateDiscordOverwriteBuilder),
-                aCancellationToken);
-
-            return Result.Success(lNewCategory.Id.ToString());
+            DiscordRole lDiscordEveryoneRole;
+            return await GetDiscordGuildFromConfigAsync(aCancellationToken)
+                        .Bind(discordGuild => GetDiscordRoleAtm(discordGuild, discordGuild.Id, out lDiscordEveryoneRole, aCancellationToken)
+                        .Bind(_ => CreateTemplateChannelsAtmAsync(discordGuild, lDiscordEveryoneRole, aCategoryChannelTemplate, aCancellationToken)));
 
         }
 
@@ -256,107 +185,100 @@ namespace MandrilBot
         /// <param name="aDiscordCategoryName"></param>
         /// <param name="aCancellationToken"></param>
         /// <returns><see cref="ulong"/> with valid DiscordChannel Id or default ulong value.</returns>
-        public async Task<TGF.CA.Domain.Primitives.Result.Result<string>> GetExistingCategoryId(string aDiscordCategoryName, CancellationToken aCancellationToken = default)
-        {
-            var lGuildRes = await this.TryGetDiscordGuildFromConfigAsync(aCancellationToken);
-            if (!lGuildRes.IsSuccess)
-                return Result.Failure<string>(lGuildRes.Error);
+        public async Task<IResult<string>> GetExistingCategoryId(string aDiscordCategoryName, CancellationToken aCancellationToken = default)
+            => await GetDiscordGuildFromConfigAsync(aCancellationToken)
+                    .Bind(discordGuild => GetCategoryIdFromName(discordGuild, aDiscordCategoryName, aCancellationToken))
+                    .Map(discordChannel => discordChannel.Id.ToString());
 
-            var lExistingCategory = (await lGuildRes.Value.GetChannelsAsync())
-                .FirstOrDefault(channel => channel.IsCategory
-                                && channel.Name == aDiscordCategoryName);
 
-            return Result.Success(lExistingCategory == null ? default : lExistingCategory.Id.ToString());
 
-        }
+        ///// <summary>
+        ///// Synchronizes an existing <see cref="DiscordChannel"/> with the given <see cref="CategoryChannelTemplate"/> template, removing not matching channels and adding missing ones.
+        ///// </summary>
+        ///// <param name="aDiscordCategoryId"></param>
+        ///// <param name="aCategoryChannelTemplate"></param>
+        ///// <param name="aCancellationToken"></param>
+        ///// <returns>awaitable <see cref="Task"/> with <see cref="Result"/> informing about success or failure in operation.</returns>
+        //public async Task<Result> SyncExistingCategoryWithTemplate(ulong aDiscordCategoryId, CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
+        //{
+        //    var lGuildRes = await this.TryGetDiscordGuildFromConfigAsync(aCancellationToken);
+        //    if (!lGuildRes.IsSuccess)
+        //        return Result.Failure(lGuildRes.Error);
 
-        /// <summary>
-        /// Synchronizes an existing <see cref="DiscordChannel"/> with the given <see cref="CategoryChannelTemplate"/> template, removing not matching channels and adding missing ones.
-        /// </summary>
-        /// <param name="aDiscordCategoryId"></param>
-        /// <param name="aCategoryChannelTemplate"></param>
-        /// <param name="aCancellationToken"></param>
-        /// <returns>awaitable <see cref="Task"/> with <see cref="Result"/> informing about success or failure in operation.</returns>
-        public async Task<Result> SyncExistingCategoryWithTemplate(ulong aDiscordCategoryId, CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
-        {
-            var lGuildRes = await this.TryGetDiscordGuildFromConfigAsync(aCancellationToken);
-            if (!lGuildRes.IsSuccess)
-                return Result.Failure(lGuildRes.Error);
+        //    var lExistingCategory = lGuildRes.Value.GetChannel(aDiscordCategoryId);
+        //    if (lExistingCategory == null)
+        //        return Result.Failure(DiscordBotErrors.Channel.NotFoundId);
 
-            var lExistingCategory = lGuildRes.Value.GetChannel(aDiscordCategoryId);
-            if (lExistingCategory == null)
-                return Result.Failure(DiscordBotErrors.Channel.NotFoundId);
+        //    await lExistingCategory.SyncExistingCategoryWithTemplate_Delete(aCategoryChannelTemplate, aCancellationToken);
+        //    await lExistingCategory.SyncExistingCategoryWithTemplate_Create(aCategoryChannelTemplate, aCancellationToken);
 
-            await lExistingCategory.SyncExistingCategoryWithTemplate_Delete(aCategoryChannelTemplate, aCancellationToken);
-            await lExistingCategory.SyncExistingCategoryWithTemplate_Create(aCategoryChannelTemplate, aCancellationToken);
+        //    return Result.Success();
 
-            return Result.Success();
+        //}
 
-        }
+        ///// <summary>
+        ///// Commands this discord bot delete a given category channel and all inner channels. 
+        ///// </summary>
+        ///// <param name="aBot">Current discord bot that will execute the commands.</param>
+        ///// <param name="aEventCategorylId">Id of the category channel</param>
+        ///// <returns><see cref="Result"/> with information about success or fail on this operation.</returns>
+        //public async Task<Result> DeleteCategoryFromId(ulong aEventCategorylId, CancellationToken aCancellationToken = default)
+        //{
+        //    var lGuildRes = await this.TryGetDiscordGuildFromConfigAsync(aCancellationToken);
+        //    if (!lGuildRes.IsSuccess)
+        //        return Result.Failure(lGuildRes.Error);
 
-        /// <summary>
-        /// Commands this discord bot delete a given category channel and all inner channels. 
-        /// </summary>
-        /// <param name="aBot">Current discord bot that will execute the commands.</param>
-        /// <param name="aEventCategorylId">Id of the category channel</param>
-        /// <returns><see cref="Result"/> with information about success or fail on this operation.</returns>
-        public async Task<Result> DeleteCategoryFromId(ulong aEventCategorylId, CancellationToken aCancellationToken = default)
-        {
-            var lGuildRes = await this.TryGetDiscordGuildFromConfigAsync(aCancellationToken);
-            if (!lGuildRes.IsSuccess)
-                return Result.Failure(lGuildRes.Error);
+        //    var lChannelRes = await this.TryGetDiscordChannelAsync(aEventCategorylId, aCancellationToken);
+        //    if (!lChannelRes.IsSuccess)
+        //        return Result.Failure(lChannelRes.Error);
 
-            var lChannelRes = await this.TryGetDiscordChannelAsync(aEventCategorylId, aCancellationToken);
-            if (!lChannelRes.IsSuccess)
-                return Result.Failure(lChannelRes.Error);
+        //    await lChannelRes.Value.Children.ParallelForEachAsync(
+        //        _maxDegreeOfParallelism,
+        //        x => x.DeleteAsync("Event finished"),
+        //        aCancellationToken);
+        //    await lChannelRes.Value.DeleteAsync("Event finished");
+        //    return Result.Success();
 
-            await lChannelRes.Value.Children.ParallelForEachAsync(
-                _maxDegreeOfParallelism,
-                x => x.DeleteAsync("Event finished"),
-                aCancellationToken);
-            await lChannelRes.Value.DeleteAsync("Event finished");
-            return Result.Success();
+        //}
 
-        }
+        ///// <summary>
+        ///// Commands this discord bot add a given list of users to a given category channel and all inner channels. 
+        ///// </summary>
+        ///// /// <param name="aUserFullHandleList">List of discord full handles</param>
+        ///// <returns><see cref="Result"/> with information about success or fail on this operation.</returns>
+        //public async Task<Result> AddMemberListToChannel(ulong aChannelId, string[] aUserFullHandleList, CancellationToken aCancellationToken = default)
+        //{
+        //    var lGuildRes = await this.TryGetDiscordGuildFromConfigAsync(aCancellationToken);
+        //    if (!lGuildRes.IsSuccess)
+        //        return Result.Failure(lGuildRes.Error);
 
-        /// <summary>
-        /// Commands this discord bot add a given list of users to a given category channel and all inner channels. 
-        /// </summary>
-        /// /// <param name="aUserFullHandleList">List of discord full handles</param>
-        /// <returns><see cref="Result"/> with information about success or fail on this operation.</returns>
-        public async Task<Result> AddMemberListToChannel(ulong aChannelId, string[] aUserFullHandleList, CancellationToken aCancellationToken = default)
-        {
-            var lGuildRes = await this.TryGetDiscordGuildFromConfigAsync(aCancellationToken);
-            if (!lGuildRes.IsSuccess)
-                return Result.Failure(lGuildRes.Error);
+        //    var lChannelRes = await this.TryGetDiscordChannelAsync(aChannelId, aCancellationToken);
+        //    if (!lChannelRes.IsSuccess)
+        //        return Result.Failure(lChannelRes.Error);
 
-            var lChannelRes = await this.TryGetDiscordChannelAsync(aChannelId, aCancellationToken);
-            if (!lChannelRes.IsSuccess)
-                return Result.Failure(lChannelRes.Error);
+        //    var lMemberListRes = await lGuildRes.Value.TryGetGuildMemberListFromHandlesAsync(aUserFullHandleList, aCancellationToken);
+        //    if (!lMemberListRes.IsSuccess)
+        //        return Result.Failure(lMemberListRes.Error);
 
-            var lMemberListRes = await lGuildRes.Value.TryGetGuildMemberListFromHandlesAsync(aUserFullHandleList, aCancellationToken);
-            if (!lMemberListRes.IsSuccess)
-                return Result.Failure(lMemberListRes.Error);
+        //    var lOverWriteBuilderList = lMemberListRes.Value
+        //        .Select(x => new DiscordOverwriteBuilder(x).Allow(Permissions.AccessChannels | Permissions.UseVoice))
+        //        .ToList();//Materialize list to avoid double materializing below 
 
-            var lOverWriteBuilderList = lMemberListRes.Value
-                .Select(x => new DiscordOverwriteBuilder(x).Allow(Permissions.AccessChannels | Permissions.UseVoice))
-                .ToList();//Materialize list to avoid double materializing below 
+        //    //As far as lChannelRes.Value.PermissionOverwrites is write-only, we have to copy current channel's overwrites and add them to the new ones we want to add.
+        //    await lChannelRes.Value.PermissionOverwrites.ParallelForEachAsync(
+        //        _maxDegreeOfParallelism,
+        //        x => lOverWriteBuilderList.UpdateBuilderOverwrites(x),
+        //        aCancellationToken);
 
-            //As far as lChannelRes.Value.PermissionOverwrites is write-only, we have to copy current channel's overwrites and add them to the new ones we want to add.
-            await lChannelRes.Value.PermissionOverwrites.ParallelForEachAsync(
-                _maxDegreeOfParallelism,
-                x => lOverWriteBuilderList.UpdateBuilderOverwrites(x),
-                aCancellationToken);
+        //    //We override the overrites with our new ones plus the already existing ones as we aded them to lOverWriteBuilderList below.
+        //    await lChannelRes.Value.ModifyAsync(x => x.PermissionOverwrites = lOverWriteBuilderList);
+        //    await lChannelRes.Value.Children.ParallelForEachAsync(
+        //        _maxDegreeOfParallelism,
+        //        x => x.ModifyAsync(x => x.PermissionOverwrites = lOverWriteBuilderList),
+        //        aCancellationToken);
+        //    return Result.Success();
 
-            //We override the overrites with our new ones plus the already existing ones as we aded them to lOverWriteBuilderList below.
-            await lChannelRes.Value.ModifyAsync(x => x.PermissionOverwrites = lOverWriteBuilderList);
-            await lChannelRes.Value.Children.ParallelForEachAsync(
-                _maxDegreeOfParallelism,
-                x => x.ModifyAsync(x => x.PermissionOverwrites = lOverWriteBuilderList),
-                aCancellationToken);
-            return Result.Success();
-
-        }
+        //}
 
         #endregion
 

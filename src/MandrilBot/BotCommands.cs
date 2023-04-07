@@ -33,7 +33,7 @@ namespace MandrilBot
         {
             try
             {
-                await aCommandContext.Channel.DeleteMessagesAsync(await aCommandContext.Channel.GetMessagesAsync());
+                //await aCommandContext.Channel.DeleteMessagesAsync(await aCommandContext.Channel.GetMessagesAsync());
                 var lMemberList = await aCommandContext.Guild
                                          .GetAllMembersAsync()
                                          .ConfigureAwait(false);
@@ -42,7 +42,7 @@ namespace MandrilBot
             }
             catch (BadRequestException)
             {
-                await aCommandContext.Channel.SendMessageAsync("Something fucked up!");
+                await aCommandContext.Channel.SendMessageAsync("Something went wrong!");
             }
 
         }
@@ -56,7 +56,7 @@ namespace MandrilBot
             }
             catch (BadRequestException)
             {
-                await aCommandContext.Channel.SendMessageAsync("Something fucked up!");
+                await aCommandContext.Channel.SendMessageAsync("Something went wrong!");
             }
 
         }
