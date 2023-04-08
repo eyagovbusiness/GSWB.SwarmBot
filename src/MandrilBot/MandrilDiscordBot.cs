@@ -3,6 +3,7 @@ using DSharpPlus.CommandsNext;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using TGF.Common.ROP.HttpResult;
 using TGF.Common.ROP.Result;
 
 namespace MandrilBot
@@ -72,17 +73,17 @@ namespace MandrilBot
             }
         }
 
-        public Task<IResult<Unit>> AddMemberListToChannel(ulong aChannelId, string[] aUserFullHandleList, CancellationToken aCancellationToken = default)
+        public Task<IHttpResult<Unit>> AddMemberListToChannel(ulong aChannelId, string[] aUserFullHandleList, CancellationToken aCancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IResult<Unit>> SyncExistingCategoryWithTemplate(ulong aDiscordCategoryId, CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
+        public Task<IHttpResult<Unit>> SyncExistingCategoryWithTemplate(ulong aDiscordCategoryId, CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IResult<Unit>> DeleteCategoryFromId(ulong aEventCategorylId, CancellationToken aCancellationToken = default)
+        public Task<IHttpResult<Unit>> DeleteCategoryFromId(ulong aEventCategorylId, CancellationToken aCancellationToken = default)
         {
             throw new NotImplementedException();
         }

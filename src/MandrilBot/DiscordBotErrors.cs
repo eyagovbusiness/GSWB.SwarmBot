@@ -17,13 +17,18 @@ namespace MandrilBot
                 new Error("User.NotFound", 
                     "The user with the specified UserId was not found."), 
                 HttpStatusCode.NotFound);
-
         }
 
         public static class Member
         {
+            public static HttpError InvalidHandle => new HttpError(
+                new Error("User.InvalidHandle",
+                    "An invalid member handle provided."),
+                HttpStatusCode.BadRequest);
+
             public static HttpError NotFoundHandle => new HttpError(
-                new Error("Member.NotFound", "The member with the specified handle was not found."),
+                new Error("Member.NotFound",
+                    "The member with the specified handle was not found."),
                 HttpStatusCode.NotFound);
 
             public static HttpError OneNotFoundHandle => new HttpError(
