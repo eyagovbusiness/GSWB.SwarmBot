@@ -3,6 +3,7 @@ using DSharpPlus.Entities;
 using MediatR;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System.Net;
+using System.Reflection.Metadata.Ecma335;
 using TGF.Common.Extensions;
 using TGF.Common.ROP.HttpResult;
 using TGF.Common.ROP.Result;
@@ -199,76 +200,51 @@ namespace MandrilBot
         /// <param name="aDiscordCategoryId"></param>
         /// <param name="aCategoryChannelTemplate"></param>
         /// <param name="aCancellationToken"></param>
-        /// <returns>awaitable <see cref="Task"/> with <see cref="IHttpResult{T}"/> informing about success or failure in operation.</returns>
+        /// <returns>awaitable <see cref="Task"/> with <see cref="IHttpResult{Unit}"/> informing about success or failure in operation.</returns>
         public async Task<IHttpResult<Unit>> SyncExistingCategoryWithTemplate(ulong aDiscordCategoryId, CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
             => await GetDiscordGuildFromConfigAsync(aCancellationToken)
                     .Bind(discordGuild => GetDiscordChannelFromId(discordGuild, aDiscordCategoryId))
                     .Bind(discordCategory => SyncExistingCategoryWithTemplate_Delete(discordCategory, aCategoryChannelTemplate, aCancellationToken))
                     .Bind(discordCategory => SyncExistingCategoryWithTemplate_Create(discordCategory, aCategoryChannelTemplate, aCancellationToken));
 
-        ///// <summary>
-        ///// Commands this discord bot delete a given category channel and all inner channels. 
-        ///// </summary>
-        ///// <param name="aBot">Current discord bot that will execute the commands.</param>
-        ///// <param name="aEventCategorylId">Id of the category channel</param>
-        ///// <returns><see cref="IHttpResult{T}"/> with information about success or fail on this operation.</returns>
-        //public async Task<Result> DeleteCategoryFromId(ulong aEventCategorylId, CancellationToken aCancellationToken = default)
-        //{
-        //    var lGuildRes = await this.TryGetDiscordGuildFromConfigAsync(aCancellationToken);
-        //    if (!lGuildRes.IsSuccess)
-        //        return Result.Failure(lGuildRes.Error);
+        /// <summary>
+        /// Commands this discord bot delete a given category channel and all inner channels. 
+        /// </summary>
+        /// <param name="aBot">Current discord bot that will execute the commands.</param>
+        /// <param name="aEventCategorylId">Id of the category channel</param>
+        /// <returns><see cref="IHttpResult{Unit}"/> with information about success or fail on this operation.</returns>
+        public async Task<IHttpResult<Unit>> DeleteCategoryFromId(ulong aEventCategorylId, CancellationToken aCancellationToken = default)
+            => await GetDiscordGuildFromConfigAsync(aCancellationToken)
+                    .Bind(discordGuild => GetDiscordChannelFromId(discordGuild, aEventCategorylId))
+                    .Bind(discordChannel => DeleteCategoryFromId(discordChannel, aCancellationToken));
 
-        //    var lChannelRes = await this.TryGetDiscordChannelAsync(aEventCategorylId, aCancellationToken);
-        //    if (!lChannelRes.IsSuccess)
-        //        return Result.Failure(lChannelRes.Error);
-
-        //    await lChannelRes.Value.Children.ParallelForEachAsync(
-        //        _maxDegreeOfParallelism,
-        //        x => x.DeleteAsync("Event finished"),
-        //        aCancellationToken);
-        //    await lChannelRes.Value.DeleteAsync("Event finished");
-        //    return Result.Success();
-
-        //}
-
-        ///// <summary>
-        ///// Commands this discord bot add a given list of users to a given category channel and all inner channels. 
-        ///// </summary>
-        ///// /// <param name="aUserFullHandleList">List of discord full handles</param>
-        ///// <returns><see cref="IHttpResult{T}"/> with information about success or fail on this operation.</returns>
-        //public async Task<Result> AddMemberListToChannel(ulong aChannelId, string[] aUserFullHandleList, CancellationToken aCancellationToken = default)
-        //{
-        //    var lGuildRes = await this.TryGetDiscordGuildFromConfigAsync(aCancellationToken);
-        //    if (!lGuildRes.IsSuccess)
-        //        return Result.Failure(lGuildRes.Error);
-
-        //    var lChannelRes = await this.TryGetDiscordChannelAsync(aChannelId, aCancellationToken);
-        //    if (!lChannelRes.IsSuccess)
-        //        return Result.Failure(lChannelRes.Error);
-
-        //    var lMemberListRes = await lGuildRes.Value.TryGetGuildMemberListFromHandlesAsync(aUserFullHandleList, aCancellationToken);
-        //    if (!lMemberListRes.IsSuccess)
-        //        return Result.Failure(lMemberListRes.Error);
-
-        //    var lOverWriteBuilderList = lMemberListRes.Value
-        //        .Select(x => new DiscordOverwriteBuilder(x).Allow(Permissions.AccessChannels | Permissions.UseVoice))
-        //        .ToList();//Materialize list to avoid double materializing below 
-
-        //    //As far as lChannelRes.Value.PermissionOverwrites is write-only, we have to copy current channel's overwrites and add them to the new ones we want to add.
-        //    await lChannelRes.Value.PermissionOverwrites.ParallelForEachAsync(
-        //        _maxDegreeOfParallelism,
-        //        x => lOverWriteBuilderList.UpdateBuilderOverwrites(x),
-        //        aCancellationToken);
-
-        //    //We override the overrites with our new ones plus the already existing ones as we aded them to lOverWriteBuilderList below.
-        //    await lChannelRes.Value.ModifyAsync(x => x.PermissionOverwrites = lOverWriteBuilderList);
-        //    await lChannelRes.Value.Children.ParallelForEachAsync(
-        //        _maxDegreeOfParallelism,
-        //        x => x.ModifyAsync(x => x.PermissionOverwrites = lOverWriteBuilderList),
-        //        aCancellationToken);
-        //    return Result.Success();
-
-        //}
+        /// <summary>
+        /// Commands this discord bot add a given list of users to a given category channel and all inner channels. 
+        /// </summary>
+        /// /// <param name="aUserFullHandleList">List of discord full handles</param>
+        /// <returns><see cref="IHttpResult{Unit}"/> with information about success or fail on this operation.</returns>
+        public async Task<IHttpResult<Unit>> AddMemberListToChannel(ulong aChannelId, string[] aUserFullHandleList, CancellationToken aCancellationToken = default)
+        {
+            DiscordGuild aDiscordGuild = default;
+            DiscordChannel aDiscordChannel = default;
+            return await Result.CancellationTokenResultAsync(aCancellationToken)
+            .Bind(_ => GetDiscordGuildFromConfigAsync(aCancellationToken))
+            .Tap(discordGuild => aDiscordGuild = discordGuild)
+            .Bind(discordGuild => GetDiscordChannelFromId(discordGuild, aChannelId, aCancellationToken))
+            .Tap(discordGuild => aDiscordChannel = discordGuild)
+            .Bind(discordChannel => GetAllDiscordMemberListAtmAsync(aDiscordGuild, aCancellationToken))
+            .Map(discordMemberList => discordMemberList.Select(x => new DiscordOverwriteBuilder(x).Allow(Permissions.AccessChannels | Permissions.UseVoice)).ToList())
+            .Tap(discordOverwriteList => aDiscordChannel.PermissionOverwrites.ParallelForEachAsync(
+                _maxDegreeOfParallelism,
+                x => UpdateBuilderOverwrites(discordOverwriteList, x),
+                aCancellationToken))
+            .Tap(discordOverwriteList => aDiscordChannel.ModifyAsync(x => x.PermissionOverwrites = discordOverwriteList))
+            .Tap(discordOverwriteList => aDiscordChannel.Children.ParallelForEachAsync(
+                _maxDegreeOfParallelism,
+                x => x.ModifyAsync(x => x.PermissionOverwrites = discordOverwriteList),
+                aCancellationToken))
+            .Map(_ => Unit.Value);
+        }
 
         #endregion
 

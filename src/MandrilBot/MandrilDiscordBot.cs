@@ -73,16 +73,6 @@ namespace MandrilBot
             }
         }
 
-        public Task<IHttpResult<Unit>> AddMemberListToChannel(ulong aChannelId, string[] aUserFullHandleList, CancellationToken aCancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IHttpResult<Unit>> DeleteCategoryFromId(ulong aEventCategorylId, CancellationToken aCancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
         //private Task Client_PresenceUpdated(DiscordClient sender, DSharpPlus.EventArgs.PresenceUpdateEventArgs e)
         //{
         //    throw new NotImplementedException();
@@ -97,5 +87,6 @@ namespace MandrilBot
         //{
         //    throw new NotImplementedException()
         //}
+
     }
 }

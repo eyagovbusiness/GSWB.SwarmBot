@@ -144,12 +144,34 @@ namespace MandrilBot
                     .Map(_ => aDiscordGuild.GetAllMembersAsync())
                     .Map(discordMemberList => discordMemberList.ToImmutableArray());
 
+        private static async Task UpdateBuilderOverwrites(List<DiscordOverwriteBuilder> aDiscordOverwriteBuilderList, DiscordOverwrite aDiscordOverwrite, CancellationToken aCancellationToken = default)
+        {
+            aCancellationToken.ThrowIfCancellationRequested();
+            switch (aDiscordOverwrite.Type)
+            {
+                case OverwriteType.Member:
+                    {
+                        var lMember = await aDiscordOverwrite.GetMemberAsync();
+                        var lDiscordOverwriteMemberBuilder = new DiscordOverwriteBuilder(lMember);
+                        var lNewDiscordMemberOverwrite = await lDiscordOverwriteMemberBuilder.FromAsync(aDiscordOverwrite);
+                        aDiscordOverwriteBuilderList.Add(lNewDiscordMemberOverwrite);
+                    }
+                    break;
+                case OverwriteType.Role:
+                    {
+                        var lRole = await aDiscordOverwrite.GetRoleAsync();
+                        var lDiscordOverwriteRoleBuilder = new DiscordOverwriteBuilder(lRole);
+                        var lNewDiscordRoleOverwrite = await lDiscordOverwriteRoleBuilder.FromAsync(aDiscordOverwrite);
+                        aDiscordOverwriteBuilderList.Add(lNewDiscordRoleOverwrite);
+                    }
+                    break;
+            }
+        }
+
+            #endregion
 
 
-        #endregion
-
-
-        #region Channel atomics
+            #region Channel atomics
         private static async Task<IHttpResult<string>> CreateTemplateChannelsAtmAsync(DiscordGuild aDiscordGuild, DiscordRole aDiscordEveryoneRole, CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
         {
             DiscordOverwriteBuilder[] lMakePrivateDiscordOverwriteBuilder = default;
@@ -213,6 +235,16 @@ namespace MandrilBot
                                                 template => aDiscordCategory.Guild.CreateChannelAsync(template.Name, template.ChannelType, parent: aDiscordCategory, reason: "A Category channel was assigned to an event and this channel was missing according to the template."),
                                                 aCancellationToken))
                     .Map(_ => Unit.Value);
+
+        private static async Task<IHttpResult<Unit>> DeleteCategoryFromId(DiscordChannel aCategoryToDelete, CancellationToken aCancellationToken = default)
+            => await Result.CancellationTokenResultAsync(aCancellationToken)
+                    .Tap(_ => aCategoryToDelete.Children.ParallelForEachAsync(
+                            MandrilDiscordBot._maxDegreeOfParallelism,
+                            x => x.DeleteAsync("Event finished"),
+                            aCancellationToken))
+                    .Tap(_ => aCategoryToDelete.DeleteAsync("Event finished"));
         #endregion
+
+        
     }
 }
