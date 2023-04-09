@@ -78,11 +78,6 @@ namespace MandrilBot
             throw new NotImplementedException();
         }
 
-        public Task<IHttpResult<Unit>> SyncExistingCategoryWithTemplate(ulong aDiscordCategoryId, CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<IHttpResult<Unit>> DeleteCategoryFromId(ulong aEventCategorylId, CancellationToken aCancellationToken = default)
         {
             throw new NotImplementedException();

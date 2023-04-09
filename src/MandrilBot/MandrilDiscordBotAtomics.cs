@@ -25,70 +25,48 @@ namespace MandrilBot
     {
         #region Guild atomics
 
-        private async Task<IHttpResult<DiscordGuild>> GetDiscordGuildFromConfigAsync()
-        {
-            var lGuild = await Client.GetGuildAsync(_botConfiguration.DiscordTargetGuildId);
-            return lGuild != null
-                ? Result.SuccessHttp(lGuild)
-                : Result.Failure<DiscordGuild>(DiscordBotErrors.Guild.NotFoundId);
-        }
         private async Task<IHttpResult<DiscordGuild>> GetDiscordGuildFromConfigAsync(CancellationToken aCancellationToken = default)
-            =>await Result.CancellationTokenResultAsync(aCancellationToken)
-                   .Bind(_ => GetDiscordGuildFromConfigAsync());
+            => await Result.CancellationTokenResultAsync(aCancellationToken)
+                    .Map(_ => Client.GetGuildAsync(_botConfiguration.DiscordTargetGuildId))
+                    .Verify(discordGuild => discordGuild != null, DiscordBotErrors.Guild.NotFoundId);
 
         #endregion
 
         #region Role atomics
-        private static async Task<IHttpResult<DiscordRole>> GetDiscordRole(DiscordGuild aDiscordGuild, ulong aRoleId)
-        {
-            var lDiscordRole = aDiscordGuild.GetRole(aRoleId);
-            return await Task.FromResult(lDiscordRole != null
-                ? Result.SuccessHttp(lDiscordRole)
-                : Result.Failure<DiscordRole>(DiscordBotErrors.Role.NotFoundId));
-        }
+
         private static async Task<IHttpResult<DiscordRole>> GetDiscordRoleAtm(DiscordGuild aDiscordGuild, ulong aRoleId, CancellationToken aCancellationToken = default)
             => await Result.CancellationTokenResultAsync(aCancellationToken)
-                    .Bind(_ => GetDiscordRole(aDiscordGuild, aRoleId));
+                    .Map(_ => aDiscordGuild.GetRole(aRoleId))
+                    .Verify(discordRole => discordRole != null, DiscordBotErrors.Role.NotFoundId);
 
-        private static async Task<IHttpResult<string>> CreateRoleAtmAsync(DiscordGuild aDiscordGuild, string aRoleName)
-        {
-            var lNewRole = await aDiscordGuild.CreateRoleAsync(aRoleName);
-            return lNewRole != null
-                ? Result.SuccessHttp(lNewRole.Id.ToString())
-                : Result.Failure<string>(DiscordBotErrors.Role.RoleNotCreated);
-
-        }
         private static async Task<IHttpResult<string>> CreateRoleAtmAsync(DiscordGuild aDiscordGuild, string aRoleName, CancellationToken aCancellationToken = default)
             => await Result.CancellationTokenResultAsync(aCancellationToken)
-                   .Bind(_ => CreateRoleAtmAsync(aDiscordGuild,aRoleName));
+                    .Map(_ => aDiscordGuild.CreateRoleAsync(aRoleName))
+                    .Verify(newRole => newRole != null, DiscordBotErrors.Role.RoleNotCreated)
+                    .Map(newRole => newRole.Id.ToString());
 
         private static async Task<IHttpResult<Unit>> DeleteRoleAtmAsync(DiscordGuild aDiscordGuild, ulong aRoleId, CancellationToken aCancellationToken = default)
-        {
-            return await Result.CancellationTokenResultAsync(aCancellationToken)
-                  .Tap(_ => aDiscordGuild.Roles.FirstOrDefault(r => r.Key == aRoleId).Value.DeleteAsync());
+        => await Result.CancellationTokenResultAsync(aCancellationToken)
+                .Tap(_ => aDiscordGuild.Roles.FirstOrDefault(r => r.Key == aRoleId).Value?.DeleteAsync());
 
-        }
 
         private static async Task<IHttpResult<Unit>> GrantRoleToMemberAtmAsync(DiscordMember aDiscordMember, DiscordRole aDiscordRole, string aReason = null, CancellationToken aCancellationToken = default)
-        {
-            return await Result.CancellationTokenResultAsync(aCancellationToken)
-                .Tap(_ => aDiscordMember.GrantRoleAsync(aDiscordRole, aReason));
-
-        }
+            => await Result.CancellationTokenResultAsync(aCancellationToken)
+                    .Tap(_ => aDiscordMember.GrantRoleAsync(aDiscordRole, aReason));
 
         private static async Task<IHttpResult<Unit>> GrantRoleToMemberListAtmAsync(IEnumerable<DiscordMember> aDiscordMemberList, DiscordRole aDiscordRole, CancellationToken aCancellationToken = default)
             => await Result.CancellationTokenResultAsync(aCancellationToken)
-                            .Tap(_ => aDiscordMemberList.ParallelForEachAsync(
-                                        _maxDegreeOfParallelism,
-                                        lMember => lMember.GrantRoleAsync(aDiscordRole),
-                                        aCancellationToken));
+                           .Tap(_ => aDiscordMemberList.ParallelForEachAsync(
+                                    _maxDegreeOfParallelism,
+                                    lMember => lMember.GrantRoleAsync(aDiscordRole),
+                                    aCancellationToken));
 
         private static async Task<IHttpResult<Unit>> RevokeRoleToMemberListAtmAsync(IEnumerable<DiscordMember> aDiscordMemberList, DiscordRole aDiscordRole, CancellationToken aCancellationToken = default)
-                        => await Result.CancellationTokenResultAsync(aCancellationToken)
-                            .Tap(_ => aDiscordMemberList.ParallelForEachAsync(
-                                        _maxDegreeOfParallelism,
-                                        lMember => lMember.RevokeRoleAsync(aDiscordRole),
-                                        aCancellationToken));
+            => await Result.CancellationTokenResultAsync(aCancellationToken)
+               .Tap(_ => aDiscordMemberList.ParallelForEachAsync(
+                        _maxDegreeOfParallelism,
+                        lMember => lMember.RevokeRoleAsync(aDiscordRole),
+                        aCancellationToken));
 
         #endregion
 
@@ -116,7 +94,8 @@ namespace MandrilBot
 
 
         private static bool ValidateMemberHandleString(string aFullDiscordHandle)
-            =>!string.IsNullOrWhiteSpace(aFullDiscordHandle) && Regex.IsMatch(aFullDiscordHandle, @"^[a-zA-Z0-9]{2,32}#\d{4}$");
+            => !string.IsNullOrWhiteSpace(aFullDiscordHandle) 
+                && Regex.IsMatch(aFullDiscordHandle, @"^[a-zA-Z0-9]{2,32}#\d{4}$");
 
 
         private static IHttpResult<Unit> ValidateMemberHandle(string aFullDiscordHandle)
@@ -126,52 +105,37 @@ namespace MandrilBot
 
         private static IHttpResult<Unit> ValidateMemberHandleList(string[] aFullDiscordHandleList)
             => aFullDiscordHandleList
-            .All(handle => ValidateMemberHandleString(handle))
-                ? Result.SuccessHttp(Unit.Value)
-                : Result.Failure<Unit>(DiscordBotErrors.Member.InvalidHandle);
+               .All(handle => ValidateMemberHandleString(handle))
+                    ? Result.SuccessHttp(Unit.Value)
+                    : Result.Failure<Unit>(DiscordBotErrors.Member.InvalidHandle);
 
         #endregion
-        private static async Task<IHttpResult<DiscordMember>> GetDiscordMemberAtmAsync(DiscordGuild aDiscordGuild, string aFullDiscordHandle)
+        private static async Task<DiscordMember> GetDiscordMemberAtmAsync(DiscordGuild aDiscordGuild, string aFullDiscordHandle)
         {
             var lDiscordHandleParts = aFullDiscordHandle.Split('#');
             var lAllMemberList = await aDiscordGuild.GetAllMembersAsync();
-            var lMember = lAllMemberList?.FirstOrDefault(x => x.Username == lDiscordHandleParts[0] && x.Discriminator == lDiscordHandleParts[1]);
-            return lMember != null
-                ? Result.SuccessHttp(lMember)
-                : Result.Failure<DiscordMember>(DiscordBotErrors.Member.NotFoundHandle);
-
+            return lAllMemberList?.FirstOrDefault(x => x.Username == lDiscordHandleParts[0] && x.Discriminator == lDiscordHandleParts[1]);
         }
 
         private static async Task<IHttpResult<DiscordMember>> GetDiscordMemberAtmAsync(DiscordGuild aDiscordGuild, string aFullDiscordHandle, CancellationToken aCancellationToken = default)
             => await Result.CancellationTokenResultAsync(aCancellationToken)
-                   .Bind(_ => GetDiscordMemberAtmAsync(aDiscordGuild, aFullDiscordHandle));
+                    .Map(_ => GetDiscordMemberAtmAsync(aDiscordGuild, aFullDiscordHandle))
+                    .Verify(discordMember => discordMember != null, DiscordBotErrors.Member.NotFoundHandle);
 
-
-        private static async Task<IHttpResult<ImmutableArray<DiscordMember>>> GetFilteredDiscordMemberListAtm(ImmutableArray<DiscordMember> aAllMemberList, IEnumerable<string[]> aDiscordHandleParts)
-        {
-            return await Task.Run(() =>
-            {
-                var lSelectedMemberList = aDiscordHandleParts
-              .Select(
-                x => aAllMemberList
-                     .FirstOrDefault(y => y != null && y.Username == x[0] && y.Discriminator == x[1])
-                     ).ToList();
-
-                if (lSelectedMemberList.Any(x => x == null))
-                    return Result.Failure<ImmutableArray<DiscordMember>>(DiscordBotErrors.Member.OneNotFoundHandle);
-
-                return Result.SuccessHttp(lSelectedMemberList.ToImmutableArray());
-            });
-        }
-        private async Task<IHttpResult<ImmutableArray<DiscordMember>>> GetDiscordMemberListAtmAsync(DiscordGuild aDiscordGuild, string[] aMemberFullHandleList, CancellationToken aCancellationToken = default)
+        private static async Task<IHttpResult<ImmutableArray<DiscordMember>>> GetDiscordMemberListAtmAsync(DiscordGuild aDiscordGuild, string[] aMemberFullHandleList, CancellationToken aCancellationToken = default)
         {
             IEnumerable<string[]> lDiscordHandleParts = default;
             return await Result.CancellationTokenResultAsync(aCancellationToken)
-                .Tap(_ => lDiscordHandleParts = aMemberFullHandleList
-                                                .Union(aMemberFullHandleList)
-                                                .Select(x => x.Split('#')))
-                .Bind(_ => GetAllDiscordMemberListAtmAsync(aDiscordGuild, aCancellationToken))
-                .Bind(allMemberList => GetFilteredDiscordMemberListAtm(allMemberList, lDiscordHandleParts));
+                        .Tap(_ => lDiscordHandleParts = aMemberFullHandleList
+                                                        .Union(aMemberFullHandleList)
+                                                        .Select(x => x.Split('#')))
+                        .Bind(_ => GetAllDiscordMemberListAtmAsync(aDiscordGuild, aCancellationToken))
+                        .Map(allMemberList => lDiscordHandleParts
+                                          .Select(
+                                            x => allMemberList
+                                                 .FirstOrDefault(y => y != null && y.Username == x[0] && y.Discriminator == x[1]))
+                                          .ToImmutableArray())
+                        .Verify(selectedMemberList => selectedMemberList.All(m => m != null), DiscordBotErrors.Member.OneNotFoundHandle);
 
         }
 
@@ -188,33 +152,67 @@ namespace MandrilBot
         #region Channel atomics
         private static async Task<IHttpResult<string>> CreateTemplateChannelsAtmAsync(DiscordGuild aDiscordGuild, DiscordRole aDiscordEveryoneRole, CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
         {
-            aCancellationToken.ThrowIfCancellationRequested();
-            var lMakePrivateDiscordOverwriteBuilder = new DiscordOverwriteBuilder[] { new DiscordOverwriteBuilder(aDiscordEveryoneRole).Deny(Permissions.AccessChannels) };
-            var lNewCategory = await aDiscordGuild.CreateChannelCategoryAsync(aCategoryChannelTemplate.Name, lMakePrivateDiscordOverwriteBuilder);
-
-            await aCategoryChannelTemplate.ChannelList.ParallelForEachAsync(
-                _maxDegreeOfParallelism,
-                x => aDiscordGuild.CreateChannelAsync(x.Name, x.ChannelType, position: x.Position, parent: lNewCategory, overwrites: lMakePrivateDiscordOverwriteBuilder),
-                aCancellationToken);
-
-            return Result.SuccessHttp(lNewCategory.Id.ToString());
-
-        }
-
-        private static async Task<IHttpResult<DiscordChannel>> GetCategoryIdFromName(DiscordGuild aDiscordGiildId, string aDiscordCategoryName, CancellationToken aCancellationToken = default)
-        {
-            aCancellationToken.ThrowIfCancellationRequested();
-
-            var lExistingDiscordChannel = (await aDiscordGiildId.GetChannelsAsync())
-                                            .FirstOrDefault(channel => channel.IsCategory
-                                                                       && channel.Name == aDiscordCategoryName);
-            return lExistingDiscordChannel != null
-                    ? Result.SuccessHttp(lExistingDiscordChannel)
-                    : Result.Failure<DiscordChannel>(DiscordBotErrors.Channel.NotFoundName);
+            DiscordOverwriteBuilder[] lMakePrivateDiscordOverwriteBuilder = default;
+            return await Result.CancellationTokenResultAsync(aCancellationToken)
+                   .Tap(_ => lMakePrivateDiscordOverwriteBuilder = new DiscordOverwriteBuilder[] { new DiscordOverwriteBuilder(aDiscordEveryoneRole).Deny(Permissions.AccessChannels) })
+                   .Map(_ => aDiscordGuild.CreateChannelCategoryAsync(aCategoryChannelTemplate.Name, lMakePrivateDiscordOverwriteBuilder))
+                   .Tap(newCategory => aCategoryChannelTemplate.ChannelList.ParallelForEachAsync(
+                                        _maxDegreeOfParallelism,
+                                        x => aDiscordGuild.CreateChannelAsync(x.Name, x.ChannelType, position: x.Position, parent: newCategory, overwrites: lMakePrivateDiscordOverwriteBuilder),
+                                        aCancellationToken))
+                   .Map(newCategory => newCategory.Id.ToString());
 
         }
+
+        private static async Task<IHttpResult<DiscordChannel>> GetDiscordCategoryIdFromName(DiscordGuild aDiscordGiildId, string aDiscordCategoryName, CancellationToken aCancellationToken = default)
+            => await Result.CancellationTokenResultAsync(aCancellationToken)
+                    .Map(_ => aDiscordGiildId.GetChannelsAsync())
+                    .Map(discordChannelList => discordChannelList.FirstOrDefault(channel => channel.IsCategory
+                                                                 && channel.Name == aDiscordCategoryName))
+                    .Verify(discordChannel => discordChannel != null, DiscordBotErrors.Channel.NotFoundName);
+
+        private static async Task<IHttpResult<DiscordChannel>> GetDiscordChannelFromId(DiscordGuild aDIscordGuild, ulong aDiscordCategoryId, CancellationToken aCancellationToken = default)
+            => await Result.CancellationTokenResultAsync(aCancellationToken)
+                    .Map(_ => aDIscordGuild.GetChannel(aDiscordCategoryId))
+                    .Verify(discordChannel => discordChannel != null, DiscordBotErrors.Channel.NotFoundId);
+
+        /// <summary>
+        ///  Performs removal tasks to synchronize a given <see cref="DiscordChannel"/> category internal channels to match a given <see cref="CategoryChannelTemplate"/> template.
+        /// </summary>
+        /// <param name="aDiscordCategory">Discord channel Category</param>
+        /// <param name="aCategoryChannelTemplate">Template of the category.</param>
+        /// <param name="aCancellationToken">Dancellation token.</param>
+        /// <returns>awaitable <see cref="Task"/></returns>
+        private static async Task<IHttpResult<DiscordChannel>> SyncExistingCategoryWithTemplate_Delete(DiscordChannel aDiscordCategory, CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
+            => await Result.CancellationTokenResultAsync(aCancellationToken)
+                    .Map(_ => aDiscordCategory.Children
+                              .Where(channel => !aCategoryChannelTemplate.ChannelList
+                                                .Any(template => template.Name == channel.Name))
+                              .ToList())
+                    .Tap(deleteChannelList => deleteChannelList.ParallelForEachAsync(
+                                              MandrilDiscordBot._maxDegreeOfParallelism,
+                                              channel => channel.DeleteAsync("This channel's category was assigned to an event and this channel did not match the template."),
+                                              aCancellationToken))
+                    .Map(_ => aDiscordCategory);
+
+        /// <summary>
+        ///  Performs creation tasks to synchronize a given <see cref="DiscordChannel"/> category internal channels to match a given <see cref="CategoryChannelTemplate"/> template.
+        /// </summary>
+        /// <param name="aDiscordCategory">Discord channel Category</param>
+        /// <param name="aCategoryChannelTemplate">Template of the category.</param>
+        /// <param name="aCancellationToken">Dancellation token.</param>
+        /// <returns>awaitable <see cref="Task"/></returns>
+        private static async Task<IHttpResult<Unit>> SyncExistingCategoryWithTemplate_Create(DiscordChannel aDiscordCategory, CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
+            => await Result.CancellationTokenResultAsync(aCancellationToken)
+                    .Map(_ => aCategoryChannelTemplate.ChannelList
+                                .Where(template => aDiscordCategory.Children
+                                                .All(channel => channel.Name != template.Name))
+                                .ToList())
+                    .Tap(missingTemplateList => missingTemplateList.ParallelForEachAsync(
+                                                MandrilDiscordBot._maxDegreeOfParallelism,
+                                                template => aDiscordCategory.Guild.CreateChannelAsync(template.Name, template.ChannelType, parent: aDiscordCategory, reason: "A Category channel was assigned to an event and this channel was missing according to the template."),
+                                                aCancellationToken))
+                    .Map(_ => Unit.Value);
         #endregion
-
-
     }
 }

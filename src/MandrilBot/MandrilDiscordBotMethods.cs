@@ -11,6 +11,7 @@ namespace MandrilBot
 {
     public partial class MandrilDiscordBot : IMandrilDiscordBot
     {
+
         internal static readonly byte _maxDegreeOfParallelism = Convert.ToByte(Math.Ceiling(Environment.ProcessorCount * 0.75));
 
         /// <summary>
@@ -56,11 +57,12 @@ namespace MandrilBot
         /// <summary>
         /// Commands this discord bot to get if a given user has verified account. 
         /// </summary>
-        /// <param name="aFullDiscordHandle">string representing the full discord Handle with format {Username}#{Discriminator} of the user.</param>
         /// <returns><see cref="IHttpResult{bool}"/> with true if the user has verified account, false otherwise</returns>
         public async Task<IHttpResult<bool>> IsUserVerified(ulong aUserId, CancellationToken aCancellationToken = default)//TO-DO: WRONG ERROR WHEN INVALID ID
             => await GetUserAsync(aUserId, aCancellationToken)
-                    .Map(discordUser => discordUser.Verified.GetValueOrDefault(false));
+                    .Bind(discordUser => Task.FromResult(discordUser != null 
+                                                         ? Result.SuccessHttp(discordUser.Verified.GetValueOrDefault(false)) 
+                                                         : Result.Failure<bool>(DiscordBotErrors.User.NotFoundId)));
 
         /// <summary>
         /// Commands this discord bot to get the date of creation of the given user account.
@@ -69,7 +71,9 @@ namespace MandrilBot
         /// <returns><see cref="IHttpResult{DateTimeOffset}"/> with the date of creation of the given user account.</returns>
         public async Task<IHttpResult<DateTimeOffset>> GetUserCreationDate(ulong aUserId, CancellationToken aCancellationToken = default)//TO-DO: WRONG ERROR WHEN INVALID ID
             => await GetUserAsync(aUserId, aCancellationToken)
-                    .Map(discordUser => discordUser.CreationTimestamp);
+                    .Bind(discordUser => Task.FromResult(discordUser != null
+                                                         ? Result.SuccessHttp(discordUser.CreationTimestamp)
+                                                         : Result.Failure<DateTimeOffset>(DiscordBotErrors.User.NotFoundId)));
 
         #endregion
 
@@ -107,8 +111,8 @@ namespace MandrilBot
                         .Bind(_ => GetDiscordGuildFromConfigAsync(aCancellationToken))
                         .Bind(discordGuild => GetDiscordRoleAtm(discordGuild, aRoleId, aCancellationToken)
                         .Tap(discordRole=> lDiscordRole = discordRole)
-                                             .Bind(_ => GetDiscordMemberListAtmAsync(discordGuild, aFullHandleList, aCancellationToken))
-                                             .Bind(discordMemberList => GrantRoleToMemberListAtmAsync(discordMemberList, lDiscordRole)));
+                            .Bind(_ => GetDiscordMemberListAtmAsync(discordGuild, aFullHandleList, aCancellationToken))
+                            .Bind(discordMemberList => GrantRoleToMemberListAtmAsync(discordMemberList, lDiscordRole)));
 
         }
 
@@ -125,8 +129,8 @@ namespace MandrilBot
                         .Bind(_ => GetDiscordGuildFromConfigAsync(aCancellationToken))
                         .Bind(discordGuild => GetDiscordRoleAtm(discordGuild, aRoleId, aCancellationToken)
                         .Tap(discordRole => lDiscordRole = discordRole)
-                                             .Bind(_ => GetDiscordMemberListAtmAsync(discordGuild, aFullHandleList, aCancellationToken))
-                                             .Bind(discordMemberList => RevokeRoleToMemberListAtmAsync(discordMemberList, lDiscordRole)));
+                            .Bind(_ => GetDiscordMemberListAtmAsync(discordGuild, aFullHandleList, aCancellationToken))
+                            .Bind(discordMemberList => RevokeRoleToMemberListAtmAsync(discordMemberList, lDiscordRole)));
 
         }
 
@@ -145,8 +149,8 @@ namespace MandrilBot
         /// <param name="aRoleId">string that represents the name the Role to delete.</param>
         /// <returns><see cref="IHttpResult{Unit}"/> with information about success or fail on this operation.</returns>
         public async Task<IHttpResult<Unit>> DeleteRole(ulong aRoleId, CancellationToken aCancellationToken = default)
-            => await Result.CancellationTokenResultAsync(aCancellationToken).Bind(_=>GetDiscordGuildFromConfigAsync(aCancellationToken)
-                    .Bind(discordGuild => DeleteRoleAtmAsync(discordGuild, aRoleId, aCancellationToken)));
+            => await GetDiscordGuildFromConfigAsync(aCancellationToken)
+                    .Bind(discordGuild => DeleteRoleAtmAsync(discordGuild, aRoleId, aCancellationToken));
 
         #endregion
 
@@ -186,32 +190,21 @@ namespace MandrilBot
         /// <returns><see cref="IHttpResult{string}"/> with valid DiscordChannel Id or default ulong value.</returns>
         public async Task<IHttpResult<string>> GetExistingCategoryId(string aDiscordCategoryName, CancellationToken aCancellationToken = default)
             => await GetDiscordGuildFromConfigAsync(aCancellationToken)
-                    .Bind(discordGuild => GetCategoryIdFromName(discordGuild, aDiscordCategoryName, aCancellationToken))
+                    .Bind(discordGuild => GetDiscordCategoryIdFromName(discordGuild, aDiscordCategoryName, aCancellationToken))
                     .Map(discordChannel => discordChannel.Id.ToString());
 
-        ///// <summary>
-        ///// Synchronizes an existing <see cref="DiscordChannel"/> with the given <see cref="CategoryChannelTemplate"/> template, removing not matching channels and adding missing ones.
-        ///// </summary>
-        ///// <param name="aDiscordCategoryId"></param>
-        ///// <param name="aCategoryChannelTemplate"></param>
-        ///// <param name="aCancellationToken"></param>
-        ///// <returns>awaitable <see cref="Task"/> with <see cref="IHttpResult{T}"/> informing about success or failure in operation.</returns>
-        //public async Task<Result> SyncExistingCategoryWithTemplate(ulong aDiscordCategoryId, CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
-        //{
-        //    var lGuildRes = await this.TryGetDiscordGuildFromConfigAsync(aCancellationToken);
-        //    if (!lGuildRes.IsSuccess)
-        //        return Result.Failure(lGuildRes.Error);
-
-        //    var lExistingCategory = lGuildRes.Value.GetChannel(aDiscordCategoryId);
-        //    if (lExistingCategory == null)
-        //        return Result.Failure(DiscordBotErrors.Channel.NotFoundId);
-
-        //    await lExistingCategory.SyncExistingCategoryWithTemplate_Delete(aCategoryChannelTemplate, aCancellationToken);
-        //    await lExistingCategory.SyncExistingCategoryWithTemplate_Create(aCategoryChannelTemplate, aCancellationToken);
-
-        //    return Result.Success();
-
-        //}
+        /// <summary>
+        /// Synchronizes an existing <see cref="DiscordChannel"/> with the given <see cref="CategoryChannelTemplate"/> template, removing not matching channels and adding missing ones.
+        /// </summary>
+        /// <param name="aDiscordCategoryId"></param>
+        /// <param name="aCategoryChannelTemplate"></param>
+        /// <param name="aCancellationToken"></param>
+        /// <returns>awaitable <see cref="Task"/> with <see cref="IHttpResult{T}"/> informing about success or failure in operation.</returns>
+        public async Task<IHttpResult<Unit>> SyncExistingCategoryWithTemplate(ulong aDiscordCategoryId, CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
+            => await GetDiscordGuildFromConfigAsync(aCancellationToken)
+                    .Bind(discordGuild => GetDiscordChannelFromId(discordGuild, aDiscordCategoryId))
+                    .Bind(discordCategory => SyncExistingCategoryWithTemplate_Delete(discordCategory, aCategoryChannelTemplate, aCancellationToken))
+                    .Bind(discordCategory => SyncExistingCategoryWithTemplate_Create(discordCategory, aCategoryChannelTemplate, aCancellationToken));
 
         ///// <summary>
         ///// Commands this discord bot delete a given category channel and all inner channels. 
