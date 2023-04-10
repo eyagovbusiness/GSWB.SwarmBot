@@ -175,13 +175,10 @@ namespace MandrilBot
         /// <param name="aEventCategoryChannelTemplate"><see cref="EventCategoryChannelTemplate"/> template to follow on creating the new category.</param>
         /// <returns><see cref="IHttpResult{string}"/> with the Id of the created category channel and information about success or fail on this operation.</returns>
         public async Task<IHttpResult<string>> CreateCategoryFromTemplate(CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
-        {
-            DiscordRole lDiscordEveryoneRole = default;
-            return await GetDiscordGuildFromConfigAsync(aCancellationToken)
-                        .Bind(discordGuild => GetDiscordRoleAtm(discordGuild, discordGuild.Id, aCancellationToken)
-                        .Bind(_ => CreateTemplateChannelsAtmAsync(discordGuild, lDiscordEveryoneRole, aCategoryChannelTemplate, aCancellationToken)));
+            => await GetDiscordGuildFromConfigAsync(aCancellationToken)
+                    .Bind(discordGuild => GetDiscordRoleAtm(discordGuild, discordGuild.Id, aCancellationToken)
+                    .Bind(discordEveryoneRole => CreateTemplateChannelsAtmAsync(discordGuild, discordEveryoneRole, aCategoryChannelTemplate, aCancellationToken)));
 
-        }
 
         /// <summary>
         /// Gets a valid Id from <see cref="DiscordChannel"/> that is category if exist.

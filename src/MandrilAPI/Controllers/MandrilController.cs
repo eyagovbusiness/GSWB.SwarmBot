@@ -76,7 +76,7 @@ namespace MandrilAPI.Controllers
 
         #region Post
 
-        [HttpPost("CreateRolee")]
+        [HttpPost("CreateRole")]
         [ProducesResponseType(typeof(IResult<string>), (int)HttpStatusCode.OK)]
         [ProducesResponseType(typeof(IResult<string>), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(IResult<string>), (int)HttpStatusCode.NoContent)]

@@ -10,7 +10,7 @@ namespace Mandril.API.IntegrationTests
     /// </summary>
     public static class TestCommon
     {
-        public static readonly HttpClient _httpClient = new() { BaseAddress = new Uri("http://localhost:7001") };
+        public static readonly HttpClient _httpClient = new() { BaseAddress = new Uri("https://localhost:44354") };
         public const string _jsonMediaType = "application/json";
         public static readonly JsonSerializerOptions _jsonSerializerOptions = new() { PropertyNameCaseInsensitive = true };
 
