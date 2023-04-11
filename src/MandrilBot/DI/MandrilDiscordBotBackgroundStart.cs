@@ -10,7 +10,7 @@ namespace MandrilBot
     {
         private readonly IServiceProvider _serviceProvider;
         public MandrilDiscordBotBackgroundStart(IServiceProvider aServiceProvider)
-        => _serviceProvider = aServiceProvider;
+            => _serviceProvider = aServiceProvider;
         protected override async Task ExecuteAsync(CancellationToken aStoppingToken)
         {
             var lDiscordBotService = _serviceProvider.GetRequiredService<IMandrilDiscordBot>();

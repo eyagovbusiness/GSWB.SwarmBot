@@ -2,7 +2,7 @@
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Exceptions;
 
-namespace MandrilBot
+namespace MandrilBot.Commands
 {
     /// <summary>
     /// Class with definition of the Discord bot commands that can be used to interact with the bot from Discord.

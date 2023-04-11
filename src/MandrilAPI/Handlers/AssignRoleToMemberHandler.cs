@@ -1,5 +1,6 @@
 ﻿using MandrilAPI.Commands;
 using MandrilBot;
+using MandrilBot.Controllers;
 using MediatR;
 using TGF.Common.ROP.Result;
 
@@ -7,12 +8,12 @@ namespace MandrilAPI.Handlers
 {
     public class AssignRoleToMemberHandler : IRequestHandler<AssignRoleToMemberCommand, IResult<Unit>>
     {
-        private readonly IMandrilDiscordBot _mandtrilDiscordBot;
-        public AssignRoleToMemberHandler(IMandrilDiscordBot aMandrilDiscordBot)
-            => _mandtrilDiscordBot = aMandrilDiscordBot;
+        private readonly IRolesController _rolesController;
+        public AssignRoleToMemberHandler(IRolesController aRolesController)
+            => _rolesController = aRolesController;
 
         public async Task<IResult<Unit>> Handle(AssignRoleToMemberCommand aRequest, CancellationToken aCancellationToken)
-            => await _mandtrilDiscordBot.AssignRoleToMember(aRequest.RoleId, aRequest.FullDiscordIdentifier, aCancellationToken: aCancellationToken);
+            => await _rolesController.AssignRoleToMember(aRequest.RoleId, aRequest.FullDiscordIdentifier, aCancellationToken: aCancellationToken);
 
     }
 }

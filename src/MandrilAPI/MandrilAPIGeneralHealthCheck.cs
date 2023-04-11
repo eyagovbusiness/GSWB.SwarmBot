@@ -13,11 +13,11 @@ namespace MandrilAPI
         {
             var lAllocatedMegaBytes = GC.GetTotalMemory(forceFullCollection: false) / 1000000; // divided to get MB
 
-            if (lAllocatedMegaBytes >= 25)
+            if (lAllocatedMegaBytes >= 30)
             {
                 return Task.FromResult(HealthCheckResult.Degraded($"Large GC memory heap: {lAllocatedMegaBytes} MB"));
             }
-            else if (lAllocatedMegaBytes >= 30)
+            else if (lAllocatedMegaBytes >= 60)
             {
                 GC.Collect();
                 return Task.FromResult(HealthCheckResult.Unhealthy($"Too large GC memory heap: {lAllocatedMegaBytes} MB"));

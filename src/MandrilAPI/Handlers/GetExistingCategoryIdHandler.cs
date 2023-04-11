@@ -1,5 +1,6 @@
 ﻿using MandrilAPI.Queries;
 using MandrilBot;
+using MandrilBot.Controllers;
 using MediatR;
 using TGF.Common.ROP.Result;
 
@@ -7,12 +8,12 @@ namespace MandrilAPI.Handlers
 {
     public class GetExistingCategoryIdHandler : IRequestHandler<GetExistingCategoryIdQuery, IResult<string>>
     {
-        private readonly IMandrilDiscordBot _mandtrilDiscordBot;
-        public GetExistingCategoryIdHandler(IMandrilDiscordBot aMandrilDiscordBot)
-            => _mandtrilDiscordBot = aMandrilDiscordBot;
+        private readonly IChannelsController _channelsController;
+        public GetExistingCategoryIdHandler(IChannelsController aChannelsController)
+            => _channelsController = aChannelsController;
 
         public async Task<IResult<string>> Handle(GetExistingCategoryIdQuery aRequest, CancellationToken aCancellationToken)
-            => await _mandtrilDiscordBot.GetExistingCategoryId(aRequest.CategoryName);
+            => await _channelsController.GetExistingCategoryId(aRequest.CategoryName);
 
     }
 }

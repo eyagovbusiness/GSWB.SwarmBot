@@ -1,5 +1,6 @@
 ﻿using MandrilAPI.Queries;
 using MandrilBot;
+using MandrilBot.Controllers;
 using MediatR;
 using TGF.Common.ROP.Result;
 
@@ -7,12 +8,12 @@ namespace MandrilAPI.Handlers
 {
     public class GetNumberOfOnlineMembersHandler : IRequestHandler<GetNumberOfOnlineMembersQuery, IResult<int>>
     {
-        private readonly IMandrilDiscordBot _mandtrilDiscordBot;
-        public GetNumberOfOnlineMembersHandler(IMandrilDiscordBot aMandrilDiscordBot)
-            => _mandtrilDiscordBot = aMandrilDiscordBot;
+        private readonly IGuildController _guildController;
+        public GetNumberOfOnlineMembersHandler(IGuildController aGuildController)
+            => _guildController = aGuildController;
 
         public async Task<IResult<int>> Handle(GetNumberOfOnlineMembersQuery aRequest, CancellationToken aCancellationToken)
-            => await _mandtrilDiscordBot.GetNumberOfOnlineMembers(aCancellationToken);
+            => await _guildController.GetNumberOfOnlineMembers(aCancellationToken);
 
     }
 }

@@ -1,5 +1,6 @@
 ﻿using MandrilAPI.Commands;
 using MandrilBot;
+using MandrilBot.Controllers;
 using MediatR;
 using TGF.Common.ROP.Result;
 
@@ -7,12 +8,12 @@ namespace MandrilAPI.Handlers
 {
     public class AddMemberListToCategoryHandler : IRequestHandler<AddMemberListToCategoryCommand, IResult<Unit>>
     {
-        private readonly IMandrilDiscordBot _mandtrilDiscordBot;
-        public AddMemberListToCategoryHandler(IMandrilDiscordBot aMandrilDiscordBot)
-        => _mandtrilDiscordBot = aMandrilDiscordBot;
+        private readonly IChannelsController _channelsController;
+        public AddMemberListToCategoryHandler(IChannelsController aChannelsController)
+            => _channelsController = aChannelsController;
 
         public async Task<IResult<Unit>> Handle(AddMemberListToCategoryCommand aRequest, CancellationToken aCancellationToken)
-            => await _mandtrilDiscordBot.AddMemberListToChannel(aRequest.CategoryId, aRequest.UserFullHandleList, aCancellationToken);
+            => await _channelsController.AddMemberListToChannel(aRequest.CategoryId, aRequest.UserFullHandleList, aCancellationToken);
 
     }
 }

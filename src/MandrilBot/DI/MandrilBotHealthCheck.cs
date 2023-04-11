@@ -10,11 +10,8 @@ namespace MandrilBot
     {
         private readonly IServiceProvider _serviceProvider;
 
-
         public MandrilBotHealthCheck(IServiceProvider aServiceProvider)
-        {
-            _serviceProvider = aServiceProvider;
-        }
+            => _serviceProvider = aServiceProvider;
 
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext aContext, CancellationToken aCancellationToken = default)
         {

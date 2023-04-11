@@ -1,6 +1,8 @@
 ﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
+using MandrilBot.Commands;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 
 namespace MandrilBot
@@ -10,18 +12,36 @@ namespace MandrilBot
     /// </summary>
     public partial class MandrilDiscordBot : IMandrilDiscordBot
     {
-        private readonly ILogger _logger;
-        private readonly ILoggerFactory _loggerFactory;
-        internal BotConfigJson _botConfiguration;
 
-        internal DiscordClient Client { get; private set; }
-        internal CommandsNextExtension Commands { get; private set; }
+        internal static readonly byte _maxDegreeOfParallelism = Convert.ToByte(Math.Ceiling(Environment.ProcessorCount * 0.75));
 
-        public MandrilDiscordBot(IConfiguration aConfiguration, ILoggerFactory aLoggerFactory)
+        /// <summary>
+        /// Gets a HealthCheck information about this service by attempting to fetch the target discord guild through the bot client.
+        /// </summary>
+        /// <param name="aCancellationToken"></param>
+        /// <returns>
+        /// <see cref="HealthCheckResult"/> healthy if the bot is up and working under 150ms latency, 
+        /// dergraded in case latency is over 150ms and unhealthy in case the bot is down. </returns>
+        public async Task<HealthCheckResult> GetHealthCheck(CancellationToken aCancellationToken = default)
         {
-            _logger = aLoggerFactory.CreateLogger(typeof(MandrilDiscordBot));
-            _botConfiguration = aConfiguration.Get<BotConfigJson>();
-            _loggerFactory = aLoggerFactory;
+            aCancellationToken.ThrowIfCancellationRequested();
+            try
+            {
+                var lGuilPreview = await Client.GetGuildPreviewAsync(_botConfiguration.DiscordTargetGuildId);
+                if (lGuilPreview?.ApproximateMemberCount != null && lGuilPreview?.ApproximateMemberCount > 0)
+                {
+                    if (Client.Ping < 150)
+                        return HealthCheckResult.Healthy(string.Format("MandrilDiscordBot service is healthy. ({0}ms) ping", Client.Ping));
+                    else
+                        return HealthCheckResult.Degraded(string.Format("MandrilDiscordBot service is degraded due to high latency. ({0}ms) ping", Client.Ping));
+                }
+            }
+            catch (Exception lException)
+            {
+                return HealthCheckResult.Unhealthy("MandrilDiscordBot service is down at the moment, an exception was thrown fetching the guild preview.", lException);
+            }
+            return HealthCheckResult.Unhealthy("MandrilDiscordBot service is down at th moment, could not fetch guild preview.");
+
         }
 
         /// <summary>

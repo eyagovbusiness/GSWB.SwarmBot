@@ -1,15 +1,23 @@
-﻿namespace MandrilBot.Handelers
+﻿using DSharpPlus;
+using DSharpPlus.Entities;
+using TGF.Common.ROP.HttpResult;
+using TGF.Common.ROP.Result;
+
+namespace MandrilBot.Handelers
 {
     internal class GuildsHandler
     {
-        //internal async Task<IResult<DiscordGuild>> GetDiscordGuildFromConfigAsync(CancellationToken aCancellationToken = default)
-        //{
-        //    aCancellationToken.ThrowIfCancellationRequested();
-        //    var lGuild = await Client.GetGuildAsync(_botConfiguration.DiscordTargetGuildId);
-        //    return lGuild != null
-        //        ? Result.SuccessHttp(lGuild)
-        //        : Result.Failure<DiscordGuild>(DiscordBotErrors.Guild.NotFoundId.Error);
-
-        //}
+        private readonly DiscordClient _client;
+        private readonly ulong _guildId;
+        internal GuildsHandler(IMandrilDiscordBot aMandrilDiscordBot) 
+        {
+            var lMandrilDiscordBot = aMandrilDiscordBot as MandrilDiscordBot;
+            _client = lMandrilDiscordBot.Client;
+            _guildId= lMandrilDiscordBot._botConfiguration.DiscordTargetGuildId;
+        }
+        internal async Task<IHttpResult<DiscordGuild>> GetDiscordGuildFromConfigAsync(CancellationToken aCancellationToken = default)
+            => await Result.CancellationTokenResultAsync(aCancellationToken)
+                    .Map(_ => _client.GetGuildAsync(_guildId))
+                    .Verify(discordGuild => discordGuild != null, DiscordBotErrors.Guild.NotFoundId);
     }
 }
