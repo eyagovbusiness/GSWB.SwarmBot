@@ -4,8 +4,6 @@ using MandrilBot;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using System.Net.Mime;
-using TGF.Common.ROP.HttpResult;
 using TGF.Common.ROP.Result;
 
 namespace MandrilAPI.Controllers
@@ -67,7 +65,7 @@ namespace MandrilAPI.Controllers
         [ProducesResponseType(typeof(IResult<string>), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(IResult<string>), (int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(IResult<string>), (int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> GetExistingCategoryId(string aCategoryName, CancellationToken aCancellationToken) 
+        public async Task<IActionResult> GetExistingCategoryId(string aCategoryName, CancellationToken aCancellationToken)
             => await _mediator.Send(new GetExistingCategoryIdQuery(aCategoryName), aCancellationToken)
                 .ToActionResult();
 
@@ -105,7 +103,7 @@ namespace MandrilAPI.Controllers
         [ProducesResponseType(typeof(IResult<Unit>), (int)HttpStatusCode.NotFound)]
         [ProducesResponseType(typeof(IResult<Unit>), (int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(IResult<Unit>), (int)HttpStatusCode.InternalServerError)]
-        public async Task<IActionResult> PostAssignRoleToMember(ulong aRoleId, string aFullDiscordHandle, CancellationToken aCancellationToken) 
+        public async Task<IActionResult> PostAssignRoleToMember(ulong aRoleId, string aFullDiscordHandle, CancellationToken aCancellationToken)
             => await _mediator.Send(new AssignRoleToMemberCommand(aRoleId, aFullDiscordHandle), aCancellationToken)
                 .ToActionResult();
 

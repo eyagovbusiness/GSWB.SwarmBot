@@ -1,11 +1,4 @@
-﻿using DSharpPlus;
-using DSharpPlus.Entities;
-using System.Data;
-using System.Net;
-using TGF.Common.Extensions;
-using TGF.Common.ROP.Result;
-
-namespace MandrilBot
+﻿namespace MandrilBot
 {
     /// <summary>
     /// Internal extension methods to support MandrilDiscordBot public methods.

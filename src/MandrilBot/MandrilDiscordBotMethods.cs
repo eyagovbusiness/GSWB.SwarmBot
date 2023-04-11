@@ -2,8 +2,6 @@
 using DSharpPlus.Entities;
 using MediatR;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using System.Net;
-using System.Reflection.Metadata.Ecma335;
 using TGF.Common.Extensions;
 using TGF.Common.ROP.HttpResult;
 using TGF.Common.ROP.Result;
@@ -61,8 +59,8 @@ namespace MandrilBot
         /// <returns><see cref="IHttpResult{bool}"/> with true if the user has verified account, false otherwise</returns>
         public async Task<IHttpResult<bool>> IsUserVerified(ulong aUserId, CancellationToken aCancellationToken = default)//TO-DO: WRONG ERROR WHEN INVALID ID
             => await GetUserAsync(aUserId, aCancellationToken)
-                    .Bind(discordUser => Task.FromResult(discordUser != null 
-                                                         ? Result.SuccessHttp(discordUser.Verified.GetValueOrDefault(false)) 
+                    .Bind(discordUser => Task.FromResult(discordUser != null
+                                                         ? Result.SuccessHttp(discordUser.Verified.GetValueOrDefault(false))
                                                          : Result.Failure<bool>(DiscordBotErrors.User.NotFoundId)));
 
         /// <summary>
@@ -111,7 +109,7 @@ namespace MandrilBot
             return await ValidateMemberHandleList(aFullHandleList)
                         .Bind(_ => GetDiscordGuildFromConfigAsync(aCancellationToken))
                         .Bind(discordGuild => GetDiscordRoleAtm(discordGuild, aRoleId, aCancellationToken)
-                        .Tap(discordRole=> lDiscordRole = discordRole)
+                        .Tap(discordRole => lDiscordRole = discordRole)
                             .Bind(_ => GetDiscordMemberListAtmAsync(discordGuild, aFullHandleList, aCancellationToken))
                             .Bind(discordMemberList => GrantRoleToMemberListAtmAsync(discordMemberList, lDiscordRole)));
 

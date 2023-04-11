@@ -1,23 +1,11 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
 using MediatR;
-using Microsoft.VisualBasic;
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Collections.ObjectModel;
-using System.Formats.Asn1;
-using System.Linq;
-using System.Net;
-using System.Net.NetworkInformation;
-using System.Security.AccessControl;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using TGF.Common.Extensions;
 using TGF.Common.ROP.HttpResult;
 using TGF.Common.ROP.Result;
-using static MandrilBot.DiscordBotErrors;
 
 namespace MandrilBot
 {
@@ -77,7 +65,7 @@ namespace MandrilBot
             {
                 return Result.SuccessHttp(await Client.GetUserAsync(aUserId));
             }
-            catch(DSharpPlus.Exceptions.NotFoundException)
+            catch (DSharpPlus.Exceptions.NotFoundException)
             {
                 return Result.SuccessHttp<DiscordUser>(null);
             }
@@ -94,7 +82,7 @@ namespace MandrilBot
 
 
         private static bool ValidateMemberHandleString(string aFullDiscordHandle)
-            => !string.IsNullOrWhiteSpace(aFullDiscordHandle) 
+            => !string.IsNullOrWhiteSpace(aFullDiscordHandle)
                 && Regex.IsMatch(aFullDiscordHandle, @"^[a-zA-Z0-9]{2,32}#\d{4}$");
 
 
@@ -168,10 +156,10 @@ namespace MandrilBot
             }
         }
 
-            #endregion
+        #endregion
 
 
-            #region Channel atomics
+        #region Channel atomics
         private static async Task<IHttpResult<string>> CreateTemplateChannelsAtmAsync(DiscordGuild aDiscordGuild, DiscordRole aDiscordEveryoneRole, CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
         {
             DiscordOverwriteBuilder[] lMakePrivateDiscordOverwriteBuilder = default;
@@ -245,6 +233,6 @@ namespace MandrilBot
                     .Tap(_ => aCategoryToDelete.DeleteAsync("Event finished"));
         #endregion
 
-        
+
     }
 }

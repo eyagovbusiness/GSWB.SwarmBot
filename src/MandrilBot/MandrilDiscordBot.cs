@@ -1,10 +1,7 @@
 ﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
-using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using TGF.Common.ROP.HttpResult;
-using TGF.Common.ROP.Result;
 
 namespace MandrilBot
 {

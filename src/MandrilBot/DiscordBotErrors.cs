@@ -8,14 +8,14 @@ namespace MandrilBot
 
         public static HttpError BadRequest => new HttpError(
             new Error("BadRequest",
-                "The request failed with the current inputs."), 
+                "The request failed with the current inputs."),
             HttpStatusCode.BadRequest);
 
         public static class User
         {
             public static HttpError NotFoundId => new HttpError(
-                new Error("User.NotFound", 
-                    "The user with the specified UserId was not found."), 
+                new Error("User.NotFound",
+                    "The user with the specified UserId was not found."),
                 HttpStatusCode.NotFound);
         }
 
@@ -32,7 +32,7 @@ namespace MandrilBot
                 HttpStatusCode.NotFound);
 
             public static HttpError OneNotFoundHandle => new HttpError(
-                new Error("Member.NotAllUsersFound", 
+                new Error("Member.NotAllUsersFound",
                     "Could not find all members from the specified handles."),
                 HttpStatusCode.NotFound);
 
@@ -58,7 +58,7 @@ namespace MandrilBot
 
 
             public static HttpError OneUserRoleNotAssigned => new HttpError(
-                new Error("Role.NotAllUserAssigned", 
+                new Error("Role.NotAllUserAssigned",
                     "Could not assign the specifid Role to all the specified Users."),
                 HttpStatusCode.InternalServerError);
 
@@ -69,7 +69,7 @@ namespace MandrilBot
             public static HttpError NotFoundId => new HttpError(new Error("Channel.NotFound", "The channel with the specified ChannelId was not found."), HttpStatusCode.NotFound);
             public static HttpError NotFoundName => new HttpError(
                 new Error("Channel.NotFound",
-                    "The channel with the specified name was not found."), 
+                    "The channel with the specified name was not found."),
                 HttpStatusCode.NotFound);
 
         }
@@ -93,7 +93,7 @@ namespace MandrilBot
         public static class Id
         {
             public static HttpError NotValid => new HttpError(
-                new Error("Id.NotValid", 
+                new Error("Id.NotValid",
                     "The Id is not valid."),
                 HttpStatusCode.BadRequest);
 
