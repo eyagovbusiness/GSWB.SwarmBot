@@ -17,19 +17,19 @@ namespace Mandril.API.IntegrationTests
 
             //GetUserExist
             var lGetUserExistRply = await TestCommon._httpClient.GetAsync($"/Mandril/GetUserExist?aUserId={1074678110991163402}");
-            _ = await TestCommon.AssertResponseWithContentAsync(lGetUserExistRply, lExpectedStatusCode, (ResultStruct<bool> lRes) => lRes.isSuccess && lRes.value);
+            _ = await TestCommon.AssertResponseWithContentAsync(lGetUserExistRply, lExpectedStatusCode, (Result<bool> lRes) => lRes.IsSuccess && lRes.Value);
 
             //GetUserIsVerified
             var lGetUserIsVerifiedRply = await TestCommon._httpClient.GetAsync($"/Mandril/GetUserIsVerified?aUserId={1074678110991163402}");
-            _ = await TestCommon.AssertResponseWithContentAsync(lGetUserIsVerifiedRply, lExpectedStatusCode, (ResultStruct<bool> lRes) => lRes.isSuccess && !lRes.value);
+            _ = await TestCommon.AssertResponseWithContentAsync(lGetUserIsVerifiedRply, lExpectedStatusCode, (Result<bool> lRes) => lRes.IsSuccess && !lRes.Value);
 
             //GetUserCreationDate
             var lGetUserCreationDateRply = await TestCommon._httpClient.GetAsync($"/Mandril/GetUserCreationDate?aUserId={1074678110991163402}");
-            _ = await TestCommon.AssertResponseWithContentAsync(lGetUserCreationDateRply, lExpectedStatusCode, (ResultStruct<DateTimeOffset> lRes) => lRes.isSuccess && lRes.value > DateTimeOffset.MinValue && lRes.value < DateTimeOffset.MaxValue);
+            _ = await TestCommon.AssertResponseWithContentAsync(lGetUserCreationDateRply, lExpectedStatusCode, (Result<DateTimeOffset> lRes) => lRes.IsSuccess && lRes.Value > DateTimeOffset.MinValue && lRes.Value < DateTimeOffset.MaxValue);
 
             //GetNumberOfUsersOnline
             var lGetNumberOfUsersOnlineRply = await TestCommon._httpClient.GetAsync("/Mandril/GetNumberOfOnlineMembers");
-            _ = await TestCommon.AssertResponseWithContentAsync(lGetNumberOfUsersOnlineRply, lExpectedStatusCode, (ResultStruct<int> lRes) => lRes.isSuccess && lRes.value >= 0);
+            _ = await TestCommon.AssertResponseWithContentAsync(lGetNumberOfUsersOnlineRply, lExpectedStatusCode, (Result<int> lRes) => lRes.IsSuccess && lRes.Value >= 0);
 
         }
 
@@ -40,19 +40,19 @@ namespace Mandril.API.IntegrationTests
 
             //CreateNewRole
             var lCreateRoleRply = await TestCommon._httpClient.PostAsync("/Mandril/CreateRole?aRoleName=IntegrationTestRole", default);
-            var lCreateRoleRes = await TestCommon.AssertResponseWithContentAsync(lCreateRoleRply, lExpectedStatusCode, (ResultStruct<string> lRes) => lRes.isSuccess && lRes.value != null);
+            var lCreateRoleRes = await TestCommon.AssertResponseWithContentAsync(lCreateRoleRply, lExpectedStatusCode, (Result<string> lRes) => lRes.IsSuccess && lRes.Value != null);
 
             //AssignRoleToAllMembers
-            var lAssignRoleToMemberListRply = await TestCommon._httpClient.PutAsync($"/Mandril/AssignRoleToMemberList?aRoleId={lCreateRoleRes.value}", TestCommon.GetJsonStringContent(new string[3] { "AlpacaInTrouble#3724", "HawK#4447", "Ragh#5567" }));
-            _ = await TestCommon.AssertResponseWithContentAsync(lAssignRoleToMemberListRply, lExpectedStatusCode, (ResultStruct lRes) => lRes.isSuccess);
+            var lAssignRoleToMemberListRply = await TestCommon._httpClient.PutAsync($"/Mandril/AssignRoleToMemberList?aRoleId={lCreateRoleRes.Value}", TestCommon.GetJsonStringContent(new string[3] { "AlpacaInTrouble#3724", "HawK#4447", "Ragh#5567" }));
+            _ = await TestCommon.AssertResponseWithContentAsync(lAssignRoleToMemberListRply, lExpectedStatusCode, (Result<object> lRes) => lRes.IsSuccess);
 
             //ThenRevokeRoleToAllMembers
-            var lRevokeRoleRply = await TestCommon._httpClient.PutAsync($"/Mandril/RevokeRoleToMemberList?aRoleId={lCreateRoleRes.value}", TestCommon.GetJsonStringContent(new string[3] { "AlpacaInTrouble#3724", "HawK#4447", "Ragh#5567" }));
-            _ = await TestCommon.AssertResponseWithContentAsync(lRevokeRoleRply, lExpectedStatusCode, (ResultStruct lRes) => lRes.isSuccess);
+            var lRevokeRoleRply = await TestCommon._httpClient.PutAsync($"/Mandril/RevokeRoleToMemberList?aRoleId={lCreateRoleRes.Value}", TestCommon.GetJsonStringContent(new string[3] { "AlpacaInTrouble#3724", "HawK#4447", "Ragh#5567" }));
+            _ = await TestCommon.AssertResponseWithContentAsync(lRevokeRoleRply, lExpectedStatusCode, (Result<object> lRes) => lRes.IsSuccess);
 
             //DeleteRole
-            var lDeleteRoleRply = await TestCommon._httpClient.DeleteAsync($"/Mandril/DeleteRole?aRoleId={lCreateRoleRes.value}", default);
-            _ = await TestCommon.AssertResponseWithContentAsync(lDeleteRoleRply, lExpectedStatusCode, (ResultStruct lRes) => lRes.isSuccess);
+            var lDeleteRoleRply = await TestCommon._httpClient.DeleteAsync($"/Mandril/DeleteRole?aRoleId={lCreateRoleRes.Value}", default);
+            _ = await TestCommon.AssertResponseWithContentAsync(lDeleteRoleRply, lExpectedStatusCode, (Result<object> lRes) => lRes.IsSuccess);
 
         }
 
@@ -63,19 +63,19 @@ namespace Mandril.API.IntegrationTests
 
             //CreateNewRole
             var lCreateRoleRply = await TestCommon._httpClient.PostAsync("/Mandril/CreateRole?aRoleName=IntegrationTestRoleSingle", default);
-            var lCreateRoleRes = await TestCommon.AssertResponseWithContentAsync(lCreateRoleRply, lExpectedStatusCode, (ResultStruct<string> lRes) => lRes.isSuccess && lRes.value != null);
+            var lCreateRoleRes = await TestCommon.AssertResponseWithContentAsync(lCreateRoleRply, lExpectedStatusCode, (Result<string> lRes) => lRes.IsSuccess && lRes.Value != null);
 
             //AssignRoleToMember
-            var lAssignRoleToMemberListRply = await TestCommon._httpClient.PutAsync($"/Mandril/AssignRoleToMember?aRoleId={lCreateRoleRes.value}&aFullDiscordHandle=MandrilBot%230739", TestCommon.GetJsonStringContent(""));
-            _ = await TestCommon.AssertResponseWithContentAsync(lAssignRoleToMemberListRply, lExpectedStatusCode, (ResultStruct lRes) => lRes.isSuccess);
+            var lAssignRoleToMemberListRply = await TestCommon._httpClient.PutAsync($"/Mandril/AssignRoleToMember?aRoleId={lCreateRoleRes.Value}&aFullDiscordHandle=MandrilBot%230739", TestCommon.GetJsonStringContent(""));
+            _ = await TestCommon.AssertResponseWithContentAsync(lAssignRoleToMemberListRply, lExpectedStatusCode, (Result<object> lRes) => lRes.IsSuccess);
 
             //ThenRevokeRoleToMember
-            var lRevokeRoleRply = await TestCommon._httpClient.PutAsync($"/Mandril/RevokeRoleToMember?aRoleId={lCreateRoleRes.value}&aFullDiscordHandle=MandrilBot%230739", TestCommon.GetJsonStringContent(""));
-            _ = await TestCommon.AssertResponseWithContentAsync(lRevokeRoleRply, lExpectedStatusCode, (ResultStruct lRes) => lRes.isSuccess);
+            var lRevokeRoleRply = await TestCommon._httpClient.PutAsync($"/Mandril/RevokeRoleToMember?aRoleId={lCreateRoleRes.Value}&aFullDiscordHandle=MandrilBot%230739", TestCommon.GetJsonStringContent(""));
+            _ = await TestCommon.AssertResponseWithContentAsync(lRevokeRoleRply, lExpectedStatusCode, (Result<object> lRes) => lRes.IsSuccess);
 
             //DeleteRole
-            var lDeleteRoleRply = await TestCommon._httpClient.DeleteAsync($"/Mandril/DeleteRole?aRoleId={lCreateRoleRes.value}", default);
-            _ = await TestCommon.AssertResponseWithContentAsync(lDeleteRoleRply, lExpectedStatusCode, (ResultStruct lRes) => lRes.isSuccess);
+            var lDeleteRoleRply = await TestCommon._httpClient.DeleteAsync($"/Mandril/DeleteRole?aRoleId={lCreateRoleRes.Value}", default);
+            _ = await TestCommon.AssertResponseWithContentAsync(lDeleteRoleRply, lExpectedStatusCode, (Result<object> lRes) => lRes.IsSuccess);
 
         }
 
@@ -88,30 +88,30 @@ namespace Mandril.API.IntegrationTests
 
             //CheckIfEqualTemplateCategoryExist
             var lGetExistingCategoryIdRply = await TestCommon._httpClient.GetAsync($"/Mandril/GetExistingCategoryId?aCategoryName={lTemplateSample.Name}");
-            _ = await TestCommon.AssertResponseWithContentAsync(lGetExistingCategoryIdRply, HttpStatusCode.NotFound, (ResultStruct<string> lRes) => !lRes.isSuccess && lRes.value == null);
+            _ = await TestCommon.AssertResponseWithContentAsync(lGetExistingCategoryIdRply, HttpStatusCode.NotFound, (Result<string> lRes) => !lRes.IsSuccess && lRes.Value == null);
 
             //CreateCategoryFromTemplate
             var lCreateCategoryFromTemplateRply = await TestCommon._httpClient.PostAsync("/Mandril/CreateCategoryFromTemplate", TestCommon.GetJsonStringContent(lTemplateSample));
-            var lCreateCategoryFromTemplateRes = await TestCommon.AssertResponseWithContentAsync(lCreateCategoryFromTemplateRply, lExpectedStatusCode, (ResultStruct<string> lRes) => lRes.isSuccess && lRes.value != null);
+            var lCreateCategoryFromTemplateRes = await TestCommon.AssertResponseWithContentAsync(lCreateCategoryFromTemplateRply, lExpectedStatusCode, (Result<string> lRes) => lRes.IsSuccess && lRes.Value != null);
 
             //JoinAllMembersToCategory
             var lAddMemberListToCategoryRply = await TestCommon._httpClient.PutAsync(
-                                                                                $"/Mandril/AddMemberListToCategory?aCategoryId={lCreateCategoryFromTemplateRes.value}",
+                                                                                $"/Mandril/AddMemberListToCategory?aCategoryId={lCreateCategoryFromTemplateRes.Value}",
                                                                                 TestCommon.GetJsonStringContent(new string[] { "All" }));
-            _ = await TestCommon.AssertResponseWithContentAsync(lAddMemberListToCategoryRply, lExpectedStatusCode, (ResultStruct lRes) => lRes.isSuccess);
+            _ = await TestCommon.AssertResponseWithContentAsync(lAddMemberListToCategoryRply, lExpectedStatusCode, (Result<object> lRes) => lRes.IsSuccess);
 
             //UpdateCategoryFromTemplate
             lTemplateSample.RandomModifyTemplate();
-            var lUpdateCategoryFromTemplateRply = await TestCommon._httpClient.PutAsync($"/Mandril/UpdateCategoryFromTemplate?aCategoryId={lCreateCategoryFromTemplateRes.value}", TestCommon.GetJsonStringContent(lTemplateSample));
-            _ = await TestCommon.AssertResponseWithContentAsync(lUpdateCategoryFromTemplateRply, lExpectedStatusCode, (ResultStruct lRes) => lRes.isSuccess);
+            var lUpdateCategoryFromTemplateRply = await TestCommon._httpClient.PutAsync($"/Mandril/UpdateCategoryFromTemplate?aCategoryId={lCreateCategoryFromTemplateRes.Value}", TestCommon.GetJsonStringContent(lTemplateSample));
+            _ = await TestCommon.AssertResponseWithContentAsync(lUpdateCategoryFromTemplateRply, lExpectedStatusCode, (Result<object> lRes) => lRes.IsSuccess);
 
             //CheckIfCreatedCategoryExist
             var lCheckIfCreatedCategoryExistRply = await TestCommon._httpClient.GetAsync($"/Mandril/GetExistingCategoryId?aCategoryName={lTemplateSample.Name}");
-            _ = await TestCommon.AssertResponseWithContentAsync(lCheckIfCreatedCategoryExistRply, lExpectedStatusCode, (ResultStruct<string> lRes) => lRes.isSuccess && lRes.value != null);
+            _ = await TestCommon.AssertResponseWithContentAsync(lCheckIfCreatedCategoryExistRply, lExpectedStatusCode, (Result<string> lRes) => lRes.IsSuccess && lRes.Value != null);
 
             //DeleteCategory
-            var lDeleteCategoryRply = await TestCommon._httpClient.DeleteAsync($"/Mandril/DeleteCategory?aCategoryId={lCreateCategoryFromTemplateRes.value}");
-            _ = await TestCommon.AssertResponseWithContentAsync(lDeleteCategoryRply, lExpectedStatusCode, (ResultStruct lRes) => lRes.isSuccess);
+            var lDeleteCategoryRply = await TestCommon._httpClient.DeleteAsync($"/Mandril/DeleteCategory?aCategoryId={lCreateCategoryFromTemplateRes.Value}");
+            _ = await TestCommon.AssertResponseWithContentAsync(lDeleteCategoryRply, lExpectedStatusCode, (Result<object> lRes) => lRes.IsSuccess);
 
         }
 

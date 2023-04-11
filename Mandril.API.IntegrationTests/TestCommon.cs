@@ -1,7 +1,11 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Immutable;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using TGF.CA.Domain.Primitives;
+using TGF.Common.ROP.Errors;
+using TGF.Common.ROP.Result;
 
 namespace Mandril.API.IntegrationTests
 {
@@ -10,7 +14,7 @@ namespace Mandril.API.IntegrationTests
     /// </summary>
     public static class TestCommon
     {
-        public static readonly HttpClient _httpClient = new() { BaseAddress = new Uri("https://localhost:44354") };
+        public static readonly HttpClient _httpClient = new() { BaseAddress = new Uri("http://localhost:7002") };
         public const string _jsonMediaType = "application/json";
         public static readonly JsonSerializerOptions _jsonSerializerOptions = new() { PropertyNameCaseInsensitive = true };
 
@@ -21,8 +25,8 @@ namespace Mandril.API.IntegrationTests
             AssertCommonResponseParts(response, expectedStatusCode);
             Assert.That(response.Content.Headers.ContentType?.MediaType, Is.EqualTo(_jsonMediaType));
 
-            var lContent = await System.Text.Json.JsonSerializer.DeserializeAsync<T>(
-                await response.Content.ReadAsStreamAsync());
+            var lJsonString = await response.Content.ReadAsStringAsync();
+            var lContent = JsonConvert.DeserializeObject<T>(lJsonString);
 
             Assert.That(lContent != null && aResponseValidationFunc.Invoke(lContent));
 
@@ -47,20 +51,37 @@ namespace Mandril.API.IntegrationTests
         public static StringContent GetJsonStringContent<T>(T model)
             => new(System.Text.Json.JsonSerializer.Serialize(model), Encoding.UTF8, _jsonMediaType);
     }
-    public struct ResultStruct<T>
-    {
-        [JsonProperty("value")]
-        public T value { get; set; }
-        [JsonProperty("isSuccess")]
-        public bool isSuccess { get; set; }
-        [JsonProperty("error")]
-        public Error error { get; set; }
+    [JsonObject]
+    public class Result<T>
+    { 
+        [JsonPropertyName("Value")]
+        public T Value { get; set; }
+
+        public Result(T aValue, bool aIsuccess, ImmutableArray<Error> aErrorList)
+        {
+            Value = aValue;
+            IsSuccess = aIsuccess;
+            ErrorList = aErrorList;
+        }
+
+        [JsonPropertyName("IsSuccess")]
+        public bool IsSuccess { get; set; }
+
+        [JsonPropertyName("IsSuccess")]
+        public ImmutableArray<Error> ErrorList { get; set; }
+
+
+
     }
-    public struct ResultStruct
+    public class Error : IError
     {
-        [JsonProperty("isSuccess")]
-        public bool isSuccess { get; set; }
-        [JsonProperty("error")]
-        public Error error { get; set; }
+        public string Code { get; }
+        public string Message { get; }
+        public Error(string aCode, string aMessage)
+        {
+            Code = aCode;
+            Message = aMessage;
+        }
     }
+
 }
