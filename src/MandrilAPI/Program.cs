@@ -1,7 +1,7 @@
 using MandrilAPI.DI;
 using MandrilBot;
 using MandrilBot.Controllers;
-using TGF.CA.Application;
+using TGF.CA.Application.Setup;
 
 namespace MandrilAPI
 {
