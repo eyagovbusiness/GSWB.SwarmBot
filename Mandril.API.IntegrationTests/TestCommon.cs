@@ -3,7 +3,6 @@ using System.Collections.Immutable;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using TGF.CA.Domain.Primitives;
 using TGF.Common.ROP.Errors;
 using TGF.Common.ROP.Result;
 
