@@ -29,17 +29,22 @@ namespace MandrilBot.Handlers
 
         }
 
-        internal static async Task<IHttpResult<DiscordChannel>> GetDiscordCategoryIdFromName(DiscordGuild aDiscordGiildId, string aDiscordCategoryName, CancellationToken aCancellationToken = default)
+        internal static async Task<IHttpResult<DiscordChannel>> GetDiscordCategory(DiscordGuild aDiscordGiild, Func<DiscordChannel, bool> aFilterFunc, CancellationToken aCancellationToken = default)
             => await Result.CancellationTokenResultAsync(aCancellationToken)
-                    .Map(_ => aDiscordGiildId.GetChannelsAsync())
-                    .Map(discordChannelList => discordChannelList.FirstOrDefault(channel => channel.IsCategory
-                                                                 && channel.Name == aDiscordCategoryName))
+                    .Map(_ => aDiscordGiild.Channels)
+                    .Map(discordChannelList => discordChannelList.Values.FirstOrDefault(channel => channel.IsCategory && aFilterFunc(channel)))
                     .Verify(discordChannel => discordChannel != null, DiscordBotErrors.Channel.NotFoundName);
 
-        internal static async Task<IHttpResult<DiscordChannel>> GetDiscordChannelFromId(DiscordGuild aDIscordGuild, ulong aDiscordCategoryId, CancellationToken aCancellationToken = default)
+        internal static async Task<IHttpResult<DiscordChannel>> GetDiscordChannelFromId(DiscordGuild aDiscordGuild, ulong aDiscordChannelId, CancellationToken aCancellationToken = default)
             => await Result.CancellationTokenResultAsync(aCancellationToken)
-                    .Map(_ => aDIscordGuild.GetChannel(aDiscordCategoryId))
+                    .Map(_ => aDiscordGuild.GetChannel(aDiscordChannelId))
                     .Verify(discordChannel => discordChannel != null, DiscordBotErrors.Channel.NotFoundId);
+
+        internal static async Task<IHttpResult<DiscordChannel>> GetDiscordChannel(DiscordGuild aDiscordGuild, Func<DiscordChannel, bool> aFilterFunc, CancellationToken aCancellationToken = default)
+            => await Result.CancellationTokenResultAsync(aCancellationToken)
+                    .Map(_ => aDiscordGuild.Channels)
+                    .Map(discordChannelList => discordChannelList.Values.FirstOrDefault(channel => aFilterFunc(channel)))
+                    .Verify(discordChannel => discordChannel != null, DiscordBotErrors.Channel.NotFoundName);
 
         /// <summary>
         ///  Performs removal tasks to synchronize a given <see cref="DiscordChannel"/> category internal channels to match a given <see cref="CategoryChannelTemplate"/> template.

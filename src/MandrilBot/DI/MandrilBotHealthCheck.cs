@@ -8,16 +8,13 @@ namespace MandrilBot
     /// </summary>
     public class MandrilBotHealthCheck : IHealthCheck
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IMandrilDiscordBot _mandrilDiscordBot;
 
-        public MandrilBotHealthCheck(IServiceProvider aServiceProvider)
-            => _serviceProvider = aServiceProvider;
+        public MandrilBotHealthCheck(IMandrilDiscordBot aMandrilDiscordBot)
+            => _mandrilDiscordBot = aMandrilDiscordBot;
 
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext aContext, CancellationToken aCancellationToken = default)
-        {
-            var lService = _serviceProvider.GetRequiredService<IMandrilDiscordBot>();
-            return await lService.GetHealthCheck(aCancellationToken);
+            => await _mandrilDiscordBot.GetHealthCheck(aCancellationToken);
 
-        }
     }
 }

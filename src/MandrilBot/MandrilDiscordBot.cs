@@ -1,6 +1,7 @@
 ﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using MandrilBot.Commands;
+using MandrilBot.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
@@ -12,7 +13,6 @@ namespace MandrilBot
     /// </summary>
     public partial class MandrilDiscordBot : IMandrilDiscordBot
     {
-
         internal static readonly byte _maxDegreeOfParallelism = Convert.ToByte(Math.Ceiling(Environment.ProcessorCount * 0.75));
 
         /// <summary>

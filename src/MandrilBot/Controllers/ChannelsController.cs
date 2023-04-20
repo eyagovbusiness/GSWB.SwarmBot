@@ -22,6 +22,15 @@ namespace MandrilBot.Controllers
                     .Bind(discordGuild => RolesHandler.GetDiscordRoleAtm(discordGuild, discordGuild.Id, aCancellationToken)
                     .Bind(discordEveryoneRole => ChannelsHandler.CreateTemplateChannelsAtmAsync(discordGuild, discordEveryoneRole, aCategoryChannelTemplate, aCancellationToken)));
 
+        /// <summary>
+        /// Gets the first <see cref="DiscordChannel"/> frrom the context server channel list that statisfies the given filter conditions.
+        /// </summary>
+        /// <param name="aFilterFunc">Filter function to get the required channel.</param>
+        /// <param name="aCancellationToken"></param>
+        /// <returns><see cref="DiscordChannel"/></returns>
+        public async Task<IHttpResult<DiscordChannel>> GetDiscordChannel(Func<DiscordChannel, bool> aFilterFunc, CancellationToken aCancellationToken = default)
+            => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
+                    .Bind(discordGuild => ChannelsHandler.GetDiscordChannel(discordGuild, aFilterFunc, aCancellationToken));
 
         /// <summary>
         /// Gets a valid Id from <see cref="DiscordChannel"/> that is a Category channel if exist.
@@ -31,7 +40,7 @@ namespace MandrilBot.Controllers
         /// <returns><see cref="IHttpResult{string}"/> with valid DiscordChannel Id and information about success or failure on this operation.</returns>
         public async Task<IHttpResult<string>> GetExistingCategoryId(string aDiscordCategoryName, CancellationToken aCancellationToken = default)
             => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
-                    .Bind(discordGuild => ChannelsHandler.GetDiscordCategoryIdFromName(discordGuild, aDiscordCategoryName, aCancellationToken))
+                    .Bind(discordGuild => ChannelsHandler.GetDiscordCategory(discordGuild, channel => channel.Name == aDiscordCategoryName, aCancellationToken))
                     .Map(discordChannel => discordChannel.Id.ToString());
 
         /// <summary>

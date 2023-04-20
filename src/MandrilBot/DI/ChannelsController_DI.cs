@@ -33,6 +33,14 @@ namespace MandrilBot.Controllers
         public Task<IHttpResult<string>> CreateCategoryFromTemplate(CategoryChannelTemplate aCategoryChannelTemplate, CancellationToken aCancellationToken = default);
 
         /// <summary>
+        /// Gets the first <see cref="DiscordChannel"/> frrom the context server channel list that statisfies the given filter conditions.
+        /// </summary>
+        /// <param name="aFilterFunc">Filter function to get the required channel.</param>
+        /// <param name="aCancellationToken"></param>
+        /// <returns><see cref="DiscordChannel"/></returns>
+        public Task<IHttpResult<DiscordChannel>> GetDiscordChannel(Func<DiscordChannel, bool> aFilterFunc, CancellationToken aCancellationToken = default);
+
+        /// <summary>
         /// Gets a valid Id from <see cref="DiscordChannel"/> that is a Category channel if exist.
         /// </summary>
         /// <param name="aDiscordCategoryName">Name of the category from which to get the Id</param>

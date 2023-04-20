@@ -1,5 +1,6 @@
 ﻿using MandrilBot;
 using MandrilBot.Controllers;
+using MandrilBot.News;
 
 namespace MandrilAPI
 {
@@ -14,10 +15,11 @@ namespace MandrilAPI
         {
             //Singleton MandrilDiscordBot shared by all the services.Services will acess only through the interface protecting the class.
             aWebHostBuilder.Services.AddSingleton<IMandrilDiscordBot, MandrilDiscordBot>();
-
-            //Depends on MandrilDiscordBot, creates the singleton instance and start connection asynchronously in the background.
-            aWebHostBuilder.Services.AddHostedService<MandrilDiscordBotBackgroundStart>();
-
+            //Depends on MandrilDiscordBo: add Star Citizen news service
+            aWebHostBuilder.Services.AddSingleton<IDiscordBotNewsService, DiscordBotNewsService>();
+            //Depends on MandrilDiscordBot and DiscordBotNewsService: create the singleton instance and start connection asynchronously in the background. 
+            aWebHostBuilder.Services.AddHostedService<MandrilDiscordBotBackgroundTasks>();
+            //Depends on MandrilDiscordBot: add controllers
             aWebHostBuilder.Services.AddScoped<IChannelsController, ChannelsController>();
             aWebHostBuilder.Services.AddScoped<IGuildController, GuildController>();
             aWebHostBuilder.Services.AddScoped<IRolesController, RolesController>();
