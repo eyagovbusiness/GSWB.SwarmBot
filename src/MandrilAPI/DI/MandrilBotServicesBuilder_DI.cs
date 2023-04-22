@@ -20,10 +20,11 @@ namespace MandrilAPI
             //Depends on MandrilDiscordBot and DiscordBotNewsService: create the singleton instance and start connection asynchronously in the background. 
             aWebHostBuilder.Services.AddHostedService<MandrilDiscordBotBackgroundTasks>();
             //Depends on MandrilDiscordBot: add controllers
-            aWebHostBuilder.Services.AddScoped<IChannelsController, ChannelsController>();
-            aWebHostBuilder.Services.AddScoped<IGuildController, GuildController>();
-            aWebHostBuilder.Services.AddScoped<IRolesController, RolesController>();
             aWebHostBuilder.Services.AddScoped<IUsersController, UsersController>();
+            aWebHostBuilder.Services.AddScoped<IGuildController, GuildController>();
+            aWebHostBuilder.Services.AddScoped<IChannelsController, ChannelsController>();
+            aWebHostBuilder.Services.AddScoped<IMembersController, MembersController>();
+            aWebHostBuilder.Services.AddScoped<IRolesController, RolesController>();
 
             return aWebHostBuilder;
             

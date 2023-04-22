@@ -42,7 +42,7 @@ namespace MandrilBot.News
         {
             var lNewsChannelResult = (await (aDiscordChannelsControllerService as ChannelsController).GetDiscordChannel(channel => channel.Name == _botNewsConfig.DevTracker.DiscordChannel));
             if (!lNewsChannelResult.IsSuccess)
-                throw new Exception($"Error fetching the SC news channel: { lNewsChannelResult.ErrorList}");
+                throw new Exception($"Error fetching the SC news channel: {lNewsChannelResult}");
 
             _devTrackerNewsChannel = lNewsChannelResult.Value;
             _lastMessageList = await GetLastMessageListAsync();

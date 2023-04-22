@@ -1,5 +1,6 @@
 ﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
+using DSharpPlus.Entities;
 using MandrilBot.Commands;
 using MandrilBot.Configuration;
 using Microsoft.Extensions.Configuration;
@@ -59,6 +60,7 @@ namespace MandrilBot
                     TokenType = TokenType.Bot,
                     AutoReconnect = true,
                     Intents = DiscordIntents.MessageContents
+                              | DiscordIntents.GuildMessageReactions
                               | DiscordIntents.GuildMessages
                               | DiscordIntents.Guilds
                               | DiscordIntents.GuildVoiceStates
@@ -66,10 +68,6 @@ namespace MandrilBot
                 };
 
                 Client = new DiscordClient(config);
-
-                //Client.Ready += Client_Ready;
-                //Client.VoiceStateUpdated += Client_VoiceStateUpdated;
-                //Client.PresenceUpdated += Client_PresenceUpdated;
 
                 var lCommandsConfig = new CommandsNextConfiguration
                 {
@@ -86,24 +84,9 @@ namespace MandrilBot
             }
             catch (Exception lException)
             {
-                _logger.LogError("An error occurred while attempting to start the Discord bot client: ", lException.ToString());
+                _loggerFactory.CreateLogger(typeof(MandrilDiscordBot)).LogError("An error occurred while attempting to start the Discord bot client: ", lException.ToString());
             }
         }
-
-        //private Task Client_PresenceUpdated(DiscordClient sender, DSharpPlus.EventArgs.PresenceUpdateEventArgs e)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //private Task Client_VoiceStateUpdated(DiscordClient sender, DSharpPlus.EventArgs.VoiceStateUpdateEventArgs e)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //private Task Client_Ready(DiscordClient sender, DSharpPlus.EventArgs.ReadyEventArgs e)
-        //{
-        //    throw new NotImplementedException()
-        //}
 
     }
 }
