@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using TGF.Common.Serialization.Converters;
 
 namespace MandrilBot.Configuration
 {
@@ -21,26 +22,5 @@ namespace MandrilBot.Configuration
 
         [JsonConverter(typeof(UlongConverter))]
         public ulong MediaRoleId { get; set; }
-    }
-    public class UlongConverter : Newtonsoft.Json.JsonConverter<ulong>
-    {
-        public override ulong ReadJson(JsonReader reader, Type objectType, ulong existingValue, bool hasExistingValue, Newtonsoft.Json.JsonSerializer serializer)
-        {
-            if (reader.TokenType == JsonToken.String)
-            {
-                string stringValue = (string)reader.Value;
-                if (ulong.TryParse(stringValue, out ulong result))
-                {
-                    return result;
-                }
-            }
-
-            throw new JsonSerializationException($"Failed to deserialize {objectType.Name} from JSON.");
-        }
-
-        public override void WriteJson(JsonWriter writer, ulong value, Newtonsoft.Json.JsonSerializer serializer)
-        {
-            writer.WriteValue(value.ToString());
-        }
     }
 }

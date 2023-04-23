@@ -33,7 +33,7 @@ namespace MandrilBot.Handlers
             => await Result.CancellationTokenResultAsync(aCancellationToken)
                     .Map(_ => aDiscordGiild.Channels)
                     .Map(discordChannelList => discordChannelList.Values.FirstOrDefault(channel => channel.IsCategory && aFilterFunc(channel)))
-                    .Verify(discordChannel => discordChannel != null, DiscordBotErrors.Channel.NotFoundName);
+                    .Verify(discordChannel => discordChannel != null, DiscordBotErrors.Channel.NotFound);
 
         internal static async Task<IHttpResult<DiscordChannel>> GetDiscordChannelFromId(DiscordGuild aDiscordGuild, ulong aDiscordChannelId, CancellationToken aCancellationToken = default)
             => await Result.CancellationTokenResultAsync(aCancellationToken)

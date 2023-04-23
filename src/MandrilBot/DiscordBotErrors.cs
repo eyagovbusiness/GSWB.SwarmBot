@@ -66,7 +66,14 @@ namespace MandrilBot
 
         public static class Channel
         {
-            public static HttpError NotFoundId => new HttpError(new Error("Channel.NotFound", "The channel with the specified ChannelId was not found."), HttpStatusCode.NotFound);
+            public static HttpError NotFound => new HttpError(
+                new Error("Channel.NotFound",
+                    "Was not found any channel with the specified characteristics."),
+                HttpStatusCode.NotFound);
+            public static HttpError NotFoundId => new HttpError(
+                new Error("Channel.NotFound", 
+                    "The channel with the specified ChannelId was not found."),
+                HttpStatusCode.NotFound);
             public static HttpError NotFoundName => new HttpError(
                 new Error("Channel.NotFound",
                     "The channel with the specified name was not found."),
