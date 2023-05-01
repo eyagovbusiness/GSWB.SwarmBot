@@ -23,7 +23,7 @@ namespace MandrilBot
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly ILogger _logger;
 
-        private readonly BotWelcomeConfig _botWelcomeConfig;
+        private readonly BotNewMembersManagerConfig _botNewMembersManagerConfig;
         private readonly string _newMembersFilePath = "/etc/NewUsers.json";
 
         public MandrilDiscordBotBackgroundTasks(
@@ -38,9 +38,9 @@ namespace MandrilBot
             _serviceScopeFactory = aServiceScopeFactory;
             _logger = aLoggerFactory.CreateLogger(typeof(MandrilDiscordBotBackgroundTasks));
 
-            var lNewWelcomeConfig = new BotWelcomeConfig();
-            aConfiguration.Bind("BotWelcome", lNewWelcomeConfig);
-            _botWelcomeConfig = lNewWelcomeConfig;
+            var lBotNewMembersManagerConfig = new BotNewMembersManagerConfig();
+            aConfiguration.Bind("BotNewMembersManager", lBotNewMembersManagerConfig);
+            _botNewMembersManagerConfig = lBotNewMembersManagerConfig;
 
         }
 
@@ -86,8 +86,8 @@ namespace MandrilBot
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
                     var lDiscordRolesControllerService = scope.ServiceProvider.GetRequiredService<IRolesController>();
-                    await lDiscordRolesControllerService.RevokeRoleToMemberList(_botWelcomeConfig.NoMediaRoleId, lKeyListToRemove, aStoppingToken);
-                    await lDiscordRolesControllerService.AssignRoleToMemberList(_botWelcomeConfig.MediaRoleId, lKeyListToRemove, aStoppingToken);
+                    await lDiscordRolesControllerService.RevokeRoleToMemberList(_botNewMembersManagerConfig.NoMediaRoleId, lKeyListToRemove, aStoppingToken);
+                    await lDiscordRolesControllerService.AssignRoleToMemberList(_botNewMembersManagerConfig.MediaRoleId, lKeyListToRemove, aStoppingToken);
                 }
                 foreach (var lKey in lKeyListToRemove)
                     lNewMemberDictionary.Remove(lKey);
@@ -107,7 +107,7 @@ namespace MandrilBot
             using (var scope = _serviceScopeFactory.CreateScope())
             {
                 var lDiscordGuildControllerService = scope.ServiceProvider.GetRequiredService<IMembersController>();
-                var lDiscordmemberListResult = await lDiscordGuildControllerService.GetMemberList(member => member.Roles.Any(role => role.Id == _botWelcomeConfig.NoMediaRoleId), aStoppingToken);
+                var lDiscordmemberListResult = await lDiscordGuildControllerService.GetMemberList(member => member.Roles.Any(role => role.Id == _botNewMembersManagerConfig.NoMediaRoleId), aStoppingToken);
                 if (!lDiscordmemberListResult.IsSuccess)
                     throw new Exception($"Error getting the MembersList with NoMedia role: {lDiscordmemberListResult}");
                 lDiscordmemberList = lDiscordmemberListResult.Value;
@@ -118,8 +118,8 @@ namespace MandrilBot
             lMemberMissingList.ForEach(
                 missingMember => 
                 {
-                    var lMultiplier = (DateTime.Now - missingMember.CreationTimestamp).Days < 7 ? _botWelcomeConfig.NoMediaDaysMultiplier : 1;
-                    aSourceNewMemberDictionary.Add(missingMember.Id, missingMember.JoinedAt.AddDays(_botWelcomeConfig.BaseNoMediaDays * lMultiplier));
+                    var lMultiplier = (DateTime.Now - missingMember.CreationTimestamp).Days < 7 ? _botNewMembersManagerConfig.NoMediaDaysMultiplier : 1;
+                    aSourceNewMemberDictionary.Add(missingMember.Id, missingMember.JoinedAt.AddDays(_botNewMembersManagerConfig.BaseNoMediaDays * lMultiplier));
                 });
 
             return aSourceNewMemberDictionary;

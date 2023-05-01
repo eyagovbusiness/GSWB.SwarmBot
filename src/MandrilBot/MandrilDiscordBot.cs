@@ -28,7 +28,7 @@ namespace MandrilBot
             aCancellationToken.ThrowIfCancellationRequested();
             try
             {
-                var lGuilPreview = await Client.GetGuildPreviewAsync(_botConfiguration.DiscordTargetGuildId);
+                var lGuilPreview = await Client.GetGuildPreviewAsync(BotConfiguration.DiscordTargetGuildId);
                 if (lGuilPreview?.ApproximateMemberCount != null && lGuilPreview?.ApproximateMemberCount > 0)
                 {
                     if (Client.Ping < 150)
@@ -53,10 +53,11 @@ namespace MandrilBot
         {
             try
             {
+                await SetBotConfigurationAsync();
                 var config = new DiscordConfiguration
                 {
                     LoggerFactory = _loggerFactory,
-                    Token = _botConfiguration.MandrilBotToken,
+                    Token = BotConfiguration.MandrilBotToken,
                     TokenType = TokenType.Bot,
                     AutoReconnect = true,
                     Intents = DiscordIntents.MessageContents
@@ -71,7 +72,7 @@ namespace MandrilBot
 
                 var lCommandsConfig = new CommandsNextConfiguration
                 {
-                    StringPrefixes = new string[] { _botConfiguration.BotCommandPrefix },
+                    StringPrefixes = new string[] { BotConfiguration.BotCommandPrefix },
                     EnableDms = false,
                     EnableMentionPrefix = true,
                 };
@@ -86,6 +87,12 @@ namespace MandrilBot
             {
                 _loggerFactory.CreateLogger(typeof(MandrilDiscordBot)).LogError("An error occurred while attempting to start the Discord bot client: ", lException.ToString());
             }
+        }
+
+        private async Task SetBotConfigurationAsync()
+        {
+            BotConfiguration = await _secretsManager.Get<BotConfig>("mandrilbot");
+            BotConfiguration.BotCommandPrefix = _configuration.GetValue<string>("BotCommandPrefix");
         }
 
     }

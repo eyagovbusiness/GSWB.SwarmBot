@@ -9,9 +9,9 @@ using TGF.Common.Serialization.Converters;
 
 namespace MandrilBot.Configuration
 {
-    public class BotWelcomeConfig
+    public class BotNewMembersManagerConfig
     {
-        public BotWelcomeConfig() { }
+        public BotNewMembersManagerConfig() { }
 
         [JsonConverter(typeof(UlongConverter))]
         public ulong NoMediaRoleId { get; set; }

@@ -1,7 +1,9 @@
 using MandrilAPI.DI;
 using MandrilBot;
 using MandrilBot.Controllers;
+using Microsoft.AspNetCore.Hosting;
 using TGF.CA.Application.Setup;
+using TGF.CA.Infrastructure.Secrets;
 
 namespace MandrilAPI
 {
@@ -12,6 +14,7 @@ namespace MandrilAPI
             var lWebApplication = WebApplicationAbstraction.CreateCustomWebApplication(
             aWebHostBuilder =>
             {
+                aWebHostBuilder.Services.AddVaultSecretsManager(aWebHostBuilder.Configuration);
                 aWebHostBuilder.AddHealthChceckServices();
                 aWebHostBuilder.AddMandrilBotServices();
 

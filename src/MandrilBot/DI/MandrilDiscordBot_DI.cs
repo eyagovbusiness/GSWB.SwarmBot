@@ -5,6 +5,7 @@ using MandrilBot.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
+using TGF.CA.Infrastructure.Secrets.Vault;
 
 namespace MandrilBot
 {
@@ -14,15 +15,18 @@ namespace MandrilBot
     public partial class MandrilDiscordBot : IMandrilDiscordBot
     {
         private readonly ILoggerFactory _loggerFactory;
-        internal readonly BotConfig _botConfiguration;
+        private readonly IConfiguration _configuration;
+        private readonly ISecretsManager _secretsManager;
+        internal BotConfig BotConfiguration { get; private set; }
 
         internal DiscordClient Client { get; private set; }
         internal CommandsNextExtension Commands { get; private set; }
 
-        public MandrilDiscordBot(IConfiguration aConfiguration, ILoggerFactory aLoggerFactory)
+        public MandrilDiscordBot(ILoggerFactory aLoggerFactory, ISecretsManager aSecretsManager, IConfiguration aConfiguration)
         {
-            _botConfiguration = aConfiguration.Get<BotConfig>();
             _loggerFactory = aLoggerFactory;
+            _secretsManager = aSecretsManager;
+            _configuration = aConfiguration;
         }
 
     }

@@ -17,10 +17,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\TGF.Common.Serialization\TGF.Common.Serialization.csproj" />
     <ProjectReference Include="..\..\..\TheGoodFramework\src\CleanArchitecture\Domain\TheGoodFramework.CA.Domain\TGF.CA.Domain.csproj" />
+    <ProjectReference Include="..\..\..\TheGoodFramework\src\CleanArchitecture\Infrastructure\TGF.CA.Infrastructure.Secrets\TGF.CA.Infrastructure.Secrets.csproj" />
     <ProjectReference Include="..\..\..\TheGoodFramework\src\Common\TheGoodFramework.Common.Extensions\TGF.Common.Extensions.csproj" />
     <ProjectReference Include="..\..\..\TheGoodFramework\src\Common\TheGoodFramework.Common.ROP\TGF.Common.ROP.csproj" />
+    <ProjectReference Include="..\..\..\TheGoodFramework\src\Common\TheGoodFramework.Common.Serialization\TGF.Common.Serialization.csproj" />
   </ItemGroup>
 
 </Project>
