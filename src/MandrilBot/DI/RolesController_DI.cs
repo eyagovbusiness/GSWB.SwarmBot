@@ -1,10 +1,6 @@
-﻿using DSharpPlus.Entities;
-using MandrilBot.Handelers;
-using MandrilBot.Handlers;
+﻿using MandrilBot.Handelers;
 using MediatR;
-using TGF.Common.Extensions;
 using TGF.Common.ROP.HttpResult;
-using TGF.Common.ROP.Result;
 
 namespace MandrilBot.Controllers
 {

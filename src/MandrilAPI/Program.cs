@@ -1,7 +1,4 @@
 using MandrilAPI.DI;
-using MandrilBot;
-using MandrilBot.Controllers;
-using Microsoft.AspNetCore.Hosting;
 using TGF.CA.Application.Setup;
 using TGF.CA.Infrastructure.Secrets;
 

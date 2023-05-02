@@ -1,10 +1,5 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TGF.Common.ROP.HttpResult;
 using TGF.Common.ROP.Result;
 

@@ -6,10 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualBasic;
 using TGF.Common.Extensions;
 using TGF.Common.Extensions.Serialization;
-using static System.Formats.Asn1.AsnWriter;
 
 namespace MandrilBot
 {
@@ -81,7 +79,7 @@ namespace MandrilBot
 
             // Remove entries where the DateTime value has already passed
             var lKeyListToRemove = lNewMemberDictionary.Where(pair => pair.Value < DateTime.Now).Select(pair => pair.Key).ToArray();
-            if(lKeyListToRemove.Any())
+            if (lKeyListToRemove.Any())
             {
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
@@ -116,7 +114,7 @@ namespace MandrilBot
             IEnumerable<DiscordMember> lMemberMissingList = lDiscordmemberList.Where(member => !aSourceNewMemberDictionary.ContainsKey(member.Id));
             //Update the Dictionary with the missing member in file, calculating the date when the NoMedia role has to replaced by the MediaRole.
             lMemberMissingList.ForEach(
-                missingMember => 
+                missingMember =>
                 {
                     var lMultiplier = (DateTime.Now - missingMember.CreationTimestamp).Days < 7 ? _botNewMembersManagerConfig.NoMediaDaysMultiplier : 1;
                     aSourceNewMemberDictionary.Add(missingMember.Id, missingMember.JoinedAt.AddDays(_botNewMembersManagerConfig.BaseNoMediaDays * lMultiplier));

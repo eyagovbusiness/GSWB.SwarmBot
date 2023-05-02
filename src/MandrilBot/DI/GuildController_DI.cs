@@ -1,5 +1,4 @@
-﻿using DSharpPlus.Entities;
-using MandrilBot.Handelers;
+﻿using MandrilBot.Handelers;
 using TGF.Common.ROP.HttpResult;
 
 namespace MandrilBot.Controllers
@@ -10,8 +9,8 @@ namespace MandrilBot.Controllers
     public partial class GuildController : IGuildController
     {
         private readonly GuildsHandler _guildsHandler;
-        public GuildController(IMandrilDiscordBot aMandrilDiscordBot) 
-            =>_guildsHandler = new GuildsHandler(aMandrilDiscordBot);
+        public GuildController(IMandrilDiscordBot aMandrilDiscordBot)
+            => _guildsHandler = new GuildsHandler(aMandrilDiscordBot);
 
     }
 

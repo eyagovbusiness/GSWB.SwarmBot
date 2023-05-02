@@ -63,10 +63,10 @@ namespace MandrilBot.Handelers
 
         }
 
-        internal static async Task<IHttpResult<IEnumerable<DiscordMember>>> GetDiscordMemberList(DiscordGuild aDiscordGuild, Func<DiscordMember,bool> aFilterFunc, CancellationToken aCancellationToken = default)
+        internal static async Task<IHttpResult<IEnumerable<DiscordMember>>> GetDiscordMemberList(DiscordGuild aDiscordGuild, Func<DiscordMember, bool> aFilterFunc, CancellationToken aCancellationToken = default)
             => await Result.CancellationTokenResultAsync(aCancellationToken)
                            .Bind(_ => GetAllDiscordMemberListAtmAsync(aDiscordGuild, aCancellationToken))
-                           .Map(allMemberList => allMemberList.Where(member => aFilterFunc(member)));     
+                           .Map(allMemberList => allMemberList.Where(member => aFilterFunc(member)));
 
         internal static async Task<IHttpResult<ImmutableArray<DiscordMember>>> GetAllDiscordMemberListAtmAsync(DiscordGuild aDiscordGuild, CancellationToken aCancellationToken = default)
             => await Result.CancellationTokenResultAsync(aCancellationToken)

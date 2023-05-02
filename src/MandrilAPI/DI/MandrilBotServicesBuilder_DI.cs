@@ -4,7 +4,7 @@ using MandrilBot.News;
 
 namespace MandrilAPI
 {
-    public static class MandrilBotServicesBuilder_DI 
+    public static class MandrilBotServicesBuilder_DI
     {
         /// <summary>
         /// Adds all needed MandrilBot related services.
@@ -27,7 +27,7 @@ namespace MandrilAPI
             aWebHostBuilder.Services.AddScoped<IRolesController, RolesController>();
 
             return aWebHostBuilder;
-            
+
         }
     }
 }

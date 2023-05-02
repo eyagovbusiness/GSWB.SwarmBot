@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace MandrilBot.Configuration
+﻿namespace MandrilBot.Configuration
 {
     /// <summary>
     /// Secret deserialization type, Secret's keys have to match JsonPropery names

@@ -1,5 +1,4 @@
 ﻿using MandrilAPI.Queries;
-using MandrilBot;
 using MandrilBot.Controllers;
 using MediatR;
 using TGF.Common.ROP.Result;

@@ -1,6 +1,5 @@
 ﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
-using DSharpPlus.Entities;
 using MandrilBot.Commands;
 using MandrilBot.Configuration;
 using Microsoft.Extensions.Configuration;

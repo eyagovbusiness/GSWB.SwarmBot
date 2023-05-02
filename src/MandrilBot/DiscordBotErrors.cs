@@ -71,7 +71,7 @@ namespace MandrilBot
                     "Was not found any channel with the specified characteristics."),
                 HttpStatusCode.NotFound);
             public static HttpError NotFoundId => new HttpError(
-                new Error("Channel.NotFound", 
+                new Error("Channel.NotFound",
                     "The channel with the specified ChannelId was not found."),
                 HttpStatusCode.NotFound);
             public static HttpError NotFoundName => new HttpError(

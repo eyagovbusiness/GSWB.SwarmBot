@@ -9,11 +9,11 @@ namespace MandrilBot.Handelers
     {
         private readonly DiscordClient _client;
         private readonly ulong _guildId;
-        internal GuildsHandler(IMandrilDiscordBot aMandrilDiscordBot) 
+        internal GuildsHandler(IMandrilDiscordBot aMandrilDiscordBot)
         {
             var lMandrilDiscordBot = aMandrilDiscordBot as MandrilDiscordBot;
             _client = lMandrilDiscordBot.Client;
-            _guildId= lMandrilDiscordBot.BotConfiguration.DiscordTargetGuildId;
+            _guildId = lMandrilDiscordBot.BotConfiguration.DiscordTargetGuildId;
         }
         internal async Task<IHttpResult<DiscordGuild>> GetDiscordGuildFromConfigAsync(CancellationToken aCancellationToken = default)
             => await Result.CancellationTokenResultAsync(aCancellationToken)

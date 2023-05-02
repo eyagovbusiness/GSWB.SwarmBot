@@ -1,5 +1,4 @@
-﻿using MandrilBot.Controllers;
-using MandrilBot;
+﻿using MandrilBot;
 
 namespace MandrilAPI.DI
 {
