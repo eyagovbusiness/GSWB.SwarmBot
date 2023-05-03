@@ -1,6 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <Version>1.0.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -23,8 +25,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\MandrilBot\MandrilBot.csproj" />
-    <ProjectReference Include="..\..\TheGoodFramework\src\CleanArchitecture\TheGoodFramework.CA.Domain\TGF.CA.Domain.csproj" />
+    <ProjectReference Include="..\..\..\..\src\MandrilBot\MandrilBot.csproj" />
+    <ProjectReference Include="..\..\..\..\..\TheGoodFramework\src\CleanArchitecture\Domain\TheGoodFramework.CA.Domain\TGF.CA.Domain.csproj" />
   </ItemGroup>
 
 </Project>
