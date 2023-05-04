@@ -8,6 +8,26 @@ using TGF.Common.ROP.Result;
 
 namespace Mandril.API.IntegrationTests
 {
+
+    public struct MandrilAPIEndpoints
+    {
+        public const string GetUserExist = "/Mandril/GetUserExist";
+        public const string GetUserIsVerified = "/Mandril/GetUserIsVerified";
+        public const string GetUserCreationDate = "/Mandril/GetUserCreationDate";
+        public const string GetNumberOfOnlineMembers = "/Mandril/GetNumberOfOnlineMembers";
+        public const string CreateRole = "/Mandril/CreateRole?aRoleName";
+        public const string AssignRoleToMemberList = "/Mandril/AssignRoleToMemberList";
+        public const string RevokeRoleToMemberList = "/Mandril/RevokeRoleToMemberList";
+        public const string DeleteRole = "/Mandril/DeleteRole";
+        public const string AssignRoleToMember = "/Mandril/AssignRoleToMember";
+        public const string RevokeRoleToMember = "/Mandril/RevokeRoleToMember";
+        public const string GetExistingCategoryId = "/Mandril/GetExistingCategoryId";
+        public const string CreateCategoryFromTemplate = "/Mandril/CreateCategoryFromTemplate";
+        public const string AddMemberListToCategory = "/Mandril/AddMemberListToCategory";
+        public const string UpdateCategoryFromTemplate = "/Mandril/UpdateCategoryFromTemplate";
+        public const string DeleteCategory = "/Mandril/DeleteCategory";
+
+    }
     /// <summary>
     /// Common methods shared between all CRUD integration tests.
     /// </summary>

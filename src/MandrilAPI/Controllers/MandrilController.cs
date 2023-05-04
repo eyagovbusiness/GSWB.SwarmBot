@@ -15,9 +15,7 @@ namespace MandrilAPI.Controllers
         private readonly IMediator _mediator;
 
         public MandrilController(IMediator aMediator)
-        {
-            _mediator = aMediator;
-        }
+            => _mediator = aMediator;
 
         #region Get
 
@@ -147,6 +145,10 @@ namespace MandrilAPI.Controllers
 
 
         [HttpPut("UpdateCategoryFromTemplate")]
+        [ProducesResponseType(typeof(IResult<Unit>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(IResult<Unit>), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(IResult<Unit>), (int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(IResult<Unit>), (int)HttpStatusCode.InternalServerError)]
         public async Task<IActionResult> UpdateCategoryFromTemplate(ulong aCategoryId, CategoryChannelTemplate aTemplate, CancellationToken aCancellationToken)
             => await _mediator.Send(new UpdateCategoryFromTemplateCommand(aCategoryId, aTemplate), aCancellationToken)
                 .ToActionResult();
