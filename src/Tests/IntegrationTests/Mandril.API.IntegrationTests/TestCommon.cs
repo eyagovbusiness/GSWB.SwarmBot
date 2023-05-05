@@ -11,21 +11,21 @@ namespace Mandril.API.IntegrationTests
 
     public struct MandrilAPIEndpoints
     {
-        public const string GetUserExist = "/Mandril/GetUserExist";
-        public const string GetUserIsVerified = "/Mandril/GetUserIsVerified";
-        public const string GetUserCreationDate = "/Mandril/GetUserCreationDate";
-        public const string GetNumberOfOnlineMembers = "/Mandril/GetNumberOfOnlineMembers";
-        public const string CreateRole = "/Mandril/CreateRole?aRoleName";
-        public const string AssignRoleToMemberList = "/Mandril/AssignRoleToMemberList";
-        public const string RevokeRoleToMemberList = "/Mandril/RevokeRoleToMemberList";
-        public const string DeleteRole = "/Mandril/DeleteRole";
-        public const string AssignRoleToMember = "/Mandril/AssignRoleToMember";
-        public const string RevokeRoleToMember = "/Mandril/RevokeRoleToMember";
-        public const string GetExistingCategoryId = "/Mandril/GetExistingCategoryId";
-        public const string CreateCategoryFromTemplate = "/Mandril/CreateCategoryFromTemplate";
-        public const string AddMemberListToCategory = "/Mandril/AddMemberListToCategory";
-        public const string UpdateCategoryFromTemplate = "/Mandril/UpdateCategoryFromTemplate";
-        public const string DeleteCategory = "/Mandril/DeleteCategory";
+        public const string GetUserExist = "/mandril-ms/Mandril/GetUserExist";
+        public const string GetUserIsVerified = "/mandril-ms/Mandril/GetUserIsVerified";
+        public const string GetUserCreationDate = "/mandril-ms/Mandril/GetUserCreationDate";
+        public const string GetNumberOfOnlineMembers = "/mandril-ms/Mandril/GetNumberOfOnlineMembers";
+        public const string CreateRole = "/mandril-ms/Mandril/CreateRole?aRoleName";
+        public const string AssignRoleToMemberList = "/mandril-ms/Mandril/AssignRoleToMemberList";
+        public const string RevokeRoleToMemberList = "/mandril-ms/Mandril/RevokeRoleToMemberList";
+        public const string DeleteRole = "/mandril-ms/Mandril/DeleteRole";
+        public const string AssignRoleToMember = "/mandril-ms/Mandril/AssignRoleToMember";
+        public const string RevokeRoleToMember = "/mandril-ms/Mandril/RevokeRoleToMember";
+        public const string GetExistingCategoryId = "/mandril-ms/Mandril/GetExistingCategoryId";
+        public const string CreateCategoryFromTemplate = "/mandril-ms/Mandril/CreateCategoryFromTemplate";
+        public const string AddMemberListToCategory = "/mandril-ms/Mandril/AddMemberListToCategory";
+        public const string UpdateCategoryFromTemplate = "/mandril-ms/Mandril/UpdateCategoryFromTemplate";
+        public const string DeleteCategory = "/mandril-ms/Mandril/DeleteCategory";
 
     }
     /// <summary>
@@ -33,7 +33,7 @@ namespace Mandril.API.IntegrationTests
     /// </summary>
     public static class TestCommon
     {
-        public static readonly HttpClient _httpClient = new() { BaseAddress = new Uri("http://localhost:7002") };
+        public static readonly HttpClient _httpClient = new() { BaseAddress = new Uri("http://localhost:7000") };
         public const string _jsonMediaType = "application/json";
         public static readonly JsonSerializerOptions _jsonSerializerOptions = new() { PropertyNameCaseInsensitive = true };
 
