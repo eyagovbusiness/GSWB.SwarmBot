@@ -91,7 +91,7 @@ namespace MandrilBot.News
                     Date = lContent[3],
                     Group = lContent[4],
                     Title = lContent[5],
-                    Description = lContent[6],
+                    Description = 6 < lContent.Length ? lContent[6] : string.Empty, //description may be empty when devs post only a picture or gif.
                     SourceLink = sourceDictionary["PathName"][1..]
                 });
             });
