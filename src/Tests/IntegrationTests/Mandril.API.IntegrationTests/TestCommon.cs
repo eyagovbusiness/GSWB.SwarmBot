@@ -4,7 +4,6 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using TGF.Common.ROP.Errors;
-using TGF.Common.ROP.Result;
 
 namespace Mandril.API.IntegrationTests
 {
@@ -72,7 +71,7 @@ namespace Mandril.API.IntegrationTests
     }
     [JsonObject]
     public class Result<T>
-    { 
+    {
         [JsonPropertyName("Value")]
         public T Value { get; set; }
 
