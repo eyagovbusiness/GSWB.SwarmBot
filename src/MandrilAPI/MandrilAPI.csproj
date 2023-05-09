@@ -11,6 +11,7 @@
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <ServerGarbageCollection>false</ServerGarbageCollection>
+    <DockerfileContext>..\..\..</DockerfileContext>
   </PropertyGroup>
 
   <ItemGroup>
