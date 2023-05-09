@@ -73,6 +73,8 @@ namespace MandrilBot.News
         {
             var lHTMLdocument = await DiscordBotNewsExtensions.GetHTMLAsync(_httpClient, _botNewsConfig.DevTracker.ResourcePath);
             var lElementList = lHTMLdocument.QuerySelector("div.devtracker-list.js-devtracker-list")?.QuerySelector(".devtracker-list");
+            if(lElementList == null)
+                throw new Exception("Error, devtracker-list was empty!!");
             var lDictionaryData = lElementList.Children.Select(y => y.ToDictionary()).ToList();
 
             List<DevTrackerNewsMessage> lCurrentContentList = new List<DevTrackerNewsMessage>();
