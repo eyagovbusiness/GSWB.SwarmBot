@@ -67,7 +67,7 @@ namespace MandrilBot
             }
             catch (Exception lException)
             {
-                _logger.LogError("An error occurred during the execution of MandrilDiscordBotBackgroundTasks: ", lException.ToString());
+                _logger.LogError("An error occurred during the execution of MandrilDiscordBotBackgroundTasks: {0}. Stack trace: {1}", lException.ToString(), lException.StackTrace);
             }
 
         }

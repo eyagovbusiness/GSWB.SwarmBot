@@ -77,7 +77,7 @@ namespace MandrilBot.News
                 throw new Exception("Error, devtracker-list was empty!!");
             var lDictionaryData = lElementList.Children.Select(y => y.ToDictionary()).ToList();
 
-            List<DevTrackerNewsMessage> lCurrentContentList = new List<DevTrackerNewsMessage>();
+            List<DevTrackerNewsMessage> lCurrentContentList = new();
 
             lDictionaryData.ForEach(sourceDictionary =>
             {
@@ -150,14 +150,14 @@ namespace MandrilBot.News
         /// </summary>
         /// <param name="aDevTrackerNewsMessage">Source <see cref="DevTrackerNewsMessage"/>.</param>
         /// <returns>Associated <see cref="DiscordColor"/>.</returns>
-        private DiscordColor GetNewsMessageColor(DevTrackerNewsMessage aDevTrackerNewsMessage)
+        private static DiscordColor GetNewsMessageColor(DevTrackerNewsMessage aDevTrackerNewsMessage)
         {
-            switch (aDevTrackerNewsMessage.Group)
+            return aDevTrackerNewsMessage.Group switch
             {
-                case "Patch Notes": return DiscordColor.Yellow;
-                case "Announcements": return DiscordColor.MidnightBlue;
-                default: return DiscordColor.CornflowerBlue;
-            }
+                "Patch Notes" => DiscordColor.Yellow,
+                "Announcements" => DiscordColor.CornflowerBlue,
+                _ => DiscordColor.MidnightBlue,
+            };
         }
 
     }

@@ -84,7 +84,7 @@ namespace MandrilBot
             }
             catch (Exception lException)
             {
-                _loggerFactory.CreateLogger(typeof(MandrilDiscordBot)).LogError("An error occurred while attempting to start the Discord bot client: ", lException.ToString());
+                _loggerFactory.CreateLogger(typeof(MandrilDiscordBot)).LogError("An error occurred while attempting to start the Discord bot client: {0}. Stack trace: {1} ", lException.ToString(), lException.StackTrace);
             }
         }
 
