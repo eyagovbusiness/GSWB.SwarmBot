@@ -1,8 +1,13 @@
 ﻿using AngleSharp.Common;
+using Consul;
 using DSharpPlus.Entities;
 using MandrilBot.Configuration;
 using MandrilBot.Controllers;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.VisualBasic;
+using System.Diagnostics;
+using System.Net.Http;
 using TGF.Common.Extensions;
 
 namespace MandrilBot.News
@@ -11,13 +16,15 @@ namespace MandrilBot.News
     /// Provides all necesary logic of a service that will get the last news from the StarCitizen devtracker resource by reading the HTML and notifying the differences on Discord periodically.
     /// (Has to be like since there is not any RSS available for this resource)
     /// </summary>
-    public class DiscordBotNewsService : IDiscordBotNewsService
+    public partial class DiscordBotNewsService : IDiscordBotNewsService
     {
         private readonly BotNewsConfig _botNewsConfig;
         private readonly HttpClient _httpClient;
 
-        private DiscordChannel _devTrackerNewsChannel;
-        private List<DevTrackerNewsMessage> _lastMessageList;
+        private DiscordChannel mDevTrackerNewsChannel;
+        private List<DevTrackerNewsMessage> mLastMessageList;
+        private DateTimeOffset mLastGetElapsedTime = DateTimeOffset.Now;
+        private int mMaxGetElapsedTime = 60;
 
         public DiscordBotNewsService(IConfiguration aConfiguration, HttpClient aHttpClient)
         {
@@ -29,6 +36,31 @@ namespace MandrilBot.News
 
             _httpClient = aHttpClient;
             _httpClient.BaseAddress = new Uri(lBotNewsConfig.BaseResourceAddress);
+        }
+
+        /// <summary>
+        /// Sets the number of seconds that the service healtcheck will use to consider if the service is healthy or not
+        /// depeding on the elapsed time between the last successful http get from news resource until the time of checking the service health.
+        /// </summary>
+        /// <param name="aSeconds"></param>
+        public void SetHealthCheck_Healthy_MaxGetElapsedTime_InSeconds(int aSeconds)
+            => mMaxGetElapsedTime = aSeconds;
+
+        /// <summary>
+        /// Gets a HealthCheck information about this service.
+        /// </summary>
+        /// <param name="aCancellationToken"></param>
+        /// <returns>
+        /// <see cref="HealthCheckResult"/> healthy if the last get from the news resource was not empty and it was within the provided <see cref="DiscordBotNewsService.mMaxGetElapsedTime"/>.</returns>
+        public HealthCheckResult GetHealthCheck(CancellationToken aCancellationToken = default)
+        {
+            aCancellationToken.ThrowIfCancellationRequested();
+            var lElapsedSecondsSinceTheLastGet = (DateTimeOffset.Now - mLastGetElapsedTime).Seconds;
+
+            return lElapsedSecondsSinceTheLastGet > mMaxGetElapsedTime
+                ? HealthCheckResult.Degraded(string.Format("The service's health is degraded. It was not possible to get the news resource, the last successful get was at {0}", mLastGetElapsedTime))
+                : HealthCheckResult.Healthy(string.Format("The service is healthy. Last news get was {0} seconds ago.", lElapsedSecondsSinceTheLastGet));
+                
         }
 
         /// <summary>
@@ -44,8 +76,8 @@ namespace MandrilBot.News
             if (!lNewsChannelResult.IsSuccess)
                 throw new Exception($"Error fetching the SC news channel: {lNewsChannelResult}");
 
-            _devTrackerNewsChannel = lNewsChannelResult.Value;
-            _lastMessageList = await GetLastMessageListAsync();
+            mDevTrackerNewsChannel = lNewsChannelResult.Value;
+            mLastMessageList = await GetLastMessageListAsync();
         }
 
         /// <summary>
@@ -72,13 +104,14 @@ namespace MandrilBot.News
         private async Task<List<DevTrackerNewsMessage>> GetLastMessageListAsync()
         {
             var lHTMLdocument = await DiscordBotNewsExtensions.GetHTMLAsync(_httpClient, _botNewsConfig.DevTracker.ResourcePath);
-            var lElementList = lHTMLdocument.QuerySelector("div.devtracker-list.js-devtracker-list")?.QuerySelector(".devtracker-list");
-            if(lElementList == null)
-                throw new Exception("Error, devtracker-list was empty!!");
-            var lDictionaryData = lElementList.Children.Select(y => y.ToDictionary()).ToList();
+            var lElementList = lHTMLdocument?.QuerySelector("div.devtracker-list.js-devtracker-list")?.QuerySelector(".devtracker-list");
 
             List<DevTrackerNewsMessage> lCurrentContentList = new();
+            if (lElementList == null)//If could not get the news resource return empty discord message list
+                return lCurrentContentList; //mLastGetElapsedTime will not be updated and healtcheck will update healt if proceeds
+            mLastGetElapsedTime = DateTimeOffset.Now;
 
+            var lDictionaryData = lElementList.Children.Select(y => y.ToDictionary()).ToList();
             lDictionaryData.ForEach(sourceDictionary =>
             {
                 /// [1]=autor, [3]=date, [4]=group, [5]=title, [6]=desc
@@ -108,11 +141,11 @@ namespace MandrilBot.News
         private async Task<List<DevTrackerNewsMessage>> GetUpdatesAsync()
         {
             var lContentList = await GetLastMessageListAsync();
-            var lRes = lContentList.Except(_lastMessageList, new DevTrackerNewsMessageComparer())?//Need to ignore Date in the except GetHash using DevTrackerNewsMessageComparer
+            var lRes = lContentList.Except(mLastMessageList, new DevTrackerNewsMessageComparer())?//Need to ignore Date in the except GetHash using DevTrackerNewsMessageComparer
                 .ToList();
 
             if (lRes.Count > 0)
-                _lastMessageList = lContentList;
+                mLastMessageList = lContentList;
 
             return lRes;
         }
@@ -125,7 +158,7 @@ namespace MandrilBot.News
         private async Task SendMessage(DevTrackerNewsMessage aDevTrackerNewsMessage)
         {
 
-            await _devTrackerNewsChannel.SendMessageAsync(new DiscordMessageBuilder()
+            await mDevTrackerNewsChannel.SendMessageAsync(new DiscordMessageBuilder()
             {
                 Embed = new DiscordEmbedBuilder()
                 {

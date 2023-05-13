@@ -23,6 +23,7 @@ namespace MandrilBot
 
         private readonly BotNewMembersManagerConfig _botNewMembersManagerConfig;
         private readonly string _newMembersFilePath = "/etc/NewUsers.json";
+        private readonly int _backgroundTick_InSeconds = 10; 
 
         public MandrilDiscordBotBackgroundTasks(
             IMandrilDiscordBot aMandrilDiscordBot,
@@ -52,16 +53,16 @@ namespace MandrilBot
                 {
                     var lDiscordChannelsControllerService = scope.ServiceProvider.GetRequiredService<IChannelsController>();
                     await _discordBotNewsService.InitAsync(lDiscordChannelsControllerService);
+                    _discordBotNewsService.SetHealthCheck_Healthy_MaxGetElapsedTime_InSeconds(_backgroundTick_InSeconds*5);//5 failure threshold
                 }
 
                 MakeSureFileExist(_newMembersFilePath, aStoppingToken);
-
                 while (!aStoppingToken.IsCancellationRequested)
                 {
                     if (DateTimeOffset.UtcNow.TimeOfDay == new TimeSpan(5, 0, 0)) //true every day at 5 AM UTC
-                        await DoDaylyTaskAsync(aStoppingToken);
+                        await DoDailyTaskAsync(aStoppingToken);
 
-                    await Task.Delay(10000, aStoppingToken);
+                    await Task.Delay(_backgroundTick_InSeconds * 1000, aStoppingToken);
                     await _discordBotNewsService.TickExecute(aStoppingToken);
                 }
             }
@@ -72,7 +73,7 @@ namespace MandrilBot
 
         }
 
-        private async Task DoDaylyTaskAsync(CancellationToken aStoppingToken)
+        private async Task DoDailyTaskAsync(CancellationToken aStoppingToken)
         {
             // Read the JSON file
             var lNewMemberDictionary = await SerializationExtensions.DeserializeFromFileAsync<Dictionary<ulong, DateTimeOffset>>(_newMembersFilePath);

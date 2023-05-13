@@ -30,17 +30,17 @@ namespace MandrilBot
                 var lGuilPreview = await Client.GetGuildPreviewAsync(BotConfiguration.DiscordTargetGuildId);
                 if (lGuilPreview?.ApproximateMemberCount != null && lGuilPreview?.ApproximateMemberCount > 0)
                 {
-                    if (Client.Ping < 150)
-                        return HealthCheckResult.Healthy(string.Format("MandrilDiscordBot service is healthy. ({0}ms) ping", Client.Ping));
+                    if (Client.Ping < 300)
+                        return HealthCheckResult.Healthy(string.Format("The service is healthy. ({0}ms) ping", Client.Ping));
                     else
-                        return HealthCheckResult.Degraded(string.Format("MandrilDiscordBot service is degraded due to high latency. ({0}ms) ping", Client.Ping));
+                        return HealthCheckResult.Degraded(string.Format("The service's health is degraded due to high latency. ({0}ms) ping", Client.Ping));
                 }
             }
             catch (Exception lException)
             {
-                return HealthCheckResult.Unhealthy("MandrilDiscordBot service is down at the moment, an exception was thrown fetching the guild preview.", lException);
+                return HealthCheckResult.Unhealthy("The service is down at the moment, an exception was thrown fetching the guild preview.", lException);
             }
-            return HealthCheckResult.Unhealthy("MandrilDiscordBot service is down at th moment, could not fetch guild preview.");
+            return HealthCheckResult.Unhealthy("The service is down at th moment, could not fetch guild preview.");
 
         }
 

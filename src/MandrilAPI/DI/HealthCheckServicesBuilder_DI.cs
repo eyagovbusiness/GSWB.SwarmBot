@@ -1,4 +1,4 @@
-﻿using MandrilBot;
+﻿using MandrilBot.HealthChecks;
 
 namespace MandrilAPI.DI
 {
@@ -13,8 +13,9 @@ namespace MandrilAPI.DI
         {
             aWebHostBuilder.Services
                             .AddHealthChecks()
-                            .AddCheck<MandrilBotHealthCheck>(nameof(MandrilBotHealthCheck))
-                            .AddCheck<MandrilAPIGeneralHealthCheck>(nameof(MandrilAPIGeneralHealthCheck));
+                            .AddCheck<MandrilBot_HealthCheck>(nameof(MandrilBot_HealthCheck))
+                            .AddCheck<MandrilAPIGeneralHealthCheck>(nameof(MandrilAPIGeneralHealthCheck))
+                            .AddCheck<DiscordBotNewsService_HealthCheck>(nameof(DiscordBotNewsService_HealthCheck));
             return aWebHostBuilder;
         }
     }
