@@ -14,7 +14,7 @@ namespace MandrilAPI.DI
             aWebHostBuilder.Services
                             .AddHealthChecks()
                             .AddCheck<MandrilBot_HealthCheck>(nameof(MandrilBot_HealthCheck))
-                            .AddCheck<MandrilAPIGeneralHealthCheck>(nameof(MandrilAPIGeneralHealthCheck))
+                            .AddCheck<MandrilAPI_HealthCheck>(nameof(MandrilAPI_HealthCheck))
                             .AddCheck<DiscordBotNewsService_HealthCheck>(nameof(DiscordBotNewsService_HealthCheck));
             return aWebHostBuilder;
         }
