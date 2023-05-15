@@ -1,4 +1,6 @@
-﻿
+﻿using Newtonsoft.Json;
+using TGF.Common.Serialization.Converters;
+
 namespace MandrilBot.Configuration
 {
     /// <summary>
@@ -22,23 +24,27 @@ namespace MandrilBot.Configuration
         /// <summary>
         /// Configuration of the DevTracker settings section
         /// </summary>
-        public DevTracker DevTracker { get; set; }
+        public NewsTopicConfig DevTracker { get; set; }
+
+        public NewsTopicConfig CommLink { get; set; }
     }
 
     /// <summary>
     /// Class used to deserialize needed part of appsettings.
     /// </summary>
-    public class DevTracker
+    public class NewsTopicConfig
     {
-        public DevTracker() { }
+        public NewsTopicConfig() { }
         /// <summary>
-        /// Relative path of the resource for this <see cref="DevTracker"/>.
+        /// Relative path of the resource for this <see cref="NewsTopicConfig"/>.
         /// </summary>
         public string ResourcePath { get; set; }
         /// <summary>
-        /// Name of the <see cref="DiscordChannel"/> where the news will be sent.
+        /// Name of the <see cref="DiscordChannelId"/> where the news will be sent.
         /// </summary>
-        public string DiscordChannel { get; set; }
+        [JsonConverter(typeof(UlongConverter))]
+        public ulong DiscordChannelId { get; set; }
     }
+
 
 }

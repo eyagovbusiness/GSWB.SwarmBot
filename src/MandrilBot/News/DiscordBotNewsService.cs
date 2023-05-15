@@ -72,7 +72,7 @@ namespace MandrilBot.News
         /// <returns>Awaitable <see cref="Task"/>.</returns>
         public async Task InitAsync(IChannelsController aDiscordChannelsControllerService)
         {
-            var lNewsChannelResult = (await (aDiscordChannelsControllerService as ChannelsController).GetDiscordChannel(channel => channel.Name == _botNewsConfig.DevTracker.DiscordChannel));
+            var lNewsChannelResult = (await (aDiscordChannelsControllerService as ChannelsController).GetDiscordChannel(channel => channel.Id == _botNewsConfig.DevTracker.DiscordChannelId));
             if (!lNewsChannelResult.IsSuccess)
                 throw new Exception($"Error fetching the SC news channel: {lNewsChannelResult}");
 
