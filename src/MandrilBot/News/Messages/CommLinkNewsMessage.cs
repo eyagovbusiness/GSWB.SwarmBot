@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace MandrilBot.News
+namespace MandrilBot.News.Messages
 {
     public struct CommLinkNewsMessage
     {
@@ -29,6 +29,6 @@ namespace MandrilBot.News
 
         public int GetHashCode([DisallowNull] CommLinkNewsMessage lObj)
             => HashCode.Combine(lObj.Title, lObj.SourceLink);
-    
+
     }
 }

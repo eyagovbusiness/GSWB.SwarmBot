@@ -1,7 +1,7 @@
 ﻿using DSharpPlus.Entities;
 using MandrilBot.Configuration;
 using MandrilBot.Controllers;
-using MandrilBot.News;
+using MandrilBot.News.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

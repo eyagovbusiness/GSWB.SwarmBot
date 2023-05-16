@@ -14,11 +14,13 @@
     <PackageReference Include="AngleSharp" Version="1.0.1" />
     <PackageReference Include="DSharpPlus.CommandsNext" Version="4.3.0" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="7.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\TheGoodFramework\src\CleanArchitecture\Infrastructure\TGF.CA.Infrastructure.Secrets\TGF.CA.Infrastructure.Secrets.csproj" />
     <ProjectReference Include="..\..\..\TheGoodFramework\src\Common\TheGoodFramework.Common.Extensions\TGF.Common.Extensions.csproj" />
+    <ProjectReference Include="..\..\..\TheGoodFramework\src\Common\TheGoodFramework.Common.Net\TGF.Common.Net.csproj" />
     <ProjectReference Include="..\..\..\TheGoodFramework\src\Common\TheGoodFramework.Common.ROP\TGF.Common.ROP.csproj" />
     <ProjectReference Include="..\..\..\TheGoodFramework\src\Common\TheGoodFramework.Common.Serialization\TGF.Common.Serialization.csproj" />
   </ItemGroup>

@@ -13,6 +13,7 @@ namespace MandrilAPI
             {
                 aWebHostBuilder.Services.AddVaultSecretsManager(aWebHostBuilder.Configuration);
                 aWebHostBuilder.AddHealthChceckServices();
+                aWebHostBuilder.Services.AddHttpClient();//Required by DiscordBotNewsService.
                 aWebHostBuilder.AddMandrilBotServices();
 
                 //Implements CQRS pattern, depends on MandrilDiscordBot

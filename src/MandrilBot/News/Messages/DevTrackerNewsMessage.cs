@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace MandrilBot.News
+namespace MandrilBot.News.Messages
 {
     public struct DevTrackerNewsMessage
     {
