@@ -27,6 +27,8 @@ namespace MandrilBot.Configuration
         public NewsTopicConfig DevTracker { get; set; }
 
         public NewsTopicConfig CommLink { get; set; }
+
+        public RSIStatusConfig RSIStatus { get; set; }
     }
 
     /// <summary>
@@ -44,6 +46,18 @@ namespace MandrilBot.Configuration
         /// </summary>
         [JsonConverter(typeof(UlongConverter))]
         public ulong DiscordChannelId { get; set; }
+    }
+
+    /// <summary>
+    /// extended class from <see cref="NewsTopicConfig"/> used to deserialize needed part of appsettings to configure the RSIStatusNewsService.
+    /// </summary>
+    public class RSIStatusConfig: NewsTopicConfig
+    {
+        public RSIStatusConfig() { }
+        /// <summary>
+        /// Name the RSIStatus news service will use to override the given channel from the base <see cref="NewsTopicConfig.DiscordChannelId"/> with the status color.
+        /// </summary>
+        public string NewsChannelName { get; set; }
     }
 
 

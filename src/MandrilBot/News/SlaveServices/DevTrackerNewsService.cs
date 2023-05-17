@@ -17,6 +17,12 @@ using TGF.Common.Net.Http;
 
 namespace MandrilBot.News.SlaveServices
 {
+    readonly struct DevPostType
+    {
+        public const string PatchNotes = "Patch Notes";
+        public const string Announcements = "Announcements";
+    }
+
     /// <summary>
     /// Service that will get the last news from the StarCitizen devtracker resource by reading the HTML and notifying the differences on Discord periodically.
     /// (Has to be like since there is not any RSS available for this resource)
@@ -140,9 +146,9 @@ namespace MandrilBot.News.SlaveServices
         {
             return aDevTrackerNewsMessage.Group switch
             {
-                "Patch Notes" => DiscordColor.Yellow,
-                "Announcements" => DiscordColor.CornflowerBlue,
-                _ => DiscordColor.MidnightBlue,
+                DevPostType.PatchNotes => DiscordColor.Yellow,
+                DevPostType.Announcements => DiscordColor.CornflowerBlue,
+                _ => DiscordColor.Gray,
             };
         }
 

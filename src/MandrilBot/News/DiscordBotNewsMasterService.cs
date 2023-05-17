@@ -40,7 +40,8 @@ namespace MandrilBot.News
             _newsResourceTrackerList = new IDiscordBotNewsService[] 
             { 
                 new DevTrackerNewsService(aHttpClientFactory, _botNewsConfig),
-                new CommLinkNewsService(aHttpClientFactory, _botNewsConfig) 
+                new CommLinkNewsService(aHttpClientFactory, _botNewsConfig),
+                new RSIStatusNewsService(aHttpClientFactory, _botNewsConfig)
             };
         }
 
