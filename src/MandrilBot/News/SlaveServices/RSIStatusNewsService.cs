@@ -79,8 +79,8 @@ namespace MandrilBot.News.SlaveServices
         {
             var lElapsedSecondsSinceTheLastGet = (DateTimeOffset.Now - mLastGetElapsedTime).Seconds;
             return lElapsedSecondsSinceTheLastGet > mMaxGetElapsedTime
-                ? HealthCheckResult.Degraded(string.Format("The CommLinkNewsService's health is degraded. It was not possible to get the news resource, the last successful get was at {0}", mLastGetElapsedTime))
-                : HealthCheckResult.Healthy(string.Format("The CommLinkNewsService is healthy. Last news get was {0} seconds ago.", lElapsedSecondsSinceTheLastGet));
+                ? HealthCheckResult.Degraded(string.Format("The RSIStatusNewsService's health is degraded. It was not possible to get the news resource, the last successful get was at {0}", mLastGetElapsedTime))
+                : HealthCheckResult.Healthy(string.Format("The RSIStatusNewsService is healthy. Last news get was {0} seconds ago.", lElapsedSecondsSinceTheLastGet));
         }
 
         #endregion
@@ -89,7 +89,7 @@ namespace MandrilBot.News.SlaveServices
 
         public async Task<List<RSIStatusNewsMessage>> GetLastMessageListAsync()
         {
-            var lHTMLdocument = await DiscordBotNewsExtensions.GetHTMLAsync(mTimedHttpClientProvider.GetHttpClient(), "/");
+            var lHTMLdocument = await DiscordBotNewsExtensions.GetHTMLAsync(mTimedHttpClientProvider.GetHttpClient());
             var disct = lHTMLdocument.ToDictionary();
             var lElementList = lHTMLdocument?.QuerySelector("ul.timeline");
 

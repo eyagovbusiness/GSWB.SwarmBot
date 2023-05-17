@@ -13,7 +13,7 @@ namespace MandrilBot.News
         /// </summary>
         /// <param name="aResourcePath">Relative path of the requiered resource.</param>
         /// <returns>Returns an instance of <see cref="IHtmlDocument"/>.</returns>
-        internal static async Task<IHtmlDocument> GetHTMLAsync(HttpClient aHttpClient, string aResourcePath)
+        internal static async Task<IHtmlDocument> GetHTMLAsync(HttpClient aHttpClient, string aResourcePath = default)
         {
             var lResponse = await aHttpClient.GetAsync(aResourcePath);
             var lStringResponse = await lResponse.Content.ReadAsStringAsync();
