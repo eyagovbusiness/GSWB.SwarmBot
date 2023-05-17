@@ -2,7 +2,7 @@
 
 namespace MandrilBot.News.Messages
 {
-    public struct DevTrackerNewsMessage
+    internal struct DevTrackerNewsMessage
     {
         /// <summary>
         /// Developer who wrote the post.
@@ -29,7 +29,7 @@ namespace MandrilBot.News.Messages
     /// <summary>
     /// Custom Equality comparer for DevTrackerNewsMessage needed to ignore Date as it is changing every hour or minute, it depends see <see cref="DevTrackerNewsMessage.Date"/>
     /// </summary>
-    public class DevTrackerNewsMessageComparer : IEqualityComparer<DevTrackerNewsMessage>
+    internal class DevTrackerNewsMessageComparer : IEqualityComparer<DevTrackerNewsMessage>
     {
         public bool Equals(DevTrackerNewsMessage x, DevTrackerNewsMessage y)
             => x.Author == y.Author

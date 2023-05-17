@@ -16,7 +16,7 @@ namespace MandrilBot.News.SlaveServices
     /// Abstract base class for all the slave DiscordBotNewsServices with some default common behaviours for slaves from <see cref="IDiscordBotNewsService"/> and needed common variables.
     /// </summary>
     /// <typeparam name="TMessageStruct"></typeparam>
-    public abstract class DiscordBotNewsServiceBase<TMessageStruct> : IDiscordBotNewsService // T of type DevTrackerNewsMessage or other messages
+    internal abstract class DiscordBotNewsServiceBase<TMessageStruct> : IDiscordBotNewsService // T of type DevTrackerNewsMessage or other messages
     {
         protected TimedHttpClientProvider mTimedHttpClientProvider;
         protected DiscordChannel mNewsChannel;

@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace MandrilBot.News.Messages
 {
-    public struct RSIStatusNewsMessage
+    internal struct RSIStatusNewsMessage
     {
         public string IncidentStatus;
         public string IncidentTitle;
@@ -17,7 +17,7 @@ namespace MandrilBot.News.Messages
     /// <summary>
     /// Custom Equality comparer for CommLinkNewsMessage needed to ignore Date as it is changing every hour or minute, it depends see <see cref="CommLinkNewsMessage.Date"/>
     /// </summary>
-    public class RSIStatusNewsMessageComparer : IEqualityComparer<RSIStatusNewsMessage>
+    internal class RSIStatusNewsMessageComparer : IEqualityComparer<RSIStatusNewsMessage>
     {
         public bool Equals(RSIStatusNewsMessage x, RSIStatusNewsMessage y)
             => x.IncidentStatus == y.IncidentStatus

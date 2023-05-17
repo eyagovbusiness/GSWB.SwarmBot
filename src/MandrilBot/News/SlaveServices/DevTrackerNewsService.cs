@@ -17,7 +17,7 @@ using TGF.Common.Net.Http;
 
 namespace MandrilBot.News.SlaveServices
 {
-    readonly struct DevPostType
+    internal readonly struct DevPostType
     {
         public const string PatchNotes = "Patch Notes";
         public const string Announcements = "Announcements";
@@ -27,7 +27,7 @@ namespace MandrilBot.News.SlaveServices
     /// Service that will get the last news from the StarCitizen devtracker resource by reading the HTML and notifying the differences on Discord periodically.
     /// (Has to be like since there is not any RSS available for this resource)
     /// </summary>
-    public class DevTrackerNewsService : DiscordBotNewsServiceBase<DevTrackerNewsMessage>, INewsWebTracker<DevTrackerNewsMessage>
+    internal class DevTrackerNewsService : DiscordBotNewsServiceBase<DevTrackerNewsMessage>, INewsWebTracker<DevTrackerNewsMessage>
     {
         private readonly BotNewsConfig _botNewsConfig;
         public DevTrackerNewsService(IHttpClientFactory aHttpClientFactory, BotNewsConfig aBotNewsConfig)

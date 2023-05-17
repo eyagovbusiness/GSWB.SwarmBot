@@ -21,7 +21,7 @@ using TGF.Common.Net.Http;
 
 namespace MandrilBot.News.SlaveServices
 {
-    readonly struct RsiServiceStatus
+    internal readonly struct RsiServiceStatus
     {
         public const string Operational = "Operational";
         public const string DegradedPerformance = "Degraded Performance";
@@ -29,7 +29,7 @@ namespace MandrilBot.News.SlaveServices
         public const string MajorOutage = "Major Outage";
         public const string UnderMaintenance = "Under Maintenance";
     }
-    readonly struct IncidentStatus
+    internal readonly struct IncidentStatus
     {
         public const string Resolved = "Resolved";
         public const string Unresolved = "Unresolved";
@@ -39,7 +39,7 @@ namespace MandrilBot.News.SlaveServices
     /// Service that will get the last news from the StarCitizen comm-link resource by reading the HTML and notifying the differences on Discord periodically.
     /// (Has to be like since there is not any RSS available for this resource)
     /// </summary>
-    public class RSIStatusNewsService : DiscordBotNewsServiceBase<RSIStatusNewsMessage>, INewsWebTracker<RSIStatusNewsMessage>
+    internal class RSIStatusNewsService : DiscordBotNewsServiceBase<RSIStatusNewsMessage>, INewsWebTracker<RSIStatusNewsMessage>
     {
         private readonly BotNewsConfig _botNewsConfig;
         private readonly ReadOnlyCollection<string> _rsiKnownServices= new ReadOnlyCollection<string>(new string[]{ "Platform", "Persistent Universe", "Electronic Access" });
@@ -155,6 +155,10 @@ namespace MandrilBot.News.SlaveServices
 
         }
 
+        #endregion
+
+        #region Private
+
         /// <summary>
         /// Updates the RSI status news channel if the current general status has changed from the last notified one and set the last notified one(<see cref="mLastGeneralStatusNotified"/>, otherwise do nothing.)
         /// </summary>
@@ -168,8 +172,6 @@ namespace MandrilBot.News.SlaveServices
                 mLastGeneralStatusNotified = lCurrentGeneralStatus;
             }
         }
-
-        #endregion
 
         /// <summary>
         /// Gets the color of the message based on the provided <see cref="aRSIServiceStatusString"/> argument.
@@ -291,6 +293,8 @@ namespace MandrilBot.News.SlaveServices
         private string GetAllRsiKnownServicesWithOperationalStatusString()
             => string.Join("  -  ", _rsiKnownServices
                                 .Select(rsiService => rsiService + GetServiceStatusColorString(RsiServiceStatus.Operational)));
+
+        #endregion
 
     }
 }

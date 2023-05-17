@@ -22,7 +22,7 @@ namespace MandrilBot.News.SlaveServices
     /// Service that will get the last news from the StarCitizen comm-link resource by reading the HTML and notifying the differences on Discord periodically.
     /// (Has to be like since there is not any RSS available for this resource)
     /// </summary>
-    public class CommLinkNewsService : DiscordBotNewsServiceBase<CommLinkNewsMessage>, INewsWebTracker<CommLinkNewsMessage>
+    internal class CommLinkNewsService : DiscordBotNewsServiceBase<CommLinkNewsMessage>, INewsWebTracker<CommLinkNewsMessage>
     {
         private readonly BotNewsConfig _botNewsConfig;
         public CommLinkNewsService(IHttpClientFactory aHttpClientFactory, BotNewsConfig aBotNewsConfig)

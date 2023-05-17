@@ -2,7 +2,7 @@
 
 namespace MandrilBot.News.Messages
 {
-    public struct CommLinkNewsMessage
+    internal struct CommLinkNewsMessage
     {
         /// <summary>
         /// Title of the post.
@@ -25,7 +25,7 @@ namespace MandrilBot.News.Messages
     /// <summary>
     /// Custom Equality comparer for CommLinkNewsMessage needed to ignore Date as it is changing every hour or minute, it depends see <see cref="CommLinkNewsMessage.Date"/>
     /// </summary>
-    public class CommLinkNewsMessageComparer : IEqualityComparer<CommLinkNewsMessage>
+    internal class CommLinkNewsMessageComparer : IEqualityComparer<CommLinkNewsMessage>
     {
         public bool Equals(CommLinkNewsMessage x, CommLinkNewsMessage y)
             => x.Title == y.Title
