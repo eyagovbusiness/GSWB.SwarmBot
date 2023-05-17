@@ -5,17 +5,21 @@ namespace MandrilBot.News.Messages
     public struct CommLinkNewsMessage
     {
         /// <summary>
-        /// The HTML does not brin any DateTime, but how long ago the post was made in format ("30 minutes ago" or "2 hours ago"..).
-        /// </summary>
-        public string Date;
-        /// <summary>
         /// Title of the post.
         /// </summary>
         public string Title;
         /// <summary>
+        /// Description of the post.
+        /// </summary>
+        public string Description;
+        /// <summary>
         /// Official source link of the post.
         /// </summary>
         public string SourceLink;
+        /// <summary>
+        /// Official image link of the post.
+        /// </summary>
+        public string ImageLink;
     }
 
     /// <summary>

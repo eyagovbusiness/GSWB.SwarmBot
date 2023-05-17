@@ -9,10 +9,6 @@ namespace MandrilBot.News.Messages
         /// </summary>
         public string Author;
         /// <summary>
-        /// The HTML does not brin any DateTime, but how long ago the post was made in format ("30 minutes ago" or "2 hours ago"..).
-        /// </summary>
-        public string Date;
-        /// <summary>
         /// Group of this news(i.e: Announcements, PatchNotes, General...).
         /// </summary>
         public string Group;

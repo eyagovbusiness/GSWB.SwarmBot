@@ -36,8 +36,12 @@ namespace MandrilBot.News
 
             _botNewsConfig = lBotNewsConfig;
             _botNewsConfig.CitizensPath += "/";
-            var x = new DevTrackerNewsService(aHttpClientFactory, _botNewsConfig);
-            _newsResourceTrackerList = new IDiscordBotNewsService[] { new DevTrackerNewsService(aHttpClientFactory, _botNewsConfig) };
+
+            _newsResourceTrackerList = new IDiscordBotNewsService[] 
+            { 
+                new DevTrackerNewsService(aHttpClientFactory, _botNewsConfig),
+                new CommLinkNewsService(aHttpClientFactory, _botNewsConfig) 
+            };
         }
 
         #region IDiscordBotNewsService

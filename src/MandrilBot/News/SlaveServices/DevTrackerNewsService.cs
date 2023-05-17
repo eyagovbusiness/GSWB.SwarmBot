@@ -55,8 +55,8 @@ namespace MandrilBot.News.SlaveServices
         {
             var lElapsedSecondsSinceTheLastGet = (DateTimeOffset.Now - mLastGetElapsedTime).Seconds;
             return lElapsedSecondsSinceTheLastGet > mMaxGetElapsedTime
-                ? HealthCheckResult.Degraded(string.Format("The service's health is degraded. It was not possible to get the news resource, the last successful get was at {0}", mLastGetElapsedTime))
-                : HealthCheckResult.Healthy(string.Format("The service is healthy. Last news get was {0} seconds ago.", lElapsedSecondsSinceTheLastGet));
+                ? HealthCheckResult.Degraded(string.Format("The DevTrackerNewsService's health is degraded. It was not possible to get the news resource, the last successful get was at {0}", mLastGetElapsedTime))
+                : HealthCheckResult.Healthy(string.Format("The DevTrackerNewsService is healthy. Last news get was {0} seconds ago.", lElapsedSecondsSinceTheLastGet));
         }
 
         #endregion
@@ -76,7 +76,7 @@ namespace MandrilBot.News.SlaveServices
             var lDictionaryData = lElementList.Children.Select(y => y.ToDictionary()).ToList();
             lDictionaryData.ForEach(sourceDictionary =>
             {
-                /// [1]=autor, [3]=date, [4]=group, [5]=title, [6]=desc
+                /// [1]=autor, [3]=howLongAgo, [4]=group, [5]=title, [6]=desc
                 var lContent = sourceDictionary["TextContent"]
                                 .Split('\n')
                                 .Where(x => !string.IsNullOrWhiteSpace(x))
@@ -85,7 +85,6 @@ namespace MandrilBot.News.SlaveServices
                 lCurrentContentList.Add(new DevTrackerNewsMessage()
                 {
                     Author = lContent[1],
-                    Date = lContent[3],
                     Group = lContent[4],
                     Title = lContent[5],
                     Description = 6 < lContent.Length ? lContent[6] : string.Empty, //description may be empty when devs post only a picture or gif.
@@ -121,7 +120,7 @@ namespace MandrilBot.News.SlaveServices
                         Url = lBaseAddress + _botNewsConfig.CitizensPath + aDevTrackerNewsMessage.Author,
                         IconUrl = lBaseAddress + await DiscordBotNewsExtensions.GetCitizenImageLink(mTimedHttpClientProvider.GetHttpClient(), _botNewsConfig.CitizensPath + aDevTrackerNewsMessage.Author),
                     },
-                    Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail() { Height = 10, Width = 10, Url = _botNewsConfig.SpectrumLogoUri },
+                    Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail() { Url = _botNewsConfig.SpectrumLogoUri },
                     Title = aDevTrackerNewsMessage.Title,
                     Description = aDevTrackerNewsMessage.Description,
                     Url = lBaseAddress + aDevTrackerNewsMessage.SourceLink,

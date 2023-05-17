@@ -22,8 +22,8 @@ namespace MandrilBot.News.SlaveServices
         protected DiscordChannel mNewsChannel;
         protected List<TMessageStruct> mLastMessageList;
         protected NewsTopicConfig mNewsTopicConfig;
-        protected DateTimeOffset mLastGetElapsedTime = DateTimeOffset.Now;
-        protected int mMaxGetElapsedTime = 60;
+        protected int mMaxGetElapsedTime = 10;
+        protected DateTimeOffset mLastGetElapsedTime;
 
         #region IDiscordBotNewsService
 
