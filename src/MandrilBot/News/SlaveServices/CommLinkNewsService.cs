@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -141,14 +142,18 @@ namespace MandrilBot.News.SlaveServices
         /// </summary>
         /// <param name="aHtmlString"><see cref="string"/> representing the HTML element that contains the link</param>
         /// <returns><see cref="string"/> that represents the image url link </returns>
-        private static string ExtractImageLinkUrl(string aHtmlString)
+        private string ExtractImageLinkUrl(string aHtmlString)
         {
             string lPattern = "url\\('([^']*)'\\)";
             Match lMatch = Regex.Match(aHtmlString, lPattern);
 
-            return lMatch.Success
+            var lResource =  lMatch.Success
                 ? lMatch.Groups[1].Value
                 : default;
+            //looks like sometimes RSI uses "media" subdomain with full path and sometimes the main domain with relative path.
+            return lResource.StartsWith("https://") 
+                ? lResource
+                : _botNewsConfig.BaseResourceAddress + lResource;
         }
 
         #endregion
