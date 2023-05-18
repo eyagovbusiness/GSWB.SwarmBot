@@ -16,13 +16,13 @@ namespace MandrilBot.News.SlaveServices
     /// Abstract base class for all the slave DiscordBotNewsServices with some default common behaviours for slaves from <see cref="IDiscordBotNewsService"/> and needed common variables.
     /// </summary>
     /// <typeparam name="TMessageStruct"></typeparam>
-    internal abstract class DiscordBotNewsServiceBase<TMessageStruct> : IDiscordBotNewsService // T of type DevTrackerNewsMessage or other messages
+    internal abstract class DiscordBotNewsServiceBase<TMessageStruct> : IDiscordBotNewsService // T from News.Messages
     {
         protected TimedHttpClientProvider mTimedHttpClientProvider;
         protected DiscordChannel mNewsChannel;
         protected List<TMessageStruct> mLastMessageList;
         protected NewsTopicConfig mNewsTopicConfig;
-        protected int mMaxGetElapsedTime = 10;
+        protected int mMaxGetElapsedTime = 20;
         protected DateTimeOffset mLastGetElapsedTime;
 
         #region IDiscordBotNewsService
@@ -36,6 +36,14 @@ namespace MandrilBot.News.SlaveServices
 
         }
 
+        public virtual HealthCheckResult GetHealthCheck(CancellationToken aCancellationToken = default)
+        {
+            var lElapsedSecondsSinceTheLastGet = (DateTimeOffset.Now - mLastGetElapsedTime).TotalSeconds;
+            return lElapsedSecondsSinceTheLastGet > mMaxGetElapsedTime
+                ? HealthCheckResult.Degraded($"The {this.GetType().Name}'s health is degraded. Failed to get the news resource, the last successful get was at {mLastGetElapsedTime}.")
+                : HealthCheckResult.Healthy($"The {this.GetType().Name} is healthy. Last news get was {lElapsedSecondsSinceTheLastGet.ToString("0.0")} seconds ago.");
+        }
+
         public virtual Task TickExecute(CancellationToken aCancellationToken)
         {
             throw new NotImplementedException();
@@ -43,11 +51,6 @@ namespace MandrilBot.News.SlaveServices
 
         public virtual void SetHealthCheck_Healthy_MaxGetElapsedTime_InSeconds(int aSeconds)
             => mMaxGetElapsedTime = aSeconds;
-
-        public virtual HealthCheckResult GetHealthCheck(CancellationToken aCancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
 
         #endregion
 

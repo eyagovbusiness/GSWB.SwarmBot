@@ -32,6 +32,7 @@ namespace MandrilBot.News.SlaveServices
         private readonly BotNewsConfig _botNewsConfig;
         public DevTrackerNewsService(IHttpClientFactory aHttpClientFactory, BotNewsConfig aBotNewsConfig)
         {
+            mLastGetElapsedTime= DateTime.UtcNow;
             _botNewsConfig = aBotNewsConfig;
             mNewsTopicConfig = aBotNewsConfig.DevTracker;
             mTimedHttpClientProvider = new TimedHttpClientProvider(aHttpClientFactory, new TimeSpan(1, 0, 0), aBaseAddress: aBotNewsConfig.BaseResourceAddress);
@@ -55,14 +56,6 @@ namespace MandrilBot.News.SlaveServices
                 update => SendMessage(update),
                 aCancellationToken
                 );
-        }
-
-        public override HealthCheckResult GetHealthCheck(CancellationToken aCancellationToken = default)
-        {
-            var lElapsedSecondsSinceTheLastGet = (DateTimeOffset.Now - mLastGetElapsedTime).Seconds;
-            return lElapsedSecondsSinceTheLastGet > mMaxGetElapsedTime
-                ? HealthCheckResult.Degraded(string.Format("The DevTrackerNewsService's health is degraded. It was not possible to get the news resource, the last successful get was at {0}", mLastGetElapsedTime))
-                : HealthCheckResult.Healthy(string.Format("The DevTrackerNewsService is healthy. Last news get was {0} seconds ago.", lElapsedSecondsSinceTheLastGet));
         }
 
         #endregion

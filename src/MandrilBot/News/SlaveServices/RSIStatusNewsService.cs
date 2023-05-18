@@ -46,6 +46,7 @@ namespace MandrilBot.News.SlaveServices
         private string mLastGeneralStatusNotified;
         public RSIStatusNewsService(IHttpClientFactory aHttpClientFactory, BotNewsConfig aBotNewsConfig)
         {
+            mLastGetElapsedTime = DateTime.UtcNow;
             _botNewsConfig = aBotNewsConfig;
             mNewsTopicConfig = aBotNewsConfig.RSIStatus;
             mTimedHttpClientProvider = new TimedHttpClientProvider(
@@ -73,14 +74,6 @@ namespace MandrilBot.News.SlaveServices
                 update => SendMessage(update),
                 aCancellationToken
                 );
-        }
-
-        public override HealthCheckResult GetHealthCheck(CancellationToken aCancellationToken = default)
-        {
-            var lElapsedSecondsSinceTheLastGet = (DateTimeOffset.Now - mLastGetElapsedTime).Seconds;
-            return lElapsedSecondsSinceTheLastGet > mMaxGetElapsedTime
-                ? HealthCheckResult.Degraded(string.Format("The RSIStatusNewsService's health is degraded. It was not possible to get the news resource, the last successful get was at {0}", mLastGetElapsedTime))
-                : HealthCheckResult.Healthy(string.Format("The RSIStatusNewsService is healthy. Last news get was {0} seconds ago.", lElapsedSecondsSinceTheLastGet));
         }
 
         #endregion
@@ -131,6 +124,7 @@ namespace MandrilBot.News.SlaveServices
         public async Task SendMessage(RSIStatusNewsMessage aRSIStatusNewsMessage)
         {
             var lCurrentGeneralStatus = GetGeneralStatus();
+            var lCurrentGeneralStatusImage = GetGeneralStatusImage(lCurrentGeneralStatus);
             var lBaseAddress = mTimedHttpClientProvider.GetHttpClient().BaseAddress;
             await mNewsChannel.SendMessageAsync(new DiscordMessageBuilder()
             {
@@ -142,7 +136,7 @@ namespace MandrilBot.News.SlaveServices
                         Url = lBaseAddress.ToString(),
                         IconUrl = "https://spng.pngfind.com/pngs/s/90-903191_star-citizen-logo-png-download-transparent-png.png",
                     },
-                    //Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail() { Url = aRSIStatusNewsMessage.ImageLink },
+                    Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail() { Url = lCurrentGeneralStatusImage },
                     Title = $"{aRSIStatusNewsMessage.IncidentTitle} - {lCurrentGeneralStatus}",
                     Description = $"{aRSIStatusNewsMessage.AffectedServices}"
                                    + Environment.NewLine + $"{aRSIStatusNewsMessage.IncidentDescription}",
@@ -217,6 +211,18 @@ namespace MandrilBot.News.SlaveServices
         private string GetGeneralStatus()
             => mLastMessageList?.FirstOrDefault(x => x.IncidentStatus != IncidentStatus.Resolved).ServicesStatus ?? RsiServiceStatus.Operational;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="aGeneralStatus"></param>
+        /// <returns><see cref="string"/> with the url related to the provided general status.</returns>
+        private static string GetGeneralStatusImage(string aGeneralStatus)
+                    => aGeneralStatus switch
+                    {
+                        RsiServiceStatus.Operational => "https://i.imgur.com/kEe5xC2.png",
+                        RsiServiceStatus.UnderMaintenance => "https://media.tenor.com/ziGwYdlteFoAAAAC/chris-roberts-video-game-designer.gif",
+                        _ => "https://media.tenor.com/47W8IS58R7kAAAAd/scam-citizen-chris-roberts.gif",
+                    };
 
         /// <summary>
         /// Gets the full Uri address indexing the given subdomain string into the official star citizen webpage.

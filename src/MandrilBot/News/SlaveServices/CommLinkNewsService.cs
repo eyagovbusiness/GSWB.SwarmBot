@@ -27,6 +27,7 @@ namespace MandrilBot.News.SlaveServices
         private readonly BotNewsConfig _botNewsConfig;
         public CommLinkNewsService(IHttpClientFactory aHttpClientFactory, BotNewsConfig aBotNewsConfig)
         {
+            mLastGetElapsedTime = DateTime.UtcNow;
             _botNewsConfig = aBotNewsConfig;
             mNewsTopicConfig = aBotNewsConfig.CommLink;
             mTimedHttpClientProvider = new TimedHttpClientProvider(aHttpClientFactory, new TimeSpan(1, 0, 0), aBaseAddress: aBotNewsConfig.BaseResourceAddress);
@@ -52,14 +53,6 @@ namespace MandrilBot.News.SlaveServices
                 );
         }
 
-        public override HealthCheckResult GetHealthCheck(CancellationToken aCancellationToken = default)
-        {
-            var lElapsedSecondsSinceTheLastGet = (DateTimeOffset.Now - mLastGetElapsedTime).Seconds;
-            return lElapsedSecondsSinceTheLastGet > mMaxGetElapsedTime
-                ? HealthCheckResult.Degraded(string.Format("The CommLinkNewsService's health is degraded. It was not possible to get the news resource, the last successful get was at {0}", mLastGetElapsedTime))
-                : HealthCheckResult.Healthy(string.Format("The CommLinkNewsService is healthy. Last news get was {0} seconds ago.", lElapsedSecondsSinceTheLastGet));
-        }
-
         #endregion
 
         #region INewsService
@@ -68,7 +61,7 @@ namespace MandrilBot.News.SlaveServices
         {
             var lHTMLdocument = await DiscordBotNewsExtensions.GetHTMLAsync(mTimedHttpClientProvider.GetHttpClient(), mNewsTopicConfig.ResourcePath);
             var disct = lHTMLdocument.ToDictionary();
-            var lElementList = lHTMLdocument?.QuerySelector("div.hub-blocks");//YOOOO BREAK THIS AND CHECK WHY HEALTH IS STILL OK!!!!
+            var lElementList = lHTMLdocument?.QuerySelector("div.hub-blocks");
 
             List<CommLinkNewsMessage> lCurrentContentList = new();
             if (lElementList == null)//If could not get the news resource return empty discord message list
@@ -127,9 +120,9 @@ namespace MandrilBot.News.SlaveServices
                     {
                         Name = "RSI Comm-Link",
                         Url = lBaseAddress + _botNewsConfig.CommLink.ResourcePath,
-                        IconUrl = "https://spng.pngfind.com/pngs/s/90-903191_star-citizen-logo-png-download-transparent-png.png",
+                        IconUrl = "https://media3.giphy.com/media/26tk1Qmvy7soIgp7G/200w.gif?cid=6c09b952lk22yoa6ffffpxhgdrtr02chcsv3koaock15hm7p&ep=v1_gifs_search&rid=200w.gif&ct=g"
                     },
-                    Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail() { Url = aCommLinkNewsMessage.ImageLink },
+                    Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail() { Url = lBaseAddress + aCommLinkNewsMessage.ImageLink },
                     Title = aCommLinkNewsMessage.Title,
                     Description = aCommLinkNewsMessage.Description,
                     Url = lBaseAddress + aCommLinkNewsMessage.SourceLink,

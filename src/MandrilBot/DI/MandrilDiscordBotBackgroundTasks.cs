@@ -53,7 +53,7 @@ namespace MandrilBot
                 {
                     var lDiscordChannelsControllerService = scope.ServiceProvider.GetRequiredService<IChannelsController>();
                     await _discordBotNewsService.InitAsync(lDiscordChannelsControllerService);
-                    _discordBotNewsService.SetHealthCheck_Healthy_MaxGetElapsedTime_InSeconds(_backgroundTick_InSeconds*2);//2 failure threshold
+                    _discordBotNewsService.SetHealthCheck_Healthy_MaxGetElapsedTime_InSeconds(_backgroundTick_InSeconds*3);//3 failure threshold
                 }
 
                 MakeSureFileExist(_newMembersFilePath, aStoppingToken);
