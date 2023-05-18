@@ -74,21 +74,9 @@ namespace MandrilBot.News.SlaveServices
 
             var lDictionaryData = lElementList.Children.Select(y => y.ToDictionary()).ToList();
             lDictionaryData.ForEach(sourceDictionary =>
-            {
-                /// [1]=autor, [3]=howLongAgo, [4]=group, [5]=title, [6]=desc
-                var lContent = sourceDictionary["TextContent"]
-                                .Split('\n')
-                                .Where(x => !string.IsNullOrWhiteSpace(x))
-                                .Select(x => x.Trim())
-                                .ToArray();
-                lCurrentContentList.Add(new DevTrackerNewsMessage()
-                {
-                    Author = lContent[1],
-                    Group = lContent[4],
-                    Title = lContent[5],
-                    Description = 6 < lContent.Length ? lContent[6] : string.Empty, //description may be empty when devs post only a picture or gif.
-                    SourceLink = sourceDictionary["PathName"][1..]
-                });
+            {             
+                var lContent = DiscordBotNewsExtensions.GetContentFromHTMLKeyAsArray(sourceDictionary, "TextContent");
+                lCurrentContentList.Add(GetMessageFromContentStringList(lContent, sourceDictionary["PathName"][1..]));
             });
 
             return lCurrentContentList;
@@ -130,6 +118,25 @@ namespace MandrilBot.News.SlaveServices
 
         #endregion
 
+        #region Private
+
+        /// <summary>
+        /// Gets a new instance of <see cref="DevTrackerNewsMessage"/> from an string array from the HTML resource that contains the needed information.
+        /// </summary>
+        /// <param name="aContentStringList">string array from the HTML resource that contains the needed information.</param>
+        /// <param name="aSourceLink">string with the original source link to the news notified in this message that is being build.</param>
+        /// <returns>A new instance of <see cref="DevTrackerNewsMessage"/>.</returns>
+        private DevTrackerNewsMessage GetMessageFromContentStringList(string[] aContentStringList, string aSourceLink)
+            => new DevTrackerNewsMessage()
+            {
+                /// [1]=autor, [3]=howLongAgo, [4]=group, [5]=title, [6]=desc
+                Author = aContentStringList[1],
+                Group = aContentStringList[4],
+                Title = aContentStringList[5],
+                Description = 6 < aContentStringList.Length ? aContentStringList[6] : string.Empty, //description may be empty when devs post only a picture or gif.
+                SourceLink = aSourceLink
+            };
+
         /// <summary>
         /// Gets the color of the message based on <see cref="DevTrackerNewsMessage.Group"/> property.
         /// </summary>
@@ -144,6 +151,8 @@ namespace MandrilBot.News.SlaveServices
                 _ => DiscordColor.Gray,
             };
         }
+
+        #endregion
 
     }
 }

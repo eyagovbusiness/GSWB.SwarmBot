@@ -96,13 +96,9 @@ namespace MandrilBot.News.SlaveServices
             lDictionaryData.Skip(1).ForEach(sourceDictionary =>
             {
                 /// [0]=date, [1]=IncidentStatus, [2]=IncidentTitle, [3]=AffectedServices, [lastServIndex +1]=ServicesStatus, [lastServIndex +2]=IncidentCreationDate, the rest = IncidentUpdates
-                var lContent = sourceDictionary["TextContent"]
-                                .Split('\n')
-                                .Where(x => !string.IsNullOrWhiteSpace(x))
-                                .Select(x => x.Trim())
-                                .ToArray();
+                var lContent = DiscordBotNewsExtensions.GetContentFromHTMLKeyAsArray(sourceDictionary, "TextContent");
 
-                if(lContent.Length >2)//empty incidents have lenght 2
+                if (lContent.Length >2)//empty incidents have lenght 2
                     lCurrentContentList.Add(GetMessageFromContentStringList(lContent));
             });
 

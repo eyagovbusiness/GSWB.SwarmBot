@@ -8,6 +8,13 @@ namespace MandrilBot.News
     /// </summary>
     internal static class DiscordBotNewsExtensions
     {
+        internal static string[] GetContentFromHTMLKeyAsArray(Dictionary<string, string> aSourceDictionary, string aKeyString)
+            => aSourceDictionary[aKeyString]
+                .Split('\n')
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => x.Trim())
+                .ToArray();
+
         /// <summary>
         /// Returns an instance of <see cref="IHtmlDocument"/> with the HTML documment of the requiered source.
         /// </summary>

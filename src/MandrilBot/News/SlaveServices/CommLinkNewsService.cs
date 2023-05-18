@@ -71,27 +71,9 @@ namespace MandrilBot.News.SlaveServices
             var lDictionaryData = lElementList.Children.Select(y => y.ToDictionary()).Take(10).ToList();//Take only the newest 10 
             lDictionaryData.ForEach(sourceDictionary =>
             {
-                /// [1]=ImageLinkDiv,
-                var lInnerContent = sourceDictionary["InnerHtml"]
-                                .Split('\n')
-                                .Where(x => !string.IsNullOrWhiteSpace(x))
-                                .Select(x => x.Trim())
-                                .ToArray(); 
-                /// [0]=mediaType, [1]=title, [2]=numComments, [3]=howLongAgo, [4]=desc
-                var lContent = sourceDictionary["TextContent"]
-                                .Split('\n')
-                                .Where(x => !string.IsNullOrWhiteSpace(x))
-                                .Select(x => x.Trim())
-                                .ToArray();
-
-                lCurrentContentList.Add(new CommLinkNewsMessage()
-                {
-                    Title = lContent[1],
-                    Description = 4 < lContent.Length ? lContent[4] : string.Empty, //description may be empty
-                    SourceLink = sourceDictionary["PathName"][1..],
-                    ImageLink = ExtractImageLinkUrl(lInnerContent[1])
-
-                });
+                var lInnerContent = DiscordBotNewsExtensions.GetContentFromHTMLKeyAsArray(sourceDictionary, "InnerHtml");
+                var lContent = DiscordBotNewsExtensions.GetContentFromHTMLKeyAsArray(sourceDictionary, "TextContent");
+                lCurrentContentList.Add(GetMessageFromContentStringList(lContent, sourceDictionary["PathName"][1..], lInnerContent));
             });
 
             return lCurrentContentList;
@@ -133,6 +115,27 @@ namespace MandrilBot.News.SlaveServices
 
         #endregion
 
+        #region Private
+
+        /// <summary>
+        /// Gets a new instance of <see cref="CommLinkNewsMessage"/> from an string array from the HTML resource that contains the needed information.
+        /// </summary>
+        /// <param name="aContentStringList">string array from the HTML resource that contains the needed information.</param>
+        /// <param name="aSourceLink">string with the original source link to the news notified in this message that is being build.</param>
+        /// <param name="aInnerContentStringList">string array from the inner HTML resource that contains the needed information.</param>
+        /// <returns>A new instance of <see cref="CommLinkNewsMessage"/>.</returns>
+        private CommLinkNewsMessage GetMessageFromContentStringList(string[] aContentStringList, string aSourceLink, string[] aInnerContentStringList)
+            => new CommLinkNewsMessage()
+            {
+                ///aContentStringList => [0]=mediaType, [1]=title, [2]=numComments, [3]=howLongAgo, [4]=desc
+                Title = aContentStringList[1],
+                Description = 4 < aContentStringList.Length ? aContentStringList[4] : string.Empty, //description may be empty
+                SourceLink = aSourceLink,
+                /// aInnerContentStringList => [1]=ImageLinkDiv,
+                ImageLink = ExtractImageLinkUrl(aInnerContentStringList[1])
+
+            };
+
         /// <summary>
         /// Extracts the ImageLink url from an string representing the HTML element that contains the link.
         /// </summary>
@@ -147,6 +150,8 @@ namespace MandrilBot.News.SlaveServices
                 ? lMatch.Groups[1].Value
                 : default;
         }
+
+        #endregion
 
     }
 }
