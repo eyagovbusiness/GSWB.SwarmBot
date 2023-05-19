@@ -93,7 +93,7 @@ namespace MandrilBot.News.SlaveServices
 
             var lDate = lElementList.Children.Select(z => z.TagName).ToArray();
             var lDictionaryData = lElementList.Children.Select(y => y.ToDictionary()).Take(10).ToList();//Take only the newest 10 
-            lDictionaryData.Skip(1).ForEach(sourceDictionary =>
+            lDictionaryData.ForEach(sourceDictionary =>
             {
                 /// [0]=date, [1]=IncidentStatus, [2]=IncidentTitle, [3]=AffectedServices, [lastServIndex +1]=ServicesStatus, [lastServIndex +2]=IncidentCreationDate, the rest = IncidentUpdates
                 var lContent = DiscordBotNewsExtensions.GetContentFromHTMLKeyAsArray(sourceDictionary, "TextContent");
@@ -141,6 +141,7 @@ namespace MandrilBot.News.SlaveServices
                 }
             });
 
+            await Task.Delay(5000);
             await UpdateChannelName(lCurrentGeneralStatus);
 
         }
@@ -158,7 +159,10 @@ namespace MandrilBot.News.SlaveServices
         {
             if (mLastGeneralStatusNotified != lCurrentGeneralStatus)
             {
-                await mNewsChannel.ModifyAsync(channel => channel.Name = GetNewsChannelName() + GetServiceStatusColorString(lCurrentGeneralStatus));
+                var lTentativeNewStatusChannelName = GetNewsChannelName() + GetServiceStatusColorString(lCurrentGeneralStatus);
+                //rename only if name is different
+                if (lTentativeNewStatusChannelName != mNewsChannel.Name)
+                    await mNewsChannel.ModifyAsync(channel => channel.Name = lTentativeNewStatusChannelName);
                 mLastGeneralStatusNotified = lCurrentGeneralStatus;
             }
         }

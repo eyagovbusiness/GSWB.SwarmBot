@@ -5,6 +5,10 @@ namespace MandrilBot.News.Messages
     internal struct CommLinkNewsMessage
     {
         /// <summary>
+        /// Type of media of this message(post/video, etc..).
+        /// </summary>
+        public string MediaType;
+        /// <summary>
         /// Title of the post.
         /// </summary>
         public string Title;

@@ -105,8 +105,8 @@ namespace MandrilBot.News.SlaveServices
                         Url = lBaseAddress + _botNewsConfig.CommLink.ResourcePath,
                         IconUrl = "https://media3.giphy.com/media/26tk1Qmvy7soIgp7G/200w.gif?cid=6c09b952lk22yoa6ffffpxhgdrtr02chcsv3koaock15hm7p&ep=v1_gifs_search&rid=200w.gif&ct=g"
                     },
-                    Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail() { Url = lBaseAddress + aCommLinkNewsMessage.ImageLink },
-                    Title = aCommLinkNewsMessage.Title,
+                    Thumbnail = new DiscordEmbedBuilder.EmbedThumbnail() { Url = aCommLinkNewsMessage.ImageLink },
+                    Title = aCommLinkNewsMessage.Title + $" ({aCommLinkNewsMessage.MediaType})",
                     Description = aCommLinkNewsMessage.Description,
                     Url = lBaseAddress + aCommLinkNewsMessage.SourceLink,
                     Color = DiscordColor.White
@@ -129,6 +129,7 @@ namespace MandrilBot.News.SlaveServices
             => new CommLinkNewsMessage()
             {
                 ///aContentStringList => [0]=mediaType, [1]=title, [2]=numComments, [3]=howLongAgo, [4]=desc
+                MediaType = aContentStringList[0],
                 Title = aContentStringList[1],
                 Description = 4 < aContentStringList.Length ? aContentStringList[4] : string.Empty, //description may be empty
                 SourceLink = aSourceLink,

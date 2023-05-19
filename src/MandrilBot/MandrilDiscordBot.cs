@@ -55,6 +55,7 @@ namespace MandrilBot
                 await SetBotConfigurationAsync();
                 var config = new DiscordConfiguration
                 {
+                    UseRelativeRatelimit= true,
                     LoggerFactory = _loggerFactory,
                     Token = BotConfiguration.MandrilBotToken,
                     TokenType = TokenType.Bot,
