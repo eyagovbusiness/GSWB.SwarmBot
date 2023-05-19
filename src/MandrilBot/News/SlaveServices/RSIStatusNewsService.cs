@@ -114,7 +114,7 @@ namespace MandrilBot.News.SlaveServices
             if (lRes.Count > 0)
                 mLastMessageList = lContentList;
 
-            return lRes;
+            return lContentList.Take(1).ToList();
         }
 
         public async Task SendMessage(RSIStatusNewsMessage aRSIStatusNewsMessage)
@@ -242,15 +242,15 @@ namespace MandrilBot.News.SlaveServices
         private RSIStatusNewsMessage GetMessageFromContentStringList(string[] aContentStringList)
         {
             var lLastAffectedServiceIndex = GetDisruptedServicesMaxIndex(aContentStringList);
-            var lServiceStatusColorString = GetServiceStatusColorString(aContentStringList[1]);
+            var lServiceStatusColorString = GetServiceStatusColorString(aContentStringList[lLastAffectedServiceIndex + 1]);
             return new RSIStatusNewsMessage()
             {
-                /// [0]=NotUseful(Today's date), [1]=IncidentStatus, [2]=IncidentTitle, [3]=AffectedServices, [lastServIndex +1]=IncidentCreationDate, [lastServIndex +2]=ServicesStatus, [lastServIndex +3]=IncidentCreationDate, the rest = IncidentUpdates
+                /// [0]=NotUseful(Today's date), [1]=IncidentStatus, [2]=IncidentTitle, [3]=AffectedServices, [lastServIndex +1]=ServicesStatus, [lastServIndex +2]=IncidentCreationDate, [lastServIndex +3]=IncidentDescription, the rest = IncidentUpdates
                 IncidentStatus = aContentStringList[1],
                 IncidentTitle = aContentStringList[2],
                 AffectedServices = GetAffectedServicesString(aContentStringList[3..(lLastAffectedServiceIndex+1)], lServiceStatusColorString, aContentStringList[1]),
-                IncidentCreationDate = aContentStringList[lLastAffectedServiceIndex + 1],
-                ServicesStatus = aContentStringList[lLastAffectedServiceIndex + 2],
+                IncidentCreationDate = aContentStringList[lLastAffectedServiceIndex + 2],
+                ServicesStatus = aContentStringList[lLastAffectedServiceIndex + 1],
                 IncidentDescription = string.Join($"{Environment.NewLine} ", aContentStringList[(lLastAffectedServiceIndex + 3)..])
 
             };
