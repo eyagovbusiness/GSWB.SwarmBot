@@ -114,7 +114,7 @@ namespace MandrilBot.News.SlaveServices
             if (lRes.Count > 0)
                 mLastMessageList = lContentList;
 
-            return lContentList.Take(1).ToList();
+            return lRes;
         }
 
         public async Task SendMessage(RSIStatusNewsMessage aRSIStatusNewsMessage)
