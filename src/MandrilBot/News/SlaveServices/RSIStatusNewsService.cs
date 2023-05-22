@@ -141,7 +141,7 @@ namespace MandrilBot.News.SlaveServices
                 }
             });
 
-            await Task.Delay(5000);
+            await Task.Delay(2000);//Add 2 seconds delay to dont pass discord api ratelimit
             await UpdateChannelName(lCurrentGeneralStatus);
 
         }
@@ -217,12 +217,12 @@ namespace MandrilBot.News.SlaveServices
         /// <param name="aGeneralStatus"></param>
         /// <returns><see cref="string"/> with the url related to the provided general status.</returns>
         private static string GetGeneralStatusImage(string aGeneralStatus)
-                    => aGeneralStatus switch
-                    {
-                        RsiServiceStatus.Operational => "https://i.imgur.com/kEe5xC2.png",
-                        RsiServiceStatus.UnderMaintenance => "https://media.tenor.com/ziGwYdlteFoAAAAC/chris-roberts-video-game-designer.gif",
-                        _ => "https://media.tenor.com/47W8IS58R7kAAAAd/scam-citizen-chris-roberts.gif",
-                    };
+            => aGeneralStatus switch
+            {
+                RsiServiceStatus.Operational => "https://i.imgur.com/kEe5xC2.png",
+                RsiServiceStatus.UnderMaintenance => "https://media.tenor.com/ziGwYdlteFoAAAAC/chris-roberts-video-game-designer.gif",
+                _ => "https://media.tenor.com/47W8IS58R7kAAAAd/scam-citizen-chris-roberts.gif",
+            };
 
         /// <summary>
         /// Gets the full Uri address indexing the given subdomain string into the official star citizen webpage.
