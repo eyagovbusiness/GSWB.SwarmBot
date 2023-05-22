@@ -1,4 +1,4 @@
-﻿using MandrilBot.News.Interfaces;
+﻿using MandrilBot.BackgroundServices.News.Interfaces;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System;
 using System.Collections.Generic;

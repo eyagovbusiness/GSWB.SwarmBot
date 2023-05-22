@@ -3,8 +3,8 @@ using Consul;
 using DSharpPlus.Entities;
 using MandrilBot.Configuration;
 using MandrilBot.Controllers;
-using MandrilBot.News.Interfaces;
-using MandrilBot.News.SlaveServices;
+using MandrilBot.BackgroundServices.News.Interfaces;
+using MandrilBot.BackgroundServices.News.SlaveServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.VisualBasic;
@@ -14,7 +14,7 @@ using System.Net.Http;
 using System.Numerics;
 using TGF.Common.Extensions;
 
-namespace MandrilBot.News
+namespace MandrilBot.BackgroundServices.News
 {
     /// <summary>
     /// Master DiscordBotNewsService that orchestrates all the <see cref="IDiscordBotNewsService"/> instances each one providing news on discord from tracking specific web resources and notifying on discord via messages in the designated channel for each news service.

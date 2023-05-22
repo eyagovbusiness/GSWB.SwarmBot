@@ -2,8 +2,8 @@
 using DSharpPlus.Entities;
 using MandrilBot.Configuration;
 using MandrilBot.Controllers;
-using MandrilBot.News.Interfaces;
-using MandrilBot.News.Messages;
+using MandrilBot.BackgroundServices.News.Interfaces;
+using MandrilBot.BackgroundServices.News.Messages;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.VisualBasic;
 using System;
@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 using TGF.Common.Extensions;
 using TGF.Common.Net.Http;
 
-namespace MandrilBot.News.SlaveServices
+namespace MandrilBot.BackgroundServices.News.SlaveServices
 {
     /// <summary>
     /// Service that will get the last news from the StarCitizen comm-link resource by reading the HTML and notifying the differences on Discord periodically.

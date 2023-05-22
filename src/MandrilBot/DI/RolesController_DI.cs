@@ -1,4 +1,5 @@
-﻿using MandrilBot.Handelers;
+﻿using DSharpPlus.Entities;
+using MandrilBot.Handelers;
 using MediatR;
 using TGF.Common.ROP.HttpResult;
 
@@ -37,6 +38,14 @@ namespace MandrilBot.Controllers
         public Task<IHttpResult<Unit>> AssignRoleToMemberList(ulong aRoleId, string[] aFullHandleList, CancellationToken aCancellationToken = default);
 
         /// <summary>
+        /// Commands this discord bot to assign a given Discord Role to every member in the given list from the server in this context.
+        /// </summary>
+        /// <param name="aRoleId">Id of the role to assign in this server to the members.</param>
+        /// <param name="aDiscordMemberList">List of <see cref="DiscordMember"/>.</param>
+        /// <returns><see cref="IHttpResult{Unit}"/> with information about success or fail on this operation.</returns>
+        public Task<IHttpResult<Unit>> AssignRoleToMemberList(ulong aRoleId, IEnumerable<DiscordMember> aDiscordMemberList, CancellationToken aCancellationToken = default);
+
+        /// <summary>
         /// Commands this discord bot to assign a given Discord Role to every member in the given member id list from the server in this context.
         /// </summary>
         /// <param name="aRoleId">Id of the role to assign in this server to the members.</param>
@@ -51,6 +60,14 @@ namespace MandrilBot.Controllers
         /// <param name="aFullHandleList">Array of string representing the full discord Handle with format {membername}#{Discriminator} of the members.</param>
         /// <returns><see cref="IHttpResult{Unit}"/> with information about success or fail on this operation.</returns>
         public Task<IHttpResult<Unit>> RevokeRoleToMemberList(ulong aRoleId, string[] aFullHandleList, CancellationToken aCancellationToken = default);
+
+        /// <summary>
+        /// Commands this discord bot to revoke a given Discord Role to every member in the given list from the server in this context.
+        /// </summary>
+        /// <param name="aRoleId">Id of the role to revoke in this server to the members.</param>
+        /// <param name="aDiscordMemberList">List of <see cref="DiscordMember"/>.</param>
+        /// <returns><see cref="IHttpResult{Unit}"/> with information about success or fail on this operation.</returns>
+        public Task<IHttpResult<Unit>> RevokeRoleToMemberList(ulong aRoleId, IEnumerable<DiscordMember> aDiscordMemberList, CancellationToken aCancellationToken = default);
 
         /// <summary>
         /// Commands this discord bot to revoke a given Discord Role to every member in the given member id list from the server in this context.

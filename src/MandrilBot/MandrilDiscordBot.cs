@@ -1,8 +1,11 @@
 ﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
+using MandrilBot.BackgroundServices.NewMemberManager;
 using MandrilBot.Commands;
 using MandrilBot.Configuration;
+using MandrilBot.Controllers;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 
@@ -75,9 +78,11 @@ namespace MandrilBot
                     StringPrefixes = new string[] { BotConfiguration.BotCommandPrefix },
                     EnableDms = false,
                     EnableMentionPrefix = true,
+                    Services = GetCommandsServiceProvider(), 
                 };
 
                 Commands = Client.UseCommandsNext(lCommandsConfig);
+                Commands.RegisterCommands<BotAdminCommands>();
                 Commands.RegisterCommands<BotCommands>();
 
                 await Client.ConnectAsync();
@@ -93,6 +98,20 @@ namespace MandrilBot
         {
             BotConfiguration = await _secretsManager.Get<BotConfig>("mandrilbot");
             BotConfiguration.BotCommandPrefix = _configuration.GetValue<string>("BotCommandPrefix");
+        }
+
+        private IServiceProvider GetCommandsServiceProvider()
+        {
+            var lNewConfiguration = new ConfigurationBuilder()
+                .AddConfiguration(_configuration)
+                .Build();
+
+            var lServices = new ServiceCollection();
+            lServices.AddSingleton<IMandrilDiscordBot>(this);
+            lServices.AddScoped<IMembersController, MembersController>();
+            lServices.AddScoped<INewMemberManagementService, NewMemberManagementService>();
+            lServices.AddSingleton<IConfiguration>(lNewConfiguration); // Register lNewConfiguration as IConfiguration
+            return lServices.BuildServiceProvider();
         }
 
     }

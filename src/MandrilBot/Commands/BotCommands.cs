@@ -9,6 +9,12 @@ namespace MandrilBot.Commands
     /// </summary>
     internal class BotCommands : BaseCommandModule
     {
+
+        public BotCommands()
+        {
+        }
+
+
         [Command("start-service")]
         public async Task StartServiceBotCommand(CommandContext aCommandContext)
         {
@@ -60,5 +66,6 @@ namespace MandrilBot.Commands
             }
 
         }
+
     }
 }

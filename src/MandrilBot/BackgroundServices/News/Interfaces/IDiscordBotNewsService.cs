@@ -1,7 +1,7 @@
 ﻿using MandrilBot.Controllers;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace MandrilBot.News.Interfaces
+namespace MandrilBot.BackgroundServices.News.Interfaces
 {
     /// <summary>
     /// Public interface to define the minimum behaviours a IDiscordBotNewsService class has to implement.

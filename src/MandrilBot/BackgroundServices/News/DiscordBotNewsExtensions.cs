@@ -1,7 +1,7 @@
 ﻿using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
 
-namespace MandrilBot.News
+namespace MandrilBot.BackgroundServices.News
 {
     /// <summary>
     /// Class to provid needed common extensions to support different news alerts in Dicord about StarCitizen.

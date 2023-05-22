@@ -1,7 +1,7 @@
 ﻿using DSharpPlus.Entities;
+using MandrilBot.BackgroundServices.News.Interfaces;
 using MandrilBot.Configuration;
 using MandrilBot.Controllers;
-using MandrilBot.News.Interfaces;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TGF.Common.Net.Http;
 
-namespace MandrilBot.News.SlaveServices
+namespace MandrilBot.BackgroundServices.News.SlaveServices
 {
     /// <summary>
     /// Abstract base class for all the slave DiscordBotNewsServices with some default common behaviours for slaves from <see cref="IDiscordBotNewsService"/> and needed common variables.
@@ -40,8 +40,8 @@ namespace MandrilBot.News.SlaveServices
         {
             var lElapsedSecondsSinceTheLastGet = (DateTimeOffset.Now - mLastGetElapsedTime).TotalSeconds;
             return lElapsedSecondsSinceTheLastGet > mMaxGetElapsedTime
-                ? HealthCheckResult.Degraded($"The {this.GetType().Name}'s health is degraded. Failed to get the news resource, the last successful get was at {mLastGetElapsedTime}.")
-                : HealthCheckResult.Healthy($"The {this.GetType().Name} is healthy. Last news get was {lElapsedSecondsSinceTheLastGet.ToString("0.0")} seconds ago.");
+                ? HealthCheckResult.Degraded($"The {GetType().Name}'s health is degraded. Failed to get the news resource, the last successful get was at {mLastGetElapsedTime}.")
+                : HealthCheckResult.Healthy($"The {GetType().Name} is healthy. Last news get was {lElapsedSecondsSinceTheLastGet.ToString("0.0")} seconds ago.");
         }
 
         public virtual Task TickExecute(CancellationToken aCancellationToken)

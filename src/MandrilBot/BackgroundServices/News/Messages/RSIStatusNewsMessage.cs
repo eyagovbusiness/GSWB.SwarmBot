@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.ObjectPool;
 using System.Diagnostics.CodeAnalysis;
 
-namespace MandrilBot.News.Messages
+namespace MandrilBot.BackgroundServices.News.Messages
 {
     internal struct RSIStatusNewsMessage
     {

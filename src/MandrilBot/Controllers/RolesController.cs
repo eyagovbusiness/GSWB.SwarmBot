@@ -48,6 +48,17 @@ namespace MandrilBot.Controllers
         }
 
         /// <summary>
+        /// Commands this discord bot to assign a given Discord Role to every member in the given list from the server in this context.
+        /// </summary>
+        /// <param name="aRoleId">Id of the role to assign in this server to the members.</param>
+        /// <param name="aDiscordMemberList">List of <see cref="DiscordMember"/>.</param>
+        /// <returns><see cref="IHttpResult{Unit}"/> with information about success or fail on this operation.</returns>
+        public async Task<IHttpResult<Unit>> AssignRoleToMemberList(ulong aRoleId, IEnumerable<DiscordMember> aDiscordMemberList, CancellationToken aCancellationToken = default)
+            => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
+                .Bind(discordGuild => RolesHandler.GetDiscordRoleAtm(discordGuild, aRoleId, aCancellationToken))
+                .Bind(discordRole => RolesHandler.GrantRoleToMemberListAtmAsync(aDiscordMemberList, discordRole));
+
+        /// <summary>
         /// Commands this discord bot to assign a given Discord Role to every member in the given member id list from the server in this context.
         /// </summary>
         /// <param name="aRoleId">Id of the role to assign in this server to the members.</param>
@@ -81,6 +92,17 @@ namespace MandrilBot.Controllers
                         .Bind(discordMemberList => RolesHandler.RevokeRoleToMemberListAtmAsync(discordMemberList, lDiscordRole)));
 
         }
+
+        /// <summary>
+        /// Commands this discord bot to revoke a given Discord Role to every member in the given list from the server in this context.
+        /// </summary>
+        /// <param name="aRoleId">Id of the role to revoke in this server to the members.</param>
+        /// <param name="aDiscordMemberList">List of <see cref="DiscordMember"/>.</param>
+        /// <returns><see cref="IHttpResult{Unit}"/> with information about success or fail on this operation.</returns>
+        public async Task<IHttpResult<Unit>> RevokeRoleToMemberList(ulong aRoleId, IEnumerable<DiscordMember> aDiscordMemberList, CancellationToken aCancellationToken = default)
+            => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
+                .Bind(discordGuild => RolesHandler.GetDiscordRoleAtm(discordGuild, aRoleId, aCancellationToken))
+                .Bind(discordRole => RolesHandler.RevokeRoleToMemberListAtmAsync(aDiscordMemberList, discordRole));
 
         /// <summary>
         /// Commands this discord bot to revoke a given Discord Role to every member in the given member id list from the server in this context.
