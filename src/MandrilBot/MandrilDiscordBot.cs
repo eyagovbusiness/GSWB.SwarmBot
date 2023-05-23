@@ -1,5 +1,6 @@
 ﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
+using DSharpPlus.EventArgs;
 using MandrilBot.BackgroundServices.NewMemberManager;
 using MandrilBot.Commands;
 using MandrilBot.Configuration;
@@ -8,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
+using System.ComponentModel;
+using System.Reflection;
 
 namespace MandrilBot
 {
@@ -17,6 +20,9 @@ namespace MandrilBot
     public partial class MandrilDiscordBot : IMandrilDiscordBot
     {
         internal static readonly byte _maxDegreeOfParallelism = Convert.ToByte(Math.Ceiling(Environment.ProcessorCount * 0.75));
+        private bool mIsAutoBanBotsEnabled = true;
+
+        #region IMandrilDiscordBot
 
         /// <summary>
         /// Gets a HealthCheck information about this service by attempting to fetch the target discord guild through the bot client.
@@ -56,37 +62,11 @@ namespace MandrilBot
             try
             {
                 await SetBotConfigurationAsync();
-                var config = new DiscordConfiguration
-                {
-                    UseRelativeRatelimit= true,
-                    LoggerFactory = _loggerFactory,
-                    Token = BotConfiguration.MandrilBotToken,
-                    TokenType = TokenType.Bot,
-                    AutoReconnect = true,
-                    Intents = DiscordIntents.MessageContents
-                              | DiscordIntents.GuildMessageReactions
-                              | DiscordIntents.GuildMessages
-                              | DiscordIntents.Guilds
-                              | DiscordIntents.GuildVoiceStates
-                              | DiscordIntents.GuildPresences
-                };
 
-                Client = new DiscordClient(config);
-
-                var lCommandsConfig = new CommandsNextConfiguration
-                {
-                    StringPrefixes = new string[] { BotConfiguration.BotCommandPrefix },
-                    EnableDms = false,
-                    EnableMentionPrefix = true,
-                    Services = GetCommandsServiceProvider(), 
-                };
-
-                Commands = Client.UseCommandsNext(lCommandsConfig);
-                Commands.RegisterCommands<BotAdminCommands>();
-                Commands.RegisterCommands<BotCommands>();
+                ConfigureDiscordBotClient();
+                ConfigureDiscordBotCommands();
 
                 await Client.ConnectAsync();
-
             }
             catch (Exception lException)
             {
@@ -94,10 +74,68 @@ namespace MandrilBot
             }
         }
 
+        /// <summary>
+        /// Unsubscribe the event handler that do ban new bots joined temporarily.
+        /// </summary>
+        /// <param name="aMinutesAllowed">Number of minutes the new bots will be allowed to join the guild.</param>
+        /// <returns>True if the status changed from not allowed to allowed, false if nothing changed because it was allowed already at this time.</returns>
+        public async Task<bool> AllowTemporarilyJoinNewBots(int aMinutesAllowed)
+        {
+            if(!mIsAutoBanBotsEnabled)
+                return mIsAutoBanBotsEnabled;
+            mIsAutoBanBotsEnabled = !mIsAutoBanBotsEnabled;
+            await Task.Delay(TimeSpan.FromMinutes(aMinutesAllowed));
+            mIsAutoBanBotsEnabled = !mIsAutoBanBotsEnabled;
+            return mIsAutoBanBotsEnabled;
+        }
+
+
+        #endregion
+
+        #region BotConfiguration
+
+        private void ConfigureDiscordBotClient()
+        {
+            var config = new DiscordConfiguration
+            {
+                UseRelativeRatelimit = true,
+                LoggerFactory = _loggerFactory,
+                Token = BotConfiguration.MandrilBotToken,
+                TokenType = TokenType.Bot,
+                AutoReconnect = true,
+                Intents = DiscordIntents.MessageContents
+                          | DiscordIntents.GuildMessageReactions
+                          | DiscordIntents.GuildMessages
+                          | DiscordIntents.Guilds
+                          | DiscordIntents.GuildVoiceStates
+                          | DiscordIntents.GuildPresences
+                          | DiscordIntents.GuildMembers
+            };
+
+            Client = new DiscordClient(config);
+            //By default the bot will be banning new bots unless it is temporary disabled via admin commands.
+            Client.GuildMemberAdded += BotOnGuildMemberAdded;
+        }
+
         private async Task SetBotConfigurationAsync()
         {
             BotConfiguration = await _secretsManager.Get<BotConfig>("mandrilbot");
             BotConfiguration.BotCommandPrefix = _configuration.GetValue<string>("BotCommandPrefix");
+        }
+
+        private void ConfigureDiscordBotCommands()
+        {
+            var lCommandsConfig = new CommandsNextConfiguration
+            {
+                StringPrefixes = new string[] { BotConfiguration.BotCommandPrefix },
+                EnableDms = false,
+                EnableMentionPrefix = true,
+                Services = GetCommandsServiceProvider(),
+            };
+
+            Commands = Client.UseCommandsNext(lCommandsConfig);
+            Commands.RegisterCommands<BotAdminCommands>();
+            Commands.RegisterCommands<BotCommands>();
         }
 
         private IServiceProvider GetCommandsServiceProvider()
@@ -113,6 +151,24 @@ namespace MandrilBot
             lServices.AddSingleton<IConfiguration>(lNewConfiguration); // Register lNewConfiguration as IConfiguration
             return lServices.BuildServiceProvider();
         }
+
+        #endregion
+
+        #region BotEvents
+
+        /// <summary>
+        /// Ban every new bot that joins the server unless it is allowed for short time by an admin using the admin command "?open-bots".
+        /// </summary>
+        private async Task BotOnGuildMemberAdded(DiscordClient sender, GuildMemberAddEventArgs e)
+        {
+            if (mIsAutoBanBotsEnabled && e.Guild.Id == BotConfiguration.DiscordTargetGuildId && e.Member.IsBot)
+            {
+                await e.Member.BanAsync(reason: "Bot detected.");
+                Console.WriteLine($"Banned bot: {e.Member.Username}#{e.Member.Discriminator}.");
+            }
+        }
+
+        #endregion
 
     }
 }

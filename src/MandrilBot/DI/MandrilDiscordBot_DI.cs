@@ -35,6 +35,14 @@ namespace MandrilBot
     /// </summary>
     public interface IMandrilDiscordBot
     {
+
+        /// <summary>
+        /// Unsubscribe the event handler that do ban new bots joined temporarily.
+        /// </summary>
+        /// <param name="aMinutesAllowed">Number of minutes the new bots will be allowed to join the guild.</param>
+        /// <returns>True if the status changed from not allowed to allowed, false if nothing changed because it was allowed already at this time.</returns>
+        public Task<bool> AllowTemporarilyJoinNewBots(int aMinutesAllowed);
+
         /// <summary>
         /// Gets a HealthCheck information about this service by attempting to fetch the target discord guild through the bot client.
         /// </summary>
