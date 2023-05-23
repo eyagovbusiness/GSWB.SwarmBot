@@ -40,9 +40,9 @@ namespace MandrilBot.BackgroundServices.News.SlaveServices
 
         #region Overrides
 
-        public override async Task InitAsync(IChannelsController aDiscordChannelsControllerService)
+        public override async Task InitAsync(IChannelsController aDiscordChannelsControllerService, TimeSpan aTimeout)
         {
-            await base.InitAsync(aDiscordChannelsControllerService);
+            await base.InitAsync(aDiscordChannelsControllerService, aTimeout);
             mLastMessageList = await GetLastMessageListAsync();
         }
 

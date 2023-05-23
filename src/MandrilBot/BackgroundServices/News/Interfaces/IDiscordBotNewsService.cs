@@ -11,8 +11,9 @@ namespace MandrilBot.BackgroundServices.News.Interfaces
         /// <summary>
         /// Initializes the instance of this service with the requiered missin information it requieres to start working.
         /// </summary>
+        /// <param name="aTimeout">Http client timeout when trying to get the web news resource.</param>
         /// <returns>Awaitable <see cref="Task"/>.</returns>
-        Task InitAsync(IChannelsController aDiscordChannelsControllerService);
+        Task InitAsync(IChannelsController aDiscordChannelsControllerService, TimeSpan aTimeout);
 
         /// <summary>
         /// Sets the number of seconds that the service healtcheck will use to consider if the service is healthy or not

@@ -22,7 +22,6 @@ namespace MandrilBot
         private readonly IDiscordBotNewsService _discordBotNewsService;
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly ILogger _logger;
-
         private readonly int _backgroundTick_InSeconds = 10; 
 
         public MandrilDiscordBotBackgroundTasks(
@@ -30,13 +29,15 @@ namespace MandrilBot
             INewMemberManagementService aNewMemberManagerService,
             IDiscordBotNewsService aDiscordBotNewsService,
             IServiceScopeFactory aServiceScopeFactory,
-            ILoggerFactory aLoggerFactory)
+            ILoggerFactory aLoggerFactory,
+            IConfiguration aConfiguration)
         {
             _mandrilDiscordBotService = aMandrilDiscordBot;
             _newMemberManagerService = aNewMemberManagerService;
             _discordBotNewsService = aDiscordBotNewsService;
             _serviceScopeFactory = aServiceScopeFactory;
             _logger = aLoggerFactory.CreateLogger(typeof(MandrilDiscordBotBackgroundTasks));
+            _backgroundTick_InSeconds = aConfiguration.GetValue<int>("BackgroundServicesTickInSeconds");
         }
 
         protected override async Task ExecuteAsync(CancellationToken aStoppingToken)
@@ -48,22 +49,30 @@ namespace MandrilBot
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
                     var lDiscordChannelsControllerService = scope.ServiceProvider.GetRequiredService<IChannelsController>();
-                    await _discordBotNewsService.InitAsync(lDiscordChannelsControllerService);
+                    await _discordBotNewsService.InitAsync(lDiscordChannelsControllerService, new TimeSpan(0,0,_backgroundTick_InSeconds));
                     _discordBotNewsService.SetHealthCheck_Healthy_MaxGetElapsedTime_InSeconds(_backgroundTick_InSeconds*3);//3 failure threshold
                 }
 
                 while (!aStoppingToken.IsCancellationRequested)
                 {
-                    if (DateTimeOffset.UtcNow.TimeOfDay == new TimeSpan(5, 0, 0)) //true every day at 5 AM UTC
-                        await _newMemberManagerService.DoDailyTaskAsync(aStoppingToken);
+                    try
+                    {
+                        if (DateTimeOffset.UtcNow.TimeOfDay == new TimeSpan(5, 0, 0)) //true every day at 5 AM UTC
+                            await _newMemberManagerService.DoDailyTaskAsync(aStoppingToken);
 
-                    await Task.Delay(_backgroundTick_InSeconds * 1000, aStoppingToken);
-                    await _discordBotNewsService.TickExecute(aStoppingToken);
+                        await Task.Delay(_backgroundTick_InSeconds * 1000, aStoppingToken);
+                        await _discordBotNewsService.TickExecute(aStoppingToken);
+                    }
+                    catch (Exception lException)
+                    {
+                        _logger.LogError("An error occurred during the execution of MandrilDiscordBotBackgroundTasks: {0}. Stack trace: {1}", lException.ToString(), lException.StackTrace);
+                    }
+
                 }
             }
             catch (Exception lException)
             {
-                _logger.LogError("An error occurred during the execution of MandrilDiscordBotBackgroundTasks: {0}. Stack trace: {1}", lException.ToString(), lException.StackTrace);
+                _logger.LogError("RESTART IS REQUIRED: An error occurred during the setup of MandrilDiscordBotBackgroundTasks: {0}. Stack trace: {1}.", lException.ToString(), lException.StackTrace);
             }
 
         }

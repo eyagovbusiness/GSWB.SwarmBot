@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using TGF.Common.Net.Http;
 
@@ -27,8 +28,9 @@ namespace MandrilBot.BackgroundServices.News.SlaveServices
 
         #region IDiscordBotNewsService
 
-        public virtual async Task InitAsync(IChannelsController aDiscordChannelsControllerService)
+        public virtual async Task InitAsync(IChannelsController aDiscordChannelsControllerService, TimeSpan aTimeout)
         {
+            mTimedHttpClientProvider.SetTimeout(aTimeout);
             var lNewsChannelResult = await (aDiscordChannelsControllerService as ChannelsController).GetDiscordChannel(channel => channel.Id == mNewsTopicConfig.DiscordChannelId);
             if (!lNewsChannelResult.IsSuccess)
                 throw new Exception($"Error fetching the SC news channel: {lNewsChannelResult}");

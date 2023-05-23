@@ -42,7 +42,7 @@ namespace MandrilBot.BackgroundServices.News.SlaveServices
     internal class RSIStatusNewsService : DiscordBotNewsServiceBase<RSIStatusNewsMessage>, INewsWebTracker<RSIStatusNewsMessage>
     {
         private readonly BotNewsConfig _botNewsConfig;
-        private readonly ReadOnlyCollection<string> _rsiKnownServices= new ReadOnlyCollection<string>(new string[]{ "Platform", "Persistent Universe", "Electronic Access" });
+        private readonly ReadOnlyCollection<string> _rsiKnownServices = new ReadOnlyCollection<string>(new string[]{ "Platform", "Persistent Universe", "Electronic Access" });
         private string mLastGeneralStatusNotified;
         public RSIStatusNewsService(IHttpClientFactory aHttpClientFactory, BotNewsConfig aBotNewsConfig)
         {
@@ -58,10 +58,15 @@ namespace MandrilBot.BackgroundServices.News.SlaveServices
 
         #region Overrides
 
-        public override async Task InitAsync(IChannelsController aDiscordChannelsControllerService)
+        public override async Task InitAsync(IChannelsController aDiscordChannelsControllerService, TimeSpan aTimeout)
         {
-            await base.InitAsync(aDiscordChannelsControllerService);
-            mLastMessageList = await GetLastMessageListAsync();
+            await base.InitAsync(aDiscordChannelsControllerService, aTimeout);           
+            mLastMessageList = new List<RSIStatusNewsMessage>();//needed for GetUpdatesAsync()
+            //make initial pull and rename the status channel if needed
+            await GetUpdatesAsync();
+            var lGeneralStatus = GetGeneralStatus();
+            await UpdateChannelName(lGeneralStatus);
+            //end
         }
 
         public override async Task TickExecute(CancellationToken aCancellationToken)
@@ -298,7 +303,7 @@ namespace MandrilBot.BackgroundServices.News.SlaveServices
         /// <returns>New <see cref="string"/> with all the known rsi services with operational status color string sufixed.</returns>
         private string GetAllRsiKnownServicesWithOperationalStatusString()
             => string.Join("  -  ", _rsiKnownServices
-                                .Select(rsiService => rsiService + GetServiceStatusColorString(RsiServiceStatus.Operational)));
+                                   .Select(rsiService => rsiService + GetServiceStatusColorString(RsiServiceStatus.Operational)));
 
         #endregion
 

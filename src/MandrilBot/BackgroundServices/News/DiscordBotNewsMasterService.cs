@@ -52,10 +52,10 @@ namespace MandrilBot.BackgroundServices.News
         /// </summary>
         /// <param name="aDiscordChannelsControllerService"></param>
         /// <returns>Awaitable <see cref="Task"/>.</returns>
-        public async Task InitAsync(IChannelsController aDiscordChannelsControllerService)
+        public async Task InitAsync(IChannelsController aDiscordChannelsControllerService, TimeSpan aTimeout)
             => await _newsResourceTrackerList.ParallelForEachAsync(
                 MandrilDiscordBot._maxDegreeOfParallelism,
-                tracker => tracker.InitAsync(aDiscordChannelsControllerService)
+                tracker => tracker.InitAsync(aDiscordChannelsControllerService, aTimeout)
                 );
 
         /// <summary>
