@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 using MandrilBot.BackgroundServices.NewMemberManager;
+using System;
 
 namespace MandrilBot.Commands
 {
@@ -48,8 +49,9 @@ namespace MandrilBot.Commands
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
                     var lNewMemberManagerService = scope.ServiceProvider.GetRequiredService<INewMemberManagementService>();
+                    var lNoMediaDays = lNewMemberManagerService.GetNoMediaDays();
                     var lNewMemberList = await lNewMemberManagerService.GetNewDiscordMemberList((DiscordMember member) => true);
-                    var lMessageContent = string.Join($"{Environment.NewLine}", lNewMemberList.Select(member => $"{member.Nickname ?? member.DisplayName} joined {member.JoinedAt}"));
+                    var lMessageContent = string.Join(Environment.NewLine, lNewMemberList.Select((member, index) => $"{++index} - **{member.Nickname ?? member.DisplayName}** joined {GetPastTimeSince(member.JoinedAt)}, created {GetPastTimeSince(member.CreationTimestamp)}. {GetNewMemberEmojiInfo(member, lNoMediaDays)}"));
                     await aCommandContext.Channel.SendMessageAsync(lMessageContent);
                 }
             }
@@ -86,5 +88,61 @@ namespace MandrilBot.Commands
             }
 
         }
+
+        #region Helpers
+        /// <summary>
+        /// Get a fancy string representing the time that passed since the provided <see cref="DateTimeOffset"/>.
+        /// </summary>
+        /// <param name="aDateTimeOffset"></param>
+        /// <returns></returns>
+        private string GetPastTimeSince(DateTimeOffset aDateTimeOffset)
+        {
+            TimeSpan lTimePast = DateTimeOffset.Now - aDateTimeOffset;
+
+            string lResult = lTimePast.TotalDays switch
+            {
+                < 1 => $"{(int)lTimePast.TotalHours} hours ago",
+                < 2 => "yesterday",
+                < 30 => $"{(int)lTimePast.TotalDays} days ago",
+                < 365 => $"{(int)(lTimePast.TotalDays / 30)} months, {(int)(lTimePast.TotalDays % 30)} days ago",
+                _ => $"{(int)(lTimePast.TotalDays / 365)} years, {(int)((lTimePast.TotalDays % 365) / 30)} months, {(int)((lTimePast.TotalDays % 365) % 30)} days ago"
+            };
+
+            return lResult;
+        }
+
+        /// <summary>
+        /// Gets an string representing information about the new member status with emojis.
+        /// </summary>
+        /// <param name="aDiscordMember"></param>
+        /// <param name="aNoMediaDays"></param>
+        /// <returns></returns>
+        private string GetNewMemberEmojiInfo(DiscordMember aDiscordMember, int aNoMediaDays)
+        {
+            string lRes = string.Empty;
+            var lTimeNow = DateTimeOffset.Now;
+            //if the new member account was created only two weeks ago or less.
+            if ((lTimeNow - aDiscordMember.CreationTimestamp).TotalDays <= 14)
+                lRes += ":warning:";
+            //if the new member will accquire soon the MediaRole
+            var lTotalJoinedDays = (lTimeNow - aDiscordMember.JoinedAt).TotalDays;
+            if (lTotalJoinedDays >= Convert.ToInt32(aNoMediaDays * 0.8))
+            {
+                var lDays = aNoMediaDays - lTotalJoinedDays;
+                if (lDays < 1)
+                {
+                    var lHours = (int)(lDays * 24);
+                    var lHoursString = lHours < 1 ? "less than 1" : lHours.ToString();
+                    lRes += $":arrow_double_up:({lHoursString}h)";
+                }
+
+                else
+                    lRes += $":arrow_double_up:({(int)(aNoMediaDays - lTotalJoinedDays)}d)";
+            }
+            return lRes;
+        }
+
+        #endregion
+
     }
 }

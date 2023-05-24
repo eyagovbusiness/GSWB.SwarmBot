@@ -24,7 +24,7 @@ namespace MandrilBot.BackgroundServices.NewMemberManager
 
         /// <summary>
         /// Executes the daily ckecking of every member with the <see cref="BotNewMembersManagerConfig.NoMediaRoleId"/> 
-        /// and replaces the role by <see cref="BotNewMembersManagerConfig.MediaRoleId"/> if it proceeds according with the application settings(<see cref="BotNewMembersManagerConfig.BaseNoMediaDays"/>).
+        /// and replaces the role by <see cref="BotNewMembersManagerConfig.MediaRoleId"/> if it proceeds according with the application settings(<see cref="BotNewMembersManagerConfig.NoMediaDays"/>).
         /// </summary>
         /// <param name="aStoppingToken"></param>
         /// <returns>awaitable <see cref="Task"/>.</returns>
@@ -67,12 +67,17 @@ namespace MandrilBot.BackgroundServices.NewMemberManager
             return lDiscordmemberList;
         }
 
+        /// <summary>
+        /// Get the number of no media days applied as a preemptive measure for new members.
+        /// </summary>
+        /// <returns><see cref="int"/> with the NoMediaDays configured for this service.</returns>
+        public int GetNoMediaDays()
+            => _botNewMembersManagerConfig.NoMediaDays;
+
+
         #endregion
 
         private bool CheckMemberJoinedAt(DiscordMember aDiscordGuildMember)
-        {
-            var lMultiplier = (DateTime.Now - aDiscordGuildMember.CreationTimestamp).TotalDays < 7d ? _botNewMembersManagerConfig.NoMediaDaysMultiplier : 1;
-            return (DateTime.Now - aDiscordGuildMember.JoinedAt).TotalDays >= _botNewMembersManagerConfig.BaseNoMediaDays * lMultiplier;
-        }
+            => (DateTime.Now - aDiscordGuildMember.JoinedAt).TotalDays > _botNewMembersManagerConfig.NoMediaDays;
     }
 }

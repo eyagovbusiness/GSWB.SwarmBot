@@ -10,9 +10,7 @@ namespace MandrilBot.Configuration
         [JsonConverter(typeof(UlongConverter))]
         public ulong NoMediaRoleId { get; set; }
 
-        public byte BaseNoMediaDays { get; set; }
-
-        public byte NoMediaDaysMultiplier { get; set; }
+        public byte NoMediaDays { get; set; }
 
         [JsonConverter(typeof(UlongConverter))]
         public ulong MediaRoleId { get; set; }
