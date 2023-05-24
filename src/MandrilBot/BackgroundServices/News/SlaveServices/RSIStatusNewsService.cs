@@ -1,21 +1,10 @@
 ﻿using AngleSharp.Common;
 using DSharpPlus.Entities;
-using MandrilBot.Configuration;
-using MandrilBot.Controllers;
 using MandrilBot.BackgroundServices.News.Interfaces;
 using MandrilBot.BackgroundServices.News.Messages;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.VisualBasic;
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+using MandrilBot.Configuration;
+using MandrilBot.Controllers;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Net.Http;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using TGF.Common.Extensions;
 using TGF.Common.Net.Http;
 
@@ -42,7 +31,7 @@ namespace MandrilBot.BackgroundServices.News.SlaveServices
     internal class RSIStatusNewsService : DiscordBotNewsServiceBase<RSIStatusNewsMessage>, INewsWebTracker<RSIStatusNewsMessage>
     {
         private readonly BotNewsConfig _botNewsConfig;
-        private readonly ReadOnlyCollection<string> _rsiKnownServices = new ReadOnlyCollection<string>(new string[]{ "Platform", "Persistent Universe", "Electronic Access" });
+        private readonly ReadOnlyCollection<string> _rsiKnownServices = new ReadOnlyCollection<string>(new string[] { "Platform", "Persistent Universe", "Electronic Access" });
         private string mLastGeneralStatusNotified;
         public RSIStatusNewsService(IHttpClientFactory aHttpClientFactory, BotNewsConfig aBotNewsConfig)
         {
@@ -50,9 +39,9 @@ namespace MandrilBot.BackgroundServices.News.SlaveServices
             _botNewsConfig = aBotNewsConfig;
             mNewsTopicConfig = aBotNewsConfig.RSIStatus;
             mTimedHttpClientProvider = new TimedHttpClientProvider(
-                aHttpClientFactory, 
-                new TimeSpan(1, 0, 0), 
-                aBaseAddress: GetBaseAddressWithSubdomainString(_botNewsConfig.BaseResourceAddress , mNewsTopicConfig.ResourcePath)
+                aHttpClientFactory,
+                new TimeSpan(1, 0, 0),
+                aBaseAddress: GetBaseAddressWithSubdomainString(_botNewsConfig.BaseResourceAddress, mNewsTopicConfig.ResourcePath)
                 );
         }
 
@@ -60,7 +49,7 @@ namespace MandrilBot.BackgroundServices.News.SlaveServices
 
         public override async Task InitAsync(IChannelsController aDiscordChannelsControllerService, TimeSpan aTimeout)
         {
-            await base.InitAsync(aDiscordChannelsControllerService, aTimeout);           
+            await base.InitAsync(aDiscordChannelsControllerService, aTimeout);
             mLastMessageList = new List<RSIStatusNewsMessage>();//needed for GetUpdatesAsync()
             //make initial pull and rename the status channel if needed
             await GetUpdatesAsync();
@@ -103,7 +92,7 @@ namespace MandrilBot.BackgroundServices.News.SlaveServices
                 /// [0]=date, [1]=IncidentStatus, [2]=IncidentTitle, [3]=AffectedServices, [lastServIndex +1]=ServicesStatus, [lastServIndex +2]=IncidentCreationDate, the rest = IncidentUpdates
                 var lContent = DiscordBotNewsExtensions.GetContentFromHTMLKeyAsArray(sourceDictionary, "TextContent");
 
-                if (lContent.Length >2)//empty incidents have lenght 2
+                if (lContent.Length > 2)//empty incidents have lenght 2
                     lCurrentContentList.Add(GetMessageFromContentStringList(lContent));
             });
 
@@ -257,7 +246,7 @@ namespace MandrilBot.BackgroundServices.News.SlaveServices
                 /// [0]=NotUseful(Today's date), [1]=IncidentStatus, [2]=IncidentTitle, [3]=AffectedServices, [lastServIndex +1]=ServicesStatus, [lastServIndex +2]=IncidentCreationDate, [lastServIndex +3]=IncidentDescription, the rest = IncidentUpdates
                 IncidentStatus = aContentStringList[1],
                 IncidentTitle = aContentStringList[2],
-                AffectedServices = GetAffectedServicesString(aContentStringList[3..(lLastAffectedServiceIndex+1)], lServiceStatusColorString, aContentStringList[1]),
+                AffectedServices = GetAffectedServicesString(aContentStringList[3..(lLastAffectedServiceIndex + 1)], lServiceStatusColorString, aContentStringList[1]),
                 IncidentCreationDate = aContentStringList[lLastAffectedServiceIndex + 2],
                 ServicesStatus = aContentStringList[lLastAffectedServiceIndex + 1],
                 IncidentDescription = string.Join($"{Environment.NewLine} ", aContentStringList[(lLastAffectedServiceIndex + 3)..])

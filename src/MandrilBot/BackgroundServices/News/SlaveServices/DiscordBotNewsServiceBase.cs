@@ -3,12 +3,6 @@ using MandrilBot.BackgroundServices.News.Interfaces;
 using MandrilBot.Configuration;
 using MandrilBot.Controllers;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using TGF.Common.Net.Http;
 
 namespace MandrilBot.BackgroundServices.News.SlaveServices

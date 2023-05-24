@@ -1,8 +1,8 @@
 ﻿using MandrilBot;
-using MandrilBot.Controllers;
+using MandrilBot.BackgroundServices.NewMemberManager;
 using MandrilBot.BackgroundServices.News;
 using MandrilBot.BackgroundServices.News.Interfaces;
-using MandrilBot.BackgroundServices.NewMemberManager;
+using MandrilBot.Controllers;
 
 namespace MandrilAPI
 {

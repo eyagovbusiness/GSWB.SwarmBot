@@ -1,14 +1,10 @@
-﻿using DSharpPlus.Entities;
-using MandrilBot.BackgroundServices.NewMemberManager;
+﻿using MandrilBot.BackgroundServices.NewMemberManager;
 using MandrilBot.BackgroundServices.News.Interfaces;
-using MandrilBot.Configuration;
 using MandrilBot.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using TGF.Common.Extensions;
-using TGF.Common.Extensions.Serialization;
 
 namespace MandrilBot
 {
@@ -22,7 +18,7 @@ namespace MandrilBot
         private readonly IDiscordBotNewsService _discordBotNewsService;
         private readonly IServiceScopeFactory _serviceScopeFactory;
         private readonly ILogger _logger;
-        private readonly int _backgroundTick_InSeconds = 10; 
+        private readonly int _backgroundTick_InSeconds = 10;
 
         public MandrilDiscordBotBackgroundTasks(
             IMandrilDiscordBot aMandrilDiscordBot,
@@ -49,8 +45,8 @@ namespace MandrilBot
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
                     var lDiscordChannelsControllerService = scope.ServiceProvider.GetRequiredService<IChannelsController>();
-                    await _discordBotNewsService.InitAsync(lDiscordChannelsControllerService, new TimeSpan(0,0,_backgroundTick_InSeconds));
-                    _discordBotNewsService.SetHealthCheck_Healthy_MaxGetElapsedTime_InSeconds(_backgroundTick_InSeconds*3);//3 failure threshold
+                    await _discordBotNewsService.InitAsync(lDiscordChannelsControllerService, new TimeSpan(0, 0, _backgroundTick_InSeconds));
+                    _discordBotNewsService.SetHealthCheck_Healthy_MaxGetElapsedTime_InSeconds(_backgroundTick_InSeconds * 3);//3 failure threshold
                 }
 
                 while (!aStoppingToken.IsCancellationRequested)

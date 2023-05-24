@@ -1,17 +1,9 @@
 ﻿using AngleSharp.Common;
 using DSharpPlus.Entities;
-using MandrilBot.Configuration;
-using MandrilBot.Controllers;
 using MandrilBot.BackgroundServices.News.Interfaces;
 using MandrilBot.BackgroundServices.News.Messages;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.VisualBasic;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
+using MandrilBot.Configuration;
+using MandrilBot.Controllers;
 using TGF.Common.Extensions;
 using TGF.Common.Net.Http;
 
@@ -32,7 +24,7 @@ namespace MandrilBot.BackgroundServices.News.SlaveServices
         private readonly BotNewsConfig _botNewsConfig;
         public DevTrackerNewsService(IHttpClientFactory aHttpClientFactory, BotNewsConfig aBotNewsConfig)
         {
-            mLastGetElapsedTime= DateTime.UtcNow;
+            mLastGetElapsedTime = DateTime.UtcNow;
             _botNewsConfig = aBotNewsConfig;
             mNewsTopicConfig = aBotNewsConfig.DevTracker;
             mTimedHttpClientProvider = new TimedHttpClientProvider(aHttpClientFactory, new TimeSpan(1, 0, 0), aBaseAddress: aBotNewsConfig.BaseResourceAddress);
@@ -74,7 +66,7 @@ namespace MandrilBot.BackgroundServices.News.SlaveServices
 
             var lDictionaryData = lElementList.Children.Select(y => y.ToDictionary()).ToList();
             lDictionaryData.ForEach(sourceDictionary =>
-            {             
+            {
                 var lContent = DiscordBotNewsExtensions.GetContentFromHTMLKeyAsArray(sourceDictionary, "TextContent");
                 lCurrentContentList.Add(GetMessageFromContentStringList(lContent, sourceDictionary["PathName"][1..]));
             });

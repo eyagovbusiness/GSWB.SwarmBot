@@ -1,17 +1,9 @@
-﻿using AngleSharp.Common;
-using Consul;
-using DSharpPlus.Entities;
+﻿using MandrilBot.BackgroundServices.News.Interfaces;
+using MandrilBot.BackgroundServices.News.SlaveServices;
 using MandrilBot.Configuration;
 using MandrilBot.Controllers;
-using MandrilBot.BackgroundServices.News.Interfaces;
-using MandrilBot.BackgroundServices.News.SlaveServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.VisualBasic;
-using System.Collections.Immutable;
-using System.Diagnostics;
-using System.Net.Http;
-using System.Numerics;
 using TGF.Common.Extensions;
 
 namespace MandrilBot.BackgroundServices.News
@@ -37,8 +29,8 @@ namespace MandrilBot.BackgroundServices.News
             _botNewsConfig = lBotNewsConfig;
             _botNewsConfig.CitizensPath += "/";
 
-            _newsResourceTrackerList = new IDiscordBotNewsService[] 
-            { 
+            _newsResourceTrackerList = new IDiscordBotNewsService[]
+            {
                 new DevTrackerNewsService(aHttpClientFactory, _botNewsConfig),
                 new CommLinkNewsService(aHttpClientFactory, _botNewsConfig),
                 new RSIStatusNewsService(aHttpClientFactory, _botNewsConfig)

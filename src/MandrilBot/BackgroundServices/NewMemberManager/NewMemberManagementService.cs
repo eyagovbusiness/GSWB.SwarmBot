@@ -58,7 +58,7 @@ namespace MandrilBot.BackgroundServices.NewMemberManager
                 var lDiscordmemberListResult = await lDiscordGuildControllerService.GetMemberList(
                     member => member.Roles.Any(role =>
                         role.Id == _botNewMembersManagerConfig.NoMediaRoleId)
-                        && aNewMemberFilterFunc(member) 
+                        && aNewMemberFilterFunc(member)
                     , aStoppingToken);
                 if (!lDiscordmemberListResult.IsSuccess)
                     throw new Exception($"Error getting the new members list from {nameof(NewMemberManagementService)}: {lDiscordmemberListResult}");

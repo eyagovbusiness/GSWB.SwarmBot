@@ -51,7 +51,7 @@ namespace MandrilBot.Configuration
     /// <summary>
     /// extended class from <see cref="NewsTopicConfig"/> used to deserialize needed part of appsettings to configure the RSIStatusNewsService.
     /// </summary>
-    public class RSIStatusConfig: NewsTopicConfig
+    public class RSIStatusConfig : NewsTopicConfig
     {
         public RSIStatusConfig() { }
         /// <summary>

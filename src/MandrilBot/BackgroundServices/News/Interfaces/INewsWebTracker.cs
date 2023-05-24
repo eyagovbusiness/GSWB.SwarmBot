@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MandrilBot.BackgroundServices.News.Interfaces
+﻿namespace MandrilBot.BackgroundServices.News.Interfaces
 {
     /// <summary>
     /// Public interface to define the minimum behaviours a INewsWebTracker class has to implement.

@@ -1,15 +1,11 @@
-﻿using AngleSharp;
-using DSharpPlus.CommandsNext;
+﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
-using MandrilBot.Configuration;
-using MandrilBot.Controllers;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
-using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 using MandrilBot.BackgroundServices.NewMemberManager;
-using System;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace MandrilBot.Commands
 {
@@ -76,9 +72,9 @@ namespace MandrilBot.Commands
                     return;
 
                 await aCommandContext.Channel.SendMessageAsync("New bots will be allowed to join the server during the next 5 minutes...");
-                if(await _mandrilDiscordBot.AllowTemporarilyJoinNewBots(5))
+                if (await _mandrilDiscordBot.AllowTemporarilyJoinNewBots(5))
                     await aCommandContext.Channel.SendMessageAsync("New bots are no longer allowed join the server.");
-                else 
+                else
                     await aCommandContext.Channel.SendMessageAsync("New bots were already allowed join the server at this time.");
 
             }

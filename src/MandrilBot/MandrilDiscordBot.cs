@@ -9,8 +9,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
-using System.ComponentModel;
-using System.Reflection;
 
 namespace MandrilBot
 {
@@ -81,7 +79,7 @@ namespace MandrilBot
         /// <returns>True if the status changed from not allowed to allowed, false if nothing changed because it was allowed already at this time.</returns>
         public async Task<bool> AllowTemporarilyJoinNewBots(int aMinutesAllowed)
         {
-            if(!mIsAutoBanBotsEnabled)
+            if (!mIsAutoBanBotsEnabled)
                 return mIsAutoBanBotsEnabled;
             mIsAutoBanBotsEnabled = !mIsAutoBanBotsEnabled;
             await Task.Delay(TimeSpan.FromMinutes(aMinutesAllowed));

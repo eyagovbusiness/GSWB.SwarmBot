@@ -1,19 +1,10 @@
 ﻿using AngleSharp.Common;
 using DSharpPlus.Entities;
-using MandrilBot.Configuration;
-using MandrilBot.Controllers;
 using MandrilBot.BackgroundServices.News.Interfaces;
 using MandrilBot.BackgroundServices.News.Messages;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.VisualBasic;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
+using MandrilBot.Configuration;
+using MandrilBot.Controllers;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using TGF.Common.Extensions;
 using TGF.Common.Net.Http;
 
@@ -148,11 +139,11 @@ namespace MandrilBot.BackgroundServices.News.SlaveServices
             string lPattern = "url\\('([^']*)'\\)";
             Match lMatch = Regex.Match(aHtmlString, lPattern);
 
-            var lResource =  lMatch.Success
+            var lResource = lMatch.Success
                 ? lMatch.Groups[1].Value
                 : default;
             //looks like sometimes RSI uses "media" subdomain with full path and sometimes the main domain with relative path.
-            return lResource.StartsWith("https://") 
+            return lResource.StartsWith("https://")
                 ? lResource
                 : _botNewsConfig.BaseResourceAddress + lResource;
         }
