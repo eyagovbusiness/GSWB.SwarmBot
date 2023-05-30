@@ -3,8 +3,10 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using MandrilBot.BackgroundServices.NewMemberManager;
+using MandrilBot.BackgroundServices.News.Messages;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using static MandrilBot.DiscordBotErrors;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace MandrilBot.Commands
@@ -47,8 +49,16 @@ namespace MandrilBot.Commands
                     var lNewMemberManagerService = scope.ServiceProvider.GetRequiredService<INewMemberManagementService>();
                     var lNoMediaDays = lNewMemberManagerService.GetNoMediaDays();
                     var lNewMemberList = await lNewMemberManagerService.GetNewDiscordMemberList((DiscordMember member) => true);
-                    var lMessageContent = string.Join(Environment.NewLine, lNewMemberList.Select((member, index) => $"{++index} - **{member.Nickname ?? member.DisplayName}** joined {GetPastTimeSince(member.JoinedAt)}, created {GetPastTimeSince(member.CreationTimestamp)}. {GetNewMemberEmojiInfo(member, lNoMediaDays)}"));
-                    await aCommandContext.Channel.SendMessageAsync(lMessageContent);
+                    var lMessageContent = string.Join(Environment.NewLine, lNewMemberList.Select((member, index) => $"{++index} - <@{member.Id}> joined {GetPastTimeSince(member.JoinedAt)}, created {GetPastTimeSince(member.CreationTimestamp)}. {GetNewMemberEmojiInfo(member, lNoMediaDays)}"));
+                    await aCommandContext.Channel.SendMessageAsync(new DiscordMessageBuilder()
+                    {
+                        Embed = new DiscordEmbedBuilder()
+                        {
+                            Title = $"New members list",
+                            Description = lMessageContent,
+                            Color = DiscordColor.Goldenrod
+                        }
+                    });
                 }
             }
             catch (BadRequestException)

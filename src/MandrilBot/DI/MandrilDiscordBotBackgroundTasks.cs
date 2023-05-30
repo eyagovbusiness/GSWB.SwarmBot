@@ -53,7 +53,8 @@ namespace MandrilBot
                 {
                     try
                     {
-                        if (DateTimeOffset.UtcNow.TimeOfDay == new TimeSpan(5, 0, 0)) //true every day at 5 AM UTC
+                        var lTimeNow = DateTimeOffset.UtcNow.TimeOfDay;
+                        if (lTimeNow >= new TimeSpan(5, 0, 0) && lTimeNow < new TimeSpan(5, 0, _backgroundTick_InSeconds * 2))//execute daily task at 5 AM UTC(consider moving to System.Threading.Timer) 
                             await _newMemberManagerService.DoDailyTaskAsync(aStoppingToken);
 
                         await Task.Delay(_backgroundTick_InSeconds * 1000, aStoppingToken);
