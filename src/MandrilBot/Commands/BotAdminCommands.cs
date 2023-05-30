@@ -107,11 +107,11 @@ namespace MandrilBot.Commands
 
             string lResult = lTimePast.TotalDays switch
             {
-                < 1 => $"{(int)lTimePast.TotalHours} hours ago",
+                < 1 => $"{(int)lTimePast.TotalHours}h ago",
                 < 2 => "yesterday",
-                < 30 => $"{(int)lTimePast.TotalDays} days ago",
-                < 365 => $"{(int)(lTimePast.TotalDays / 30)} months, {(int)(lTimePast.TotalDays % 30)} days ago",
-                _ => $"{(int)(lTimePast.TotalDays / 365)} years, {(int)((lTimePast.TotalDays % 365) / 30)} months, {(int)((lTimePast.TotalDays % 365) % 30)} days ago"
+                < 30 => $"{(int)lTimePast.TotalDays}d ago",
+                < 365 => $"{(int)(lTimePast.TotalDays / 30)}m, {(int)(lTimePast.TotalDays % 30)}d ago",
+                _ => $"{(int)(lTimePast.TotalDays / 365)}y, {(int)((lTimePast.TotalDays % 365) / 30)}m, {(int)((lTimePast.TotalDays % 365) % 30)}d ago"
             };
 
             return lResult;
@@ -138,7 +138,7 @@ namespace MandrilBot.Commands
                 if (lDays < 1)
                 {
                     var lHours = (int)(lDays * 24);
-                    var lHoursString = lHours < 1 ? "less than 1" : lHours.ToString();
+                    var lHoursString = lHours < 1 ? "<1h" : lHours.ToString();
                     lRes += $":arrow_double_up:({lHoursString}h)";
                 }
 
