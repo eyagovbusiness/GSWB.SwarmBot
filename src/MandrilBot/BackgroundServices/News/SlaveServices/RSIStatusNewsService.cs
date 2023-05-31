@@ -153,7 +153,7 @@ namespace MandrilBot.BackgroundServices.News.SlaveServices
         {
             if (mLastGeneralStatusNotified != lCurrentGeneralStatus)
             {
-                var lTentativeNewStatusChannelName = GetNewsChannelName() + GetServiceStatusColorString(lCurrentGeneralStatus);
+                var lTentativeNewStatusChannelName = GetServiceStatusColorString(lCurrentGeneralStatus) + GetNewsChannelName();
                 //rename only if name is different
                 if (lTentativeNewStatusChannelName != mNewsChannel.Name)
                     await mNewsChannel.ModifyAsync(channel => channel.Name = lTentativeNewStatusChannelName);

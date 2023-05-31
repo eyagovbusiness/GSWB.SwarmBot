@@ -49,7 +49,8 @@ namespace MandrilBot.Commands
                     var lNewMemberManagerService = scope.ServiceProvider.GetRequiredService<INewMemberManagementService>();
                     var lNoMediaDays = lNewMemberManagerService.GetNoMediaDays();
                     var lNewMemberList = await lNewMemberManagerService.GetNewDiscordMemberList((DiscordMember member) => true);
-                    var lMessageContent = string.Join(Environment.NewLine, lNewMemberList.Select((member, index) => $"{++index} - <@{member.Id}> joined {GetPastTimeSince(member.JoinedAt)}, created {GetPastTimeSince(member.CreationTimestamp)}. {GetNewMemberEmojiInfo(member, lNoMediaDays)}"));
+                    string lJoinString = $"{Environment.NewLine} {Environment.NewLine}";//jump line and leave one empty line below each entry
+                    var lMessageContent = string.Join(lJoinString, lNewMemberList.Select((member, index) => $"{++index} - **{member.Nickname ?? member.DisplayName}** joined {GetPastTimeSince(member.JoinedAt)}, created {GetPastTimeSince(member.CreationTimestamp)}. {GetNewMemberEmojiInfo(member, lNoMediaDays)}"));
                     await aCommandContext.Channel.SendMessageAsync(new DiscordMessageBuilder()
                     {
                         Embed = new DiscordEmbedBuilder()
@@ -59,6 +60,7 @@ namespace MandrilBot.Commands
                             Color = DiscordColor.Goldenrod
                         }
                     });
+
                 }
             }
             catch (BadRequestException)
@@ -107,11 +109,11 @@ namespace MandrilBot.Commands
 
             string lResult = lTimePast.TotalDays switch
             {
-                < 1 => $"{(int)lTimePast.TotalHours}h ago",
+                < 1 => $"{(int)lTimePast.TotalHours} hours ago",
                 < 2 => "yesterday",
-                < 30 => $"{(int)lTimePast.TotalDays}d ago",
-                < 365 => $"{(int)(lTimePast.TotalDays / 30)}m, {(int)(lTimePast.TotalDays % 30)}d ago",
-                _ => $"{(int)(lTimePast.TotalDays / 365)}y, {(int)((lTimePast.TotalDays % 365) / 30)}m, {(int)((lTimePast.TotalDays % 365) % 30)}d ago"
+                < 30 => $"{(int)lTimePast.TotalDays} days ago",
+                < 365 => $"{(int)(lTimePast.TotalDays / 30)} months, {(int)(lTimePast.TotalDays % 30)} days ago",
+                _ => $"{(int)(lTimePast.TotalDays / 365)} years, {(int)((lTimePast.TotalDays % 365) / 30)} months, {(int)((lTimePast.TotalDays % 365) % 30)} days ago"
             };
 
             return lResult;
@@ -135,15 +137,17 @@ namespace MandrilBot.Commands
             if (lTotalJoinedDays >= Convert.ToInt32(aNoMediaDays * 0.8))
             {
                 var lDays = aNoMediaDays - lTotalJoinedDays;
+                lRes += ":arrow_double_up:";
                 if (lDays < 1)
                 {
                     var lHours = (int)(lDays * 24);
-                    var lHoursString = lHours < 1 ? "<1h" : lHours.ToString();
-                    lRes += $":arrow_double_up:({lHoursString}h)";
+                    var lHoursString = lHours < 1 ? "less than 1 hour" : lHours.ToString();
+                    lRes += $"({lHoursString})";
                 }
-
                 else
-                    lRes += $":arrow_double_up:({(int)(aNoMediaDays - lTotalJoinedDays)}d)";
+                    lRes += (lDays >= 1 && lDays < 2) 
+                        ? $"(1 day)" 
+                        : lRes += $"({(int)lDays} days)";
             }
             return lRes;
         }
