@@ -29,6 +29,6 @@ RUN dotnet publish "MandrilAPI.csproj" -c Release -o /app/publish /p:UseAppHost=
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-COPY Infrastructure/MicroserviceEntrypointOverrides/MandrilAPIEntrypointOverride.sh ./entrypoint.sh
+COPY Infrastructure/MicroserviceEntrypointOverrides/MandrilEntrypointOverride.sh ./entrypoint.sh
 COPY Infrastructure/ServiceAwait/wait_for_service.sh ./wait_for_service.sh
 ENTRYPOINT ["sh", "entrypoint.sh"]
