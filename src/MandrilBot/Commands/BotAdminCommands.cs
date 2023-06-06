@@ -3,10 +3,8 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using MandrilBot.BackgroundServices.NewMemberManager;
-using MandrilBot.BackgroundServices.News.Messages;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using static MandrilBot.DiscordBotErrors;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace MandrilBot.Commands
@@ -141,13 +139,13 @@ namespace MandrilBot.Commands
                 if (lDays < 1)
                 {
                     var lHours = (int)(lDays * 24);
-                    lRes += lHours < 1 
-                        ? "(less than 1 hour)" 
+                    lRes += lHours < 1
+                        ? "(less than 1 hour)"
                         : $"({lHours} hours)";
                 }
                 else
-                    lRes += (lDays >= 1 && lDays < 2) 
-                        ? $"(1 day)" 
+                    lRes += (lDays >= 1 && lDays < 2)
+                        ? $"(1 day)"
                         : lRes += $"({(int)lDays} days)";
             }
             return lRes;
