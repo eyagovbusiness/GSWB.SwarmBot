@@ -48,7 +48,10 @@ namespace MandrilBot.Commands
                     var lNoMediaDays = lNewMemberManagerService.GetNoMediaDays();
                     var lNewMemberList = await lNewMemberManagerService.GetNewDiscordMemberList((DiscordMember member) => true);
                     string lJoinString = $"{Environment.NewLine} {Environment.NewLine}";//jump line and leave one empty line below each entry
-                    var lMessageContent = string.Join(lJoinString, lNewMemberList.Select((member, index) => $"{++index} - <@{member.Id}> joined {GetPastTimeSince(member.JoinedAt)}, created {GetPastTimeSince(member.CreationTimestamp)}. {GetNewMemberEmojiInfo(member, lNoMediaDays)}"));
+                    var lMessageContent = string.Join(lJoinString,
+                        lNewMemberList
+                        .OrderBy(member => member.JoinedAt)
+                        .Select((member, index) => $"{++index} - <@{member.Id}> joined {GetPastTimeSince(member.JoinedAt)}, created {GetPastTimeSince(member.CreationTimestamp)}. {GetNewMemberEmojiInfo(member, lNoMediaDays)}"));
                     await aCommandContext.Channel.SendMessageAsync(new DiscordMessageBuilder()
                     {
                         Embed = new DiscordEmbedBuilder()
