@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\TheGoodFramework\src\CleanArchitecture\Infrastructure\Security\TGF.CA.Infrastructure.Secrets\TGF.CA.Infrastructure.Security.Secrets.csproj" />
+    <ProjectReference Include="..\..\..\TheGoodFramework\src\CleanArchitecture\Infrastructure\Security\TGF.CA.Infrastructure.Security.Secrets\TGF.CA.Infrastructure.Security.Secrets.csproj" />
     <ProjectReference Include="..\..\..\TheGoodFramework\src\Common\TheGoodFramework.Common.Extensions\TGF.Common.Extensions.csproj" />
     <ProjectReference Include="..\..\..\TheGoodFramework\src\Common\TheGoodFramework.Common.Net\TGF.Common.Net.csproj" />
     <ProjectReference Include="..\..\..\TheGoodFramework\src\Common\TheGoodFramework.Common.ROP\TGF.Common.ROP.csproj" />
