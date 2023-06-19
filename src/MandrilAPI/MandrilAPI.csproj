@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\TheGoodFramework\src\CleanArchitecture\Application\TheGoodFramework.CA.Application\TGF.CA.Application.Setup.csproj" />
-    <ProjectReference Include="..\..\..\TheGoodFramework\src\CleanArchitecture\Infrastructure\TGF.CA.Infrastructure.Secrets\TGF.CA.Infrastructure.Secrets.csproj" />
     <ProjectReference Include="..\..\..\TheGoodFramework\src\Common\TheGoodFramework.Common.ROP\TGF.Common.ROP.csproj" />
     <ProjectReference Include="..\MandrilBot\MandrilBot.csproj" />
   </ItemGroup>

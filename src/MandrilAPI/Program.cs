@@ -1,6 +1,6 @@
 using MandrilAPI.DI;
 using TGF.CA.Application.Setup;
-using TGF.CA.Infrastructure.Secrets;
+using TGF.CA.Infrastructure.Security.Secrets;
 
 namespace MandrilAPI
 {
