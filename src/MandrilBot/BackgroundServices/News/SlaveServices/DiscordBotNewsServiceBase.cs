@@ -24,7 +24,7 @@ namespace MandrilBot.BackgroundServices.News.SlaveServices
 
         public virtual async Task InitAsync(IChannelsController aDiscordChannelsControllerService, TimeSpan aTimeout)
         {
-            mTimedHttpClientProvider.SetTimeout(aTimeout);
+            mTimedHttpClientProvider?.SetTimeout(aTimeout);
             var lNewsChannelResult = await (aDiscordChannelsControllerService as ChannelsController).GetDiscordChannel(channel => channel.Id == mNewsTopicConfig.DiscordChannelId);
             if (!lNewsChannelResult.IsSuccess)
                 throw new Exception($"Error fetching the SC news channel: {lNewsChannelResult}");

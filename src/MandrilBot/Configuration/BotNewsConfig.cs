@@ -29,6 +29,8 @@ namespace MandrilBot.Configuration
         public NewsTopicConfig CommLink { get; set; }
 
         public RSIStatusConfig RSIStatus { get; set; }
+
+        public YouTubeNewsConfig YouTubeTracker { get; set; }
     }
 
     /// <summary>
@@ -49,6 +51,18 @@ namespace MandrilBot.Configuration
     }
 
     /// <summary>
+    /// extended class from <see cref="NewsTopicConfig"/> used to deserialize needed part of appsettings to configure the YouTubeNewsService .
+    /// </summary>
+    public class YouTubeNewsConfig : NewsTopicConfig
+    {
+        public YouTubeNewsConfig() { }
+        /// <summary>
+        /// Target channel to be tracked about new videos.
+        /// </summary>
+        public string TargetChannelId { get; set; }
+    }
+
+    /// <summary>
     /// extended class from <see cref="NewsTopicConfig"/> used to deserialize needed part of appsettings to configure the RSIStatusNewsService.
     /// </summary>
     public class RSIStatusConfig : NewsTopicConfig
@@ -59,6 +73,5 @@ namespace MandrilBot.Configuration
         /// </summary>
         public string NewsChannelName { get; set; }
     }
-
 
 }

@@ -4,6 +4,7 @@ using MandrilBot.Configuration;
 using MandrilBot.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using TGF.CA.Infrastructure.Secrets.Vault;
 using TGF.Common.Extensions;
 
 namespace MandrilBot.BackgroundServices.News
@@ -21,7 +22,7 @@ namespace MandrilBot.BackgroundServices.News
         /// </summary>
         /// <param name="aConfiguration"><see cref="IConfiguration"/> from the ASP.NET DI container.</param>
         /// <param name="aHttpClientFactory"><see cref="IHttpClientFactory"/> from the ASP.NET DI container.(needs WebHostBuilder.Services.AddHttpClient() in the web application builder.</param>
-        public DiscordBotNewsMasterService(IConfiguration aConfiguration, IHttpClientFactory aHttpClientFactory)
+        public DiscordBotNewsMasterService(IConfiguration aConfiguration, IHttpClientFactory aHttpClientFactory, ISecretsManager aSecretsManager)
         {
             var lBotNewsConfig = new BotNewsConfig();
             aConfiguration.Bind("BotNews", lBotNewsConfig);
@@ -33,7 +34,8 @@ namespace MandrilBot.BackgroundServices.News
             {
                 new DevTrackerNewsService(aHttpClientFactory, _botNewsConfig),
                 new CommLinkNewsService(aHttpClientFactory, _botNewsConfig),
-                new RSIStatusNewsService(aHttpClientFactory, _botNewsConfig)
+                new RSIStatusNewsService(aHttpClientFactory, _botNewsConfig),
+                new YouTubeNewsService(aSecretsManager, _botNewsConfig)
             };
         }
 
