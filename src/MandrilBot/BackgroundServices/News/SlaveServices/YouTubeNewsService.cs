@@ -138,7 +138,7 @@ namespace MandrilBot.BackgroundServices.News.SlaveServices
         {
             ApiKey = (await _secretsManager.GetValueObject("youtube", "ApiKey")).ToString(),
             ApplicationName = "SCYouTubeTracker"
-        }); 
+        });
 
         #endregion
 
