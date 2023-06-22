@@ -62,19 +62,19 @@ namespace MandrilBot.BackgroundServices.News.SlaveServices
         /// <returns></returns>
         public async Task<List<YouTubeNewsMessage>> GetLastMessageListAsync()
         {
-            var lSearchListRequest = _youTubeService.Search.List("snippet");
-            lSearchListRequest.ChannelId = (mNewsTopicConfig as YouTubeNewsConfig).TargetChannelId;
-            lSearchListRequest.Order = SearchResource.ListRequest.OrderEnum.Date;
-            lSearchListRequest.MaxResults = 5; // Retrieve the last 5 videos
+            var ActivitiesListRequest = _youTubeService.Activities.List("contentDetails,snippet");
+            ActivitiesListRequest.ChannelId = (mNewsTopicConfig as YouTubeNewsConfig).TargetChannelId;
+            ActivitiesListRequest.MaxResults = 8; // Retrieve the last 5 videos(some results are not "uploaded", so we need to pull 8 items to get the last 5 uploaded videos
 
-            var lSearchListResponse = await lSearchListRequest.ExecuteAsync();
+            var ActivitiesListResponse = await ActivitiesListRequest.ExecuteAsync();
 
             List<YouTubeNewsMessage> lCurrentContentList = new();
-            if (lSearchListResponse == null || lSearchListResponse.Items.IsNullOrEmpty())//If could not get the news resource return empty discord message list
+            if (ActivitiesListResponse == null || ActivitiesListResponse.Items.IsNullOrEmpty())//If could not get the news resource return empty discord message list
                 return new List<YouTubeNewsMessage>(); //mLastGetElapsedTime will not be updated and healtcheck will update health if proceeds
             mLastGetElapsedTime = DateTimeOffset.Now;
 
-            return lSearchListResponse.Items
+            return ActivitiesListResponse.Items
+                   .Where(item => item.Snippet.Type == "upload")//process only video upload activities
                    .Select(item => GetMessageFromSearchResult(item))
                    .ToList();
         }
@@ -120,13 +120,13 @@ namespace MandrilBot.BackgroundServices.News.SlaveServices
         /// </summary>
         /// <param name="aSearchResult">youtube api result.</param>
         /// <returns>A new instance of <see cref="YouTubeNewsMessage"/>.</returns>
-        private YouTubeNewsMessage GetMessageFromSearchResult(SearchResult aSearchResult)
+        private YouTubeNewsMessage GetMessageFromSearchResult(Activity aActivityResponse)
         => new()
         {
-            Title = aSearchResult.Snippet.Title,
-            Description = aSearchResult.Snippet.Description,
-            VideoLink = mNewsTopicConfig.ResourcePath + aSearchResult.Id.VideoId,
-            ThumbnailLink = aSearchResult.Snippet.Thumbnails.High.Url
+            Title = aActivityResponse.Snippet.Title,
+            Description = aActivityResponse.Snippet.Description,
+            VideoLink = mNewsTopicConfig.ResourcePath + aActivityResponse.ContentDetails.Upload.VideoId,
+            ThumbnailLink = aActivityResponse.Snippet.Thumbnails.High.Url
         };
 
         /// <summary>
