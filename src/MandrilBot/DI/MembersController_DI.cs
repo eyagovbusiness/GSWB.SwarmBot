@@ -21,6 +21,20 @@ namespace MandrilBot.Controllers
     public interface IMembersController
     {
 
+        /// <summary>
+        /// Returns a list of guild members that satisfied the filter function conditions.
+        /// </summary>
+        /// <param name="aFilterFunc"></param>
+        /// <param name="aCancellationToken"></param>
+        /// <returns></returns>
         public Task<IHttpResult<IEnumerable<DiscordMember>>> GetMemberList(Func<DiscordMember, bool> aFilterFunc, CancellationToken aCancellationToken = default);
+
+        /// <summary>
+        /// Returns the highest DiscordRole(from the hierarchy order) assigned to the UserId in the guild.
+        /// </summary>
+        /// <param name="aDiscordUserId"></param>
+        /// <param name="aCancellationToken"></param>
+        /// <returns></returns>
+        public Task<IHttpResult<DiscordRole>> GetMemberHighestRole(ulong aDiscordUserId, CancellationToken aCancellationToken = default);
     }
 }

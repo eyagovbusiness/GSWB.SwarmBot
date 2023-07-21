@@ -1,3 +1,4 @@
+using DSharpPlus.Entities;
 using MandrilAPI.Commands;
 using MandrilAPI.Queries;
 using MandrilBot;
@@ -67,6 +68,14 @@ namespace MandrilAPI.Controllers
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.InternalServerError)]
         public async Task<IActionResult> GetExistingCategoryId(string aCategoryName, CancellationToken aCancellationToken)
             => await _mediator.Send(new GetExistingCategoryIdQuery(aCategoryName), aCancellationToken)
+                .ToActionResult();
+
+        [HttpGet("GetMemberHighestRole")]
+        [ProducesResponseType(typeof(DiscordRole), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(DiscordRole), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(DiscordRole), (int)HttpStatusCode.InternalServerError)]
+        public async Task<IActionResult> GetMemberHighestRole(string aUserId, CancellationToken aCancellationToken)
+            => await _mediator.Send(new GetMemberHighestRoleQuery(Convert.ToUInt64(aUserId)), aCancellationToken)
                 .ToActionResult();
 
 

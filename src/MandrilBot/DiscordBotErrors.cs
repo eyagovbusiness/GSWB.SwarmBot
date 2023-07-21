@@ -31,6 +31,11 @@ namespace MandrilBot
                     "The member with the specified handle was not found."),
                 HttpStatusCode.NotFound);
 
+            public static HttpError NotFoundId => new HttpError(
+                new Error("Member.NotFoundId",
+                    "The DiscordUser with the specified id was not found in the list of members of the guild."),
+                HttpStatusCode.NotFound);
+
             public static HttpError OneNotFoundHandle => new HttpError(
                 new Error("Member.NotAllUsersFound",
                     "Could not find all members from the specified handles."),
