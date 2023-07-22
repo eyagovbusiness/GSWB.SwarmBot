@@ -10,14 +10,16 @@ WORKDIR /src
 COPY ["Mandril/src/MandrilAPI/MandrilAPI.csproj", "Mandril/src/MandrilAPI/"]
 COPY ["TheGoodFramework/src/CleanArchitecture/Application/TheGoodFramework.CA.Application/TGF.CA.Application.Setup.csproj", "TheGoodFramework/src/CleanArchitecture/Application/TheGoodFramework.CA.Application/"]
 COPY ["TheGoodFramework/src/Common/TheGoodFramework.Common.Logging/TGF.Common.Logging.csproj", "TheGoodFramework/src/Common/TheGoodFramework.Common.Logging/"]
+COPY ["TheGoodFramework/src/CleanArchitecture/Infrastructure/Security/TGF.CA.Infrastructure.Security.Identity/TGF.CA.Infrastructure.Security.Identity.csproj", "TheGoodFramework/src/CleanArchitecture/Infrastructure/Security/TGF.CA.Infrastructure.Security.Identity/"]
+COPY ["TheGoodFramework/src/CleanArchitecture/Infrastructure/TGF.CA.Infrastructure.Communication/TGF.CA.Infrastructure.Communication.csproj", "TheGoodFramework/src/CleanArchitecture/Infrastructure/TGF.CA.Infrastructure.Communication/"]
+COPY ["TheGoodFramework/src/Common/TheGoodFramework.Common.Serialization/TGF.Common.Serialization.csproj", "TheGoodFramework/src/Common/TheGoodFramework.Common.Serialization/"]
+COPY ["TheGoodFramework/src/CleanArchitecture/Infrastructure/Security/TGF.CA.Infrastructure.Security.Secrets/TGF.CA.Infrastructure.Security.Secrets.csproj", "TheGoodFramework/src/CleanArchitecture/Infrastructure/Security/TGF.CA.Infrastructure.Security.Secrets/"]
 COPY ["TheGoodFramework/src/CleanArchitecture/Infrastructure/TGF.CA.Infrastructure.Discovery/TGF.CA.Infrastructure.Discovery.csproj", "TheGoodFramework/src/CleanArchitecture/Infrastructure/TGF.CA.Infrastructure.Discovery/"]
 COPY ["TheGoodFramework/src/CleanArchitecture/Presentation/TGF.CA.Presentation.Middleware/TGF.CA.Presentation.Middleware.csproj", "TheGoodFramework/src/CleanArchitecture/Presentation/TGF.CA.Presentation.Middleware/"]
-COPY ["TheGoodFramework/src/CleanArchitecture/Infrastructure/TGF.CA.Infrastructure.Secrets/TGF.CA.Infrastructure.Secrets.csproj", "TheGoodFramework/src/CleanArchitecture/Infrastructure/TGF.CA.Infrastructure.Secrets/"]
 COPY ["TheGoodFramework/src/Common/TheGoodFramework.Common.ROP/TGF.Common.ROP.csproj", "TheGoodFramework/src/Common/TheGoodFramework.Common.ROP/"]
 COPY ["Mandril/src/MandrilBot/MandrilBot.csproj", "Mandril/src/MandrilBot/"]
 COPY ["TheGoodFramework/src/Common/TheGoodFramework.Common.Extensions/TGF.Common.Extensions.csproj", "TheGoodFramework/src/Common/TheGoodFramework.Common.Extensions/"]
 COPY ["TheGoodFramework/src/Common/TheGoodFramework.Common.Net/TGF.Common.Net.csproj", "TheGoodFramework/src/Common/TheGoodFramework.Common.Net/"]
-COPY ["TheGoodFramework/src/Common/TheGoodFramework.Common.Serialization/TGF.Common.Serialization.csproj", "TheGoodFramework/src/Common/TheGoodFramework.Common.Serialization/"]
 RUN dotnet restore "Mandril/src/MandrilAPI/MandrilAPI.csproj"
 COPY . .
 WORKDIR "/src/Mandril/src/MandrilAPI"
