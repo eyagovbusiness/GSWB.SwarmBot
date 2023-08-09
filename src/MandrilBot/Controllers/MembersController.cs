@@ -1,5 +1,6 @@
 ﻿using DSharpPlus.Entities;
 using MandrilBot.Handelers;
+using TGF.Common.Extensions;
 using TGF.Common.ROP.HttpResult;
 
 namespace MandrilBot.Controllers
@@ -25,13 +26,13 @@ namespace MandrilBot.Controllers
         /// <returns></returns>
         public async Task<IHttpResult<DiscordRole>> GetMemberHighestRole(ulong aDiscordUserId, CancellationToken aCancellationToken = default)
             => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
-            .Bind(discordGuild => MembersHandler.GetAllDiscordMemberListAtmAsync(discordGuild, aCancellationToken))
-            .Map(allMemberList => allMemberList.FirstOrDefault(member => member.Id == aDiscordUserId))
-            .Verify(member => member is not null, DiscordBotErrors.Member.NotFoundId)
-            .Map(existingMember => existingMember.Roles
-                                   .OrderByDescending(role => role.Position)
-                                   .FirstOrDefault()
-            );
+                .Bind(discordGuild => MembersHandler.GetAllDiscordMemberListAtmAsync(discordGuild, aCancellationToken))
+                .Map(allMemberList => allMemberList.FirstOrDefault(member => member.Id == aDiscordUserId))
+                .Verify(member => member is not null, DiscordBotErrors.Member.NotFoundId)
+                .Map(existingMember => existingMember.Roles
+                                        .OrderByDescending(role => role.Position)
+                                        .FirstOrDefault())
+                .Verify(highestRole => highestRole != null && highestRole.Name.IsNullOrWhiteSpace(), DiscordBotErrors.Member.NotFoundAnyRole);
 
     }
 }

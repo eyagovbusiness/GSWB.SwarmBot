@@ -31,6 +31,11 @@ namespace MandrilBot
                     "The member with the specified handle was not found."),
                 HttpStatusCode.NotFound);
 
+            public static HttpError NotFoundAnyRole => new HttpError(
+                new Error("Member.NotFoundAnyRoleAssigned",
+                    "The member does not have any role assigned yet."),
+                HttpStatusCode.NotFound);
+
             public static HttpError NotFoundId => new HttpError(
                 new Error("Member.NotFoundId",
                     "The DiscordUser with the specified id was not found in the list of members of the guild."),
