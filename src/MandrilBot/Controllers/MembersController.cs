@@ -32,7 +32,7 @@ namespace MandrilBot.Controllers
                 .Map(existingMember => existingMember.Roles
                                         .OrderByDescending(role => role.Position)
                                         .FirstOrDefault())
-                .Verify(highestRole => highestRole != null && highestRole.Name.IsNullOrWhiteSpace(), DiscordBotErrors.Member.NotFoundAnyRole);
+                .Verify(highestRole => highestRole != null && !highestRole.Name.IsNullOrWhiteSpace(), DiscordBotErrors.Member.NotFoundAnyRole);
 
     }
 }
