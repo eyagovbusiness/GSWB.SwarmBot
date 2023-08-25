@@ -4,7 +4,7 @@ using MandrilBot.Configuration;
 using MandrilBot.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using TGF.CA.Infrastructure.Secrets.Vault;
+using TGF.CA.Infrastructure.Security.Secrets.Vault;
 using TGF.Common.Extensions;
 
 namespace MandrilBot.BackgroundServices.News

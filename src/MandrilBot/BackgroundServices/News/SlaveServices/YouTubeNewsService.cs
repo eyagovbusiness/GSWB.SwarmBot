@@ -7,7 +7,7 @@ using MandrilBot.BackgroundServices.News.Interfaces;
 using MandrilBot.BackgroundServices.News.Messages;
 using MandrilBot.Configuration;
 using MandrilBot.Controllers;
-using TGF.CA.Infrastructure.Secrets.Vault;
+using TGF.CA.Infrastructure.Security.Secrets.Vault;
 using TGF.Common.Extensions;
 
 
