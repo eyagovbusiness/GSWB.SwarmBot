@@ -1,5 +1,4 @@
 using Mandril.Application.DTOs;
-using MandrilBot;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using TGF.Common.Extensions;

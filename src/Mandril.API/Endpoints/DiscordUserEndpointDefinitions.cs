@@ -1,7 +1,7 @@
-﻿using TGF.CA.Presentation;
-using TGF.CA.Presentation.MinimalAPI;
+﻿using Mandril.Application;
+using TGF.CA.Presentation;
 using TGF.CA.Presentation.Middleware;
-using Mandril.Application;
+using TGF.CA.Presentation.MinimalAPI;
 
 namespace Maindril.API.Endpoints
 {

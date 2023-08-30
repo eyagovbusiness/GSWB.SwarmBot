@@ -1,7 +1,6 @@
 ﻿using DSharpPlus.Entities;
 using Mandril.Application;
 using Mandril.Application.DTOs;
-using MandrilBot;
 using MandrilBot.Handelers;
 using TGF.Common.Extensions;
 using TGF.Common.ROP.HttpResult;

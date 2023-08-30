@@ -39,7 +39,7 @@ namespace Mandril.API.IntegrationTests
             Func<T, bool> aResponseValidationFunc, string aJsonMediaTypeOverride = default!)
         {
             AssertCommonResponseParts(response, expectedStatusCode);
-            Assert.That(response.Content.Headers.ContentType?.MediaType, Is.EqualTo(aJsonMediaTypeOverride??_jsonMediaType));
+            Assert.That(response.Content.Headers.ContentType?.MediaType, Is.EqualTo(aJsonMediaTypeOverride ?? _jsonMediaType));
 
             var lJsonString = await response.Content.ReadAsStringAsync();
             var lContent = JsonConvert.DeserializeObject<T>(lJsonString);

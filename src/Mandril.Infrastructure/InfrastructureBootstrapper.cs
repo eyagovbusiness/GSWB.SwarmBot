@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using TGF.CA.Infrastructure.Security.Secrets;
-using TGF.CA.Infrastructure.Discovery;
-using Mandril.Application;
+﻿using Mandril.Application;
+using MandrilBot;
 using MandrilBot.BackgroundServices.NewMemberManager;
 using MandrilBot.BackgroundServices.News;
-using MandrilBot;
-using Microsoft.Extensions.DependencyInjection;
-using MandrilBot.Services;
 using MandrilBot.HealthChecks;
+using MandrilBot.Services;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using TGF.CA.Infrastructure.Discovery;
+using TGF.CA.Infrastructure.Security.Secrets;
 
 namespace Mandril.Infrastructure
 {

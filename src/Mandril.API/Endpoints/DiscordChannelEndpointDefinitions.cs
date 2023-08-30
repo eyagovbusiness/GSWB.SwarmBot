@@ -1,9 +1,9 @@
-﻿using TGF.CA.Presentation;
-using TGF.CA.Presentation.MinimalAPI;
-using TGF.CA.Presentation.Middleware;
-using Mandril.Application;
-using Microsoft.AspNetCore.Mvc;
+﻿using Mandril.Application;
 using Mandril.Application.DTOs;
+using Microsoft.AspNetCore.Mvc;
+using TGF.CA.Presentation;
+using TGF.CA.Presentation.Middleware;
+using TGF.CA.Presentation.MinimalAPI;
 
 namespace Maindril.API.Endpoints
 {

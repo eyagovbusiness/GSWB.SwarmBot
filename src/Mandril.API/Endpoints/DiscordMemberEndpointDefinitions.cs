@@ -1,9 +1,8 @@
-﻿using TGF.CA.Presentation;
-using TGF.CA.Presentation.MinimalAPI;
-using TGF.CA.Presentation.Middleware;
-using Mandril.Application;
-using DSharpPlus.Entities;
+﻿using Mandril.Application;
 using Mandril.Application.DTOs;
+using TGF.CA.Presentation;
+using TGF.CA.Presentation.Middleware;
+using TGF.CA.Presentation.MinimalAPI;
 
 namespace Maindril.API.Endpoints
 {
@@ -17,7 +16,7 @@ namespace Maindril.API.Endpoints
         public void DefineEndpoints(WebApplication aWebApplication)
         {
             aWebApplication.MapGet("/getNumberOfOnlineMembers", GetNumberOfOnlineMembers).SetResponseMetadata<int>(200);
-            aWebApplication.MapGet("/getMemberHighestRole", GetMemberHighestRole).SetResponseMetadata<DiscordRoleDTO>(200,404);
+            aWebApplication.MapGet("/getMemberHighestRole", GetMemberHighestRole).SetResponseMetadata<DiscordRoleDTO>(200, 404);
 
         }
 
