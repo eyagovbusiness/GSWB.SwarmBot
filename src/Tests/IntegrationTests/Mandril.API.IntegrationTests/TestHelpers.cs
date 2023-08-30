@@ -1,53 +1,36 @@
 ﻿using DSharpPlus;
-using MandrilBot;
+using Mandril.Application.DTOs;
 
 namespace Mandril.API.IntegrationTests
 {
     internal static class TestHelpers
     {
-        internal static Random _random = new Random();
+        internal static Random _random = new();
 
         private static ChannelType GetRandomVoiceOrTextType()
         {
             return _random.Next(2) > 0 ? ChannelType.Text : ChannelType.Voice;
         }
-        private static ChannelTemplate[] GetChannelTemplateSampleList()
+        private static ChannelTemplateDTO[] GetChannelTemplateSampleList()
         {
             int lRandomSampleSize = _random.Next(2, 10);
 
-            ChannelTemplate[] lChannelTemplateList = new ChannelTemplate[lRandomSampleSize];
+            ChannelTemplateDTO[] lChannelTemplateList = new ChannelTemplateDTO[lRandomSampleSize];
 
             for (int i = 0; i < lRandomSampleSize; i++)
             {
-                ChannelTemplate lChannelTemplate = new ChannelTemplate();
-                lChannelTemplate.ChannelType = GetRandomVoiceOrTextType();
-                lChannelTemplate.Position = i;
-                lChannelTemplate.Name = "TestChannel" + i;
+                var lChannelTemplate = new ChannelTemplateDTO("TestChannel" + i, i, GetRandomVoiceOrTextType());
                 lChannelTemplateList[i] = lChannelTemplate;
             }
             return lChannelTemplateList;
         }
-        internal static CategoryChannelTemplate GetCategoryChannelTemplateSample()
+        internal static CategoryChannelTemplateDTO GetCategoryChannelTemplateSample()
+            => new("TestingCategory", 0, GetChannelTemplateSampleList());
+        internal static void RandomModifyTemplate(this CategoryChannelTemplateDTO aCategoryChannelTemplate)
         {
-            return new CategoryChannelTemplate()
-            {
-                Name = "TestingCategory",
-                Position = 0,
-                ChannelList = GetChannelTemplateSampleList()
-
-            };
-        }
-        internal static void RandomModifyTemplate(this CategoryChannelTemplate aCategoryChannelTemplate)
-        {
-            var lModifyIndex = _random.Next(aCategoryChannelTemplate.ChannelList.Count());
-            (aCategoryChannelTemplate.ChannelList as ChannelTemplate[])[lModifyIndex] =
-            new ChannelTemplate()
-            {
-                Name = "ModifiedAddedChannel",
-                Position = aCategoryChannelTemplate.ChannelList.Max(channel => channel.Position) + 1,
-                ChannelType = GetRandomVoiceOrTextType()
-            };
-
+            var lModifyIndex = _random.Next(aCategoryChannelTemplate.ChannelList!.Length);
+            aCategoryChannelTemplate.ChannelList![lModifyIndex] =
+            new ChannelTemplateDTO("ModifiedAddedChannel", aCategoryChannelTemplate.ChannelList.Max(channel => channel.Position) + 1, GetRandomVoiceOrTextType());
         }
     }
 }

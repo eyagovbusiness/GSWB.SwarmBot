@@ -1,14 +1,16 @@
 ﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.EventArgs;
+using Mandril.Application;
 using MandrilBot.BackgroundServices.NewMemberManager;
 using MandrilBot.Commands;
 using MandrilBot.Configuration;
-using MandrilBot.Controllers;
+using MandrilBot.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
+using TGF.CA.Application;
 
 namespace MandrilBot
 {
@@ -17,8 +19,22 @@ namespace MandrilBot
     /// </summary>
     public partial class MandrilDiscordBot : IMandrilDiscordBot
     {
-        internal static readonly byte _maxDegreeOfParallelism = Convert.ToByte(Math.Ceiling(Environment.ProcessorCount * 0.75));
+        public static readonly byte _maxDegreeOfParallelism = Convert.ToByte(Math.Ceiling(Environment.ProcessorCount * 0.75));
         private bool mIsAutoBanBotsEnabled = true;
+        private readonly ILoggerFactory _loggerFactory;
+        private readonly IConfiguration _configuration;
+        private readonly ISecretsManager _secretsManager;
+        internal BotConfig BotConfiguration { get; private set; }
+
+        internal DiscordClient Client { get; private set; }
+        internal CommandsNextExtension Commands { get; private set; }
+
+        public MandrilDiscordBot(ILoggerFactory aLoggerFactory, ISecretsManager aSecretsManager, IConfiguration aConfiguration)
+        {
+            _loggerFactory = aLoggerFactory;
+            _secretsManager = aSecretsManager;
+            _configuration = aConfiguration;
+        }
 
         #region IMandrilDiscordBot
 
@@ -144,7 +160,7 @@ namespace MandrilBot
 
             var lServices = new ServiceCollection();
             lServices.AddSingleton<IMandrilDiscordBot>(this);
-            lServices.AddScoped<IMembersController, MembersController>();
+            lServices.AddScoped<IMandrilMembersService, MandrilMembersService>();
             lServices.AddScoped<INewMemberManagementService, NewMemberManagementService>();
             lServices.AddSingleton<IConfiguration>(lNewConfiguration); // Register lNewConfiguration as IConfiguration
             return lServices.BuildServiceProvider();

@@ -3,11 +3,11 @@ using DSharpPlus.Entities;
 using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
+using Mandril.Application;
 using MandrilBot.BackgroundServices.News.Interfaces;
 using MandrilBot.BackgroundServices.News.Messages;
 using MandrilBot.Configuration;
-using MandrilBot.Controllers;
-using TGF.CA.Infrastructure.Security.Secrets.Vault;
+using TGF.CA.Application;
 using TGF.Common.Extensions;
 
 
@@ -32,9 +32,9 @@ namespace MandrilBot.BackgroundServices.News.SlaveServices
 
         #region Overrides
 
-        public override async Task InitAsync(IChannelsController aDiscordChannelsControllerService, TimeSpan aTimeout)
+        public override async Task InitAsync(IMandrilChannelsService aDiscordChannelsService, TimeSpan aTimeout)
         {
-            await base.InitAsync(aDiscordChannelsControllerService, aTimeout);
+            await base.InitAsync(aDiscordChannelsService, aTimeout);
             _youTubeService = await GetNewYouTubeService();
             mLastMessageList = await GetLastMessageListAsync();
 

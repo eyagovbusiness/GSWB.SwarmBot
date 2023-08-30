@@ -1,9 +1,9 @@
 ﻿using AngleSharp.Common;
 using DSharpPlus.Entities;
+using Mandril.Application;
 using MandrilBot.BackgroundServices.News.Interfaces;
 using MandrilBot.BackgroundServices.News.Messages;
 using MandrilBot.Configuration;
-using MandrilBot.Controllers;
 using System.Text.RegularExpressions;
 using TGF.Common.Extensions;
 using TGF.Common.Net.Http;
@@ -27,7 +27,7 @@ namespace MandrilBot.BackgroundServices.News.SlaveServices
 
         #region Overrides
 
-        public override async Task InitAsync(IChannelsController aDiscordChannelsControllerService, TimeSpan aTimeout)
+        public override async Task InitAsync(IMandrilChannelsService aDiscordChannelsControllerService, TimeSpan aTimeout)
         {
             await base.InitAsync(aDiscordChannelsControllerService, aTimeout);
             mLastMessageList = await GetLastMessageListAsync();

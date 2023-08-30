@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Version>1.1.1</Version>
     <AssemblyVersion>1.1.1</AssemblyVersion>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
     <ServerGarbageCollection>false</ServerGarbageCollection>
@@ -11,8 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AngleSharp" Version="1.0.1" />
-    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.4.1" />
+    <PackageReference Include="AngleSharp" Version="1.0.4" />
+    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.4.2" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
   </ItemGroup>
 
@@ -22,8 +22,9 @@
     <ProjectReference Include="..\..\..\TheGoodFramework\src\Common\TheGoodFramework.Common.Net\TGF.Common.Net.csproj" />
     <ProjectReference Include="..\..\..\TheGoodFramework\src\Common\TheGoodFramework.Common.ROP\TGF.Common.ROP.csproj" />
     <ProjectReference Include="..\..\..\TheGoodFramework\src\Common\TheGoodFramework.Common.Serialization\TGF.Common.Serialization.csproj" />
-    <PackageReference Include="Google.Apis.Auth" Version="1.60.0" />
-    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.60.0.3064" />
+    <ProjectReference Include="..\Mandril.Application\Mandril.Application.csproj" />
+    <PackageReference Include="Google.Apis.Auth" Version="1.61.0" />
+    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.61.0.3155" />
   </ItemGroup>
 
 </Project>

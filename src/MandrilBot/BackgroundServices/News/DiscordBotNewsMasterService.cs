@@ -1,10 +1,9 @@
-﻿using MandrilBot.BackgroundServices.News.Interfaces;
+﻿using Mandril.Application;
 using MandrilBot.BackgroundServices.News.SlaveServices;
 using MandrilBot.Configuration;
-using MandrilBot.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using TGF.CA.Infrastructure.Security.Secrets.Vault;
+using TGF.CA.Application;
 using TGF.Common.Extensions;
 
 namespace MandrilBot.BackgroundServices.News
@@ -12,6 +11,7 @@ namespace MandrilBot.BackgroundServices.News
     /// <summary>
     /// Master DiscordBotNewsService that orchestrates all the <see cref="IDiscordBotNewsService"/> instances each one providing news on discord from tracking specific web resources and notifying on discord via messages in the designated channel for each news service.
     /// </summary>
+    /// <remarks>Depends on <see cref="IMandrilDiscordBot"/> and <see cref="IMandrilChannelsService"/>.</remarks>
     public partial class DiscordBotNewsMasterService : IDiscordBotNewsService
     {
         private readonly BotNewsConfig _botNewsConfig; //Main configuration that will be used by all the slave news services.
@@ -44,12 +44,12 @@ namespace MandrilBot.BackgroundServices.News
         /// <summary>
         /// Triggers in parallel every asynchronous <see cref="IDiscordBotNewsService.InitAsync(IChannelsController)"/> of all the slave news services.
         /// </summary>
-        /// <param name="aDiscordChannelsControllerService"></param>
+        /// <param name="aDiscordChannelsService"></param>
         /// <returns>Awaitable <see cref="Task"/>.</returns>
-        public async Task InitAsync(IChannelsController aDiscordChannelsControllerService, TimeSpan aTimeout)
+        public async Task InitAsync(IMandrilChannelsService aDiscordChannelsService, TimeSpan aTimeout)
             => await _newsResourceTrackerList.ParallelForEachAsync(
                 MandrilDiscordBot._maxDegreeOfParallelism,
-                tracker => tracker.InitAsync(aDiscordChannelsControllerService, aTimeout)
+                tracker => tracker.InitAsync(aDiscordChannelsService, aTimeout)
                 );
 
         /// <summary>

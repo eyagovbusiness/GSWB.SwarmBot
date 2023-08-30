@@ -10,21 +10,19 @@ namespace Mandril.API.IntegrationTests
 
     public struct MandrilAPIEndpoints
     {
-        public const string GetUserExist = "/mandril-ms/Mandril/GetUserExist";
-        public const string GetUserIsVerified = "/mandril-ms/Mandril/GetUserIsVerified";
-        public const string GetUserCreationDate = "/mandril-ms/Mandril/GetUserCreationDate";
-        public const string GetNumberOfOnlineMembers = "/mandril-ms/Mandril/GetNumberOfOnlineMembers";
-        public const string CreateRole = "/mandril-ms/Mandril/CreateRole?aRoleName";
-        public const string AssignRoleToMemberList = "/mandril-ms/Mandril/AssignRoleToMemberList";
-        public const string RevokeRoleToMemberList = "/mandril-ms/Mandril/RevokeRoleToMemberList";
-        public const string DeleteRole = "/mandril-ms/Mandril/DeleteRole";
-        public const string AssignRoleToMember = "/mandril-ms/Mandril/AssignRoleToMember";
-        public const string RevokeRoleToMember = "/mandril-ms/Mandril/RevokeRoleToMember";
-        public const string GetExistingCategoryId = "/mandril-ms/Mandril/GetExistingCategoryId";
-        public const string CreateCategoryFromTemplate = "/mandril-ms/Mandril/CreateCategoryFromTemplate";
-        public const string AddMemberListToCategory = "/mandril-ms/Mandril/AddMemberListToCategory";
-        public const string UpdateCategoryFromTemplate = "/mandril-ms/Mandril/UpdateCategoryFromTemplate";
-        public const string DeleteCategory = "/mandril-ms/Mandril/DeleteCategory";
+        public const string GetUserExist = "/mandril-ms/getUserExist";
+        public const string GetUserIsVerified = "/mandril-ms/getUserIsVerified";
+        public const string GetUserCreationDate = "/mandril-ms/getUserCreationDate";
+        public const string GetNumberOfOnlineMembers = "/mandril-ms/getNumberOfOnlineMembers";
+        public const string CreateRole = "/mandril-ms/createRole?aRoleName";
+        public const string AssignRoleToMemberList = "/mandril-ms/assignRoleToMemberList";
+        public const string RevokeRoleToMemberList = "/mandril-ms/revokeRoleToMemberList";
+        public const string DeleteRole = "/mandril-ms/deleteRole";
+        public const string GetExistingCategoryId = "/mandril-ms/getExistingCategoryId";
+        public const string CreateCategoryFromTemplate = "/mandril-ms/createCategoryFromTemplate";
+        public const string AddMemberListToCategory = "/mandril-ms/addMemberListToCategory";
+        public const string UpdateCategoryFromTemplate = "/mandril-ms/updateCategoryFromTemplate";
+        public const string DeleteCategory = "/mandril-ms/deleteCategory";
 
     }
     /// <summary>
@@ -38,10 +36,10 @@ namespace Mandril.API.IntegrationTests
 
         public static async Task<T> AssertResponseWithContentAsync<T>(
             HttpResponseMessage response, System.Net.HttpStatusCode expectedStatusCode,
-            Func<T, bool> aResponseValidationFunc)
+            Func<T, bool> aResponseValidationFunc, string aJsonMediaTypeOverride = default!)
         {
             AssertCommonResponseParts(response, expectedStatusCode);
-            Assert.That(response.Content.Headers.ContentType?.MediaType, Is.EqualTo(_jsonMediaType));
+            Assert.That(response.Content.Headers.ContentType?.MediaType, Is.EqualTo(aJsonMediaTypeOverride??_jsonMediaType));
 
             var lJsonString = await response.Content.ReadAsStringAsync();
             var lContent = JsonConvert.DeserializeObject<T>(lJsonString);

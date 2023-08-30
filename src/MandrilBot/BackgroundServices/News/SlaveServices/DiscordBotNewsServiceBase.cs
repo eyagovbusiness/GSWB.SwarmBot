@@ -1,7 +1,7 @@
 ﻿using DSharpPlus.Entities;
-using MandrilBot.BackgroundServices.News.Interfaces;
+using Mandril.Application;
 using MandrilBot.Configuration;
-using MandrilBot.Controllers;
+using MandrilBot.Services;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using TGF.Common.Net.Http;
 
@@ -22,10 +22,10 @@ namespace MandrilBot.BackgroundServices.News.SlaveServices
 
         #region IDiscordBotNewsService
 
-        public virtual async Task InitAsync(IChannelsController aDiscordChannelsControllerService, TimeSpan aTimeout)
+        public virtual async Task InitAsync(IMandrilChannelsService aDiscordChannelsService, TimeSpan aTimeout)
         {
             mTimedHttpClientProvider?.SetTimeout(aTimeout);
-            var lNewsChannelResult = await (aDiscordChannelsControllerService as ChannelsController).GetDiscordChannel(channel => channel.Id == mNewsTopicConfig.DiscordChannelId);
+            var lNewsChannelResult = await (aDiscordChannelsService as MandrilChannelsService).GetDiscordChannel(channel => channel.Id == mNewsTopicConfig.DiscordChannelId);
             if (!lNewsChannelResult.IsSuccess)
                 throw new Exception($"Error fetching the SC news channel: {lNewsChannelResult}");
             mNewsChannel = lNewsChannelResult.Value;

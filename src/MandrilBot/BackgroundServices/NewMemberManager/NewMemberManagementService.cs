@@ -1,11 +1,15 @@
 ﻿using DSharpPlus.Entities;
+using Mandril.Application;
 using MandrilBot.Configuration;
-using MandrilBot.Controllers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace MandrilBot.BackgroundServices.NewMemberManager
 {
+    /// <summary>
+    /// New members management service that assign a given role to all new members that has no permissions to upload media in the server and after the specified time replaces it by a normal base rol allowing those members to finally post media in the server.
+    /// </summary>
+    /// <remarks>Depends on <see cref="IMandrilDiscordBot"/>, <see cref="IMandrilMembersService"/> and <see cref="IMandrilRolesService"/></remarks>
     public class NewMemberManagementService : INewMemberManagementService
     {
         private readonly IServiceScopeFactory _serviceScopeFactory;
@@ -36,7 +40,7 @@ namespace MandrilBot.BackgroundServices.NewMemberManager
             {
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
-                    var lDiscordRolesControllerService = scope.ServiceProvider.GetRequiredService<IRolesController>();
+                    var lDiscordRolesControllerService = scope.ServiceProvider.GetRequiredService<IMandrilRolesService>();
                     await lDiscordRolesControllerService.RevokeRoleToMemberList(_botNewMembersManagerConfig.NoMediaRoleId, lDiscordmemberList, aStoppingToken);
                     await lDiscordRolesControllerService.AssignRoleToMemberList(_botNewMembersManagerConfig.MediaRoleId, lDiscordmemberList, aStoppingToken);
                 }
@@ -54,7 +58,7 @@ namespace MandrilBot.BackgroundServices.NewMemberManager
             IEnumerable<DiscordMember> lDiscordmemberList = default;
             using (var scope = _serviceScopeFactory.CreateScope())
             {
-                var lDiscordGuildControllerService = scope.ServiceProvider.GetRequiredService<IMembersController>();
+                var lDiscordGuildControllerService = scope.ServiceProvider.GetRequiredService<IMandrilMembersService>();
                 var lDiscordmemberListResult = await lDiscordGuildControllerService.GetMemberList(
                     member => member.Roles.Any(role =>
                         role.Id == _botNewMembersManagerConfig.NoMediaRoleId)

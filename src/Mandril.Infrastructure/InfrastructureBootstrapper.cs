@@ -1,0 +1,96 @@
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using TGF.CA.Infrastructure.Security.Secrets;
+using TGF.CA.Infrastructure.Discovery;
+using Mandril.Application;
+using MandrilBot.BackgroundServices.NewMemberManager;
+using MandrilBot.BackgroundServices.News;
+using MandrilBot;
+using Microsoft.Extensions.DependencyInjection;
+using MandrilBot.Services;
+using MandrilBot.HealthChecks;
+
+namespace Mandril.Infrastructure
+{
+    /// <summary>
+    /// Provides methods for configuring and using the application specific the infrastructure components.
+    /// </summary>
+    public static class InfrastructureBootstrapper
+    {
+        /// <summary>
+        /// Configures the necessary infrastructure services for the application.
+        /// </summary>
+        /// <param name="aWebApplicationBuilder">The web application builder.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
+        public static void ConfigureInfrastructure(this WebApplicationBuilder aWebApplicationBuilder)
+        {
+            aWebApplicationBuilder.Services.AddDiscoveryService(aWebApplicationBuilder.Configuration);
+            aWebApplicationBuilder.Services.AddVaultSecretsManager(aWebApplicationBuilder.Configuration);
+
+            aWebApplicationBuilder.Services.AddSingleton<IMandrilDiscordBot, MandrilDiscordBot>()
+                .AddMandrilBotPassiveServices()
+                .AddMandrilBotActiveServices()
+                .AddMandrilHealthChceckServices();
+        }
+
+        /// <summary>
+        /// Add Mandril related passive services. Require <see cref="IMandrilDiscordBot"/>.
+        /// </summary>
+        public static IServiceCollection AddMandrilBotPassiveServices(this IServiceCollection aServiceList)
+        {
+            //Required by DiscordBotNewsService.
+            aServiceList.AddHttpClient()
+            .AddSingleton<IDiscordBotNewsService, DiscordBotNewsMasterService>();
+
+            aServiceList.AddSingleton<INewMemberManagementService, NewMemberManagementService>();
+            aServiceList.AddHostedService<BackgroundTasks>();
+
+            return aServiceList;
+
+        }
+
+        /// <summary>
+        /// Add Mandril related active services. Require <see cref="IMandrilDiscordBot"/>.
+        /// </summary>
+        public static IServiceCollection AddMandrilBotActiveServices(this IServiceCollection aServiceList)
+        {
+            aServiceList.AddScoped<IMandrilUsersService, MandrilUsersService>();
+            aServiceList.AddScoped<IMandrilChannelsService, MandrilChannelsService>();
+            aServiceList.AddScoped<IMandrilMembersService, MandrilMembersService>();
+            aServiceList.AddScoped<IMandrilRolesService, MandrilRolesService>();
+
+            return aServiceList;
+
+        }
+
+        /// <summary>
+        /// Adds Mandril related health checks.
+        /// </summary>
+        /// <param name="aServiceList"></param>
+        /// <returns></returns>
+        public static IServiceCollection AddMandrilHealthChceckServices(this IServiceCollection aServiceList)
+        {
+            aServiceList
+                .AddHealthChecks()
+                .AddCheck<MandrilBot_HealthCheck>(nameof(MandrilBot_HealthCheck))
+                .AddCheck<MandrilAPI_HealthCheck>(nameof(MandrilAPI_HealthCheck))
+                .AddCheck<DiscordBotNewsService_HealthCheck>(nameof(DiscordBotNewsService_HealthCheck));
+            return aServiceList;
+        }
+
+
+        /// <summary>
+        /// Applies the infrastructure configurations to the web application.
+        /// </summary>
+        /// <param name="aWebApplication">The Web application instance.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
+        public static void UseInfrastructure(this WebApplication aWebApplication)
+        {
+            aWebApplication.UseCookiePolicy(new CookiePolicyOptions()//call before any middelware with auth
+            {
+                MinimumSameSitePolicy = SameSiteMode.Lax
+            });
+        }
+
+    }
+}

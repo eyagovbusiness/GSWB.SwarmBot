@@ -2,7 +2,7 @@
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
-using MandrilBot.BackgroundServices.NewMemberManager;
+using Mandril.Application;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
@@ -44,7 +44,7 @@ namespace MandrilBot.Commands
 
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
-                    var lNewMemberManagerService = scope.ServiceProvider.GetRequiredService<INewMemberManagementService>();
+                    var lNewMemberManagerService = scope.ServiceProvider.GetRequiredService<Mandril.Application.INewMemberManagementService>();
                     var lNoMediaDays = lNewMemberManagerService.GetNoMediaDays();
                     var lNewMemberList = await lNewMemberManagerService.GetNewDiscordMemberList((DiscordMember member) => true);
                     string lJoinString = $"{Environment.NewLine} {Environment.NewLine}";//jump line and leave one empty line below each entry

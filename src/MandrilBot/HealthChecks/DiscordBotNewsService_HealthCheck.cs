@@ -1,4 +1,4 @@
-﻿using MandrilBot.BackgroundServices.News.Interfaces;
+﻿using Mandril.Application;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace MandrilBot.HealthChecks
