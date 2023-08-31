@@ -55,7 +55,7 @@ namespace MandrilBot.Services
                                         .OrderByDescending(role => role.Position)
                                         .FirstOrDefault())
                 .Verify(highestRole => highestRole != null && !highestRole.Name.IsNullOrWhiteSpace(), DiscordBotErrors.Member.NotFoundAnyRole)
-                .Map(highestRole => new DiscordRoleDTO(highestRole.Id, highestRole.Name));
+                .Map(highestRole => new DiscordRoleDTO(highestRole.Id, highestRole.Name, (byte)highestRole.Position));
 
     }
 }

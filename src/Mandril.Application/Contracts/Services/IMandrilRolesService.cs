@@ -1,4 +1,5 @@
 ﻿using DSharpPlus.Entities;
+using Mandril.Application.DTOs;
 using TGF.Common.ROP;
 using TGF.Common.ROP.HttpResult;
 
@@ -9,6 +10,13 @@ namespace Mandril.Application
     /// </summary>
     public interface IMandrilRolesService
     {
+
+        /// <summary>
+        /// Commands this discord bot get all the available roles in the guild's server.
+        /// </summary>
+        /// <returns>List of <see cref="DiscordRoleDTO"/> with all the available roles in the guild's server.</returns>
+        public Task<IHttpResult<DiscordRoleDTO[]>> GetGuildServerRoleList(CancellationToken aCancellationToken = default);
+
         /// <summary>
         /// Commands this discord bot to assign a given Discord Role to a given member server in this context.
         /// </summary>

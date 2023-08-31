@@ -50,6 +50,11 @@ namespace MandrilBot
 
         public static class Role
         {
+            public static HttpError GuildRolesFetchFailed => new HttpError(
+             new Error("Role.GuildRolesFetchFailed",
+                "Could not fetch successfully the guild's server roles.")
+            , HttpStatusCode.InternalServerError);
+
             public static HttpError NotFoundId => new HttpError(
              new Error("Role.NotFound",
                 "The Role with the specified RoleId was not found.")

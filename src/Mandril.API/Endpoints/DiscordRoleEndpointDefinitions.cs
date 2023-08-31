@@ -1,4 +1,5 @@
 ﻿using Mandril.Application;
+using Mandril.Application.DTOs;
 using TGF.CA.Presentation;
 using TGF.CA.Presentation.Middleware;
 using TGF.CA.Presentation.MinimalAPI;
@@ -14,11 +15,11 @@ namespace Maindril.API.Endpoints
         /// <inheritdoc/>
         public void DefineEndpoints(WebApplication aWebApplication)
         {
+            aWebApplication.MapGet("/getGuildServerRoles", GetGuildServerRoles).SetResponseMetadata<DiscordRoleDTO[]>(200);
             aWebApplication.MapPost("/createRole", PostCreateRole).SetResponseMetadata<string>(200, 404);
             aWebApplication.MapDelete("/deleteRole", DeleteRole).SetResponseMetadata(200, 404);
             aWebApplication.MapPut("/assignRoleToMemberList", PostAssignRoleToMemberList).SetResponseMetadata(200, 404);
             aWebApplication.MapPut("/revokeRoleToMemberList", PutRevokeRoleToMemberList).SetResponseMetadata(200, 404);
-
         }
 
         /// <inheritdoc/>
@@ -29,6 +30,13 @@ namespace Maindril.API.Endpoints
         #endregion
 
         #region EndpointMethods
+
+        /// <summary>
+        /// Gets a list with all the available roles in the guild's server.
+        /// </summary>
+        private async Task<IResult> GetGuildServerRoles(IMandrilRolesService aMandrilRolesService, CancellationToken aCancellationToken = default)
+            => await aMandrilRolesService.GetGuildServerRoleList(aCancellationToken)
+            .ToIResult();
 
         /// <summary>
         /// Creates a new role in the discord's guild and response with the Id of the new Discord role created.

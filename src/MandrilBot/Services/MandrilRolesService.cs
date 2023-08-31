@@ -1,5 +1,8 @@
-﻿using DSharpPlus.Entities;
+﻿using Consul;
+using DSharpPlus.Entities;
+using Google.Apis.Util;
 using Mandril.Application;
+using Mandril.Application.DTOs;
 using MandrilBot.Handelers;
 using MandrilBot.Handlers;
 using TGF.Common.ROP;
@@ -18,6 +21,18 @@ namespace MandrilBot.Services
         private readonly GuildsHandler _guildsHandler;
         public MandrilRolesService(IMandrilDiscordBot aMandrilDiscordBot)
             => _guildsHandler = new GuildsHandler(aMandrilDiscordBot);
+
+
+        /// <summary>
+        /// Commands this discord bot get all the available roles in the guild's server.
+        /// </summary>
+        /// <returns>List of <see cref="DiscordRoleDTO"/> with all the available roles in the guild's server.</returns>
+        public async Task<IHttpResult<DiscordRoleDTO[]>> GetGuildServerRoleList(CancellationToken aCancellationToken = default)
+            => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
+                .Map(discordGuild => discordGuild.Roles
+                                    .Select(rolePair => rolePair.Value)
+                                    .Select(role => new DiscordRoleDTO(role.Id, role.Name, (byte)role.Position)).ToArray())
+                .Verify(roleList => roleList!= null && roleList.Length > 0, DiscordBotErrors.Role.GuildRolesFetchFailed);
 
         /// <summary>
         /// Commands this discord bot to assign a given Discord Role to a given member server in this context.
