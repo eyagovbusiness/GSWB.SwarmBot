@@ -16,7 +16,7 @@ namespace Maindril.API.Endpoints
         public void DefineEndpoints(WebApplication aWebApplication)
         {
             aWebApplication.MapGet("/getNumberOfOnlineMembers", GetNumberOfOnlineMembers).SetResponseMetadata<int>(200);
-            aWebApplication.MapGet("/getMemberHighestRole", GetMemberHighestRole).SetResponseMetadata<DiscordRoleDTO>(200, 404);
+            aWebApplication.MapGet("/getMemberRoleList", GetMemberRoleList).SetResponseMetadata<IEnumerable<DiscordRoleDTO>>(200, 404);
 
         }
 
@@ -37,10 +37,10 @@ namespace Maindril.API.Endpoints
             .ToIResult();
 
         /// <summary>
-        /// Get the highest role in the server's role hierarchy assigned to the specified member by its User Id.
+        /// Get the the list of all assigned roles to this member in the guild's server ordered by position.
         /// </summary>
-        private async Task<IResult> GetMemberHighestRole(string aUserId, IMandrilMembersService aMandrilMembersService, CancellationToken aCancellationToken = default)
-            => await aMandrilMembersService.GetMemberHighestRole(Convert.ToUInt64(aUserId), aCancellationToken)
+        private async Task<IResult> GetMemberRoleList(string aUserId, IMandrilMembersService aMandrilMembersService, CancellationToken aCancellationToken = default)
+            => await aMandrilMembersService.GetMemberRoleList(Convert.ToUInt64(aUserId), aCancellationToken)
             .ToIResult();
 
         #endregion

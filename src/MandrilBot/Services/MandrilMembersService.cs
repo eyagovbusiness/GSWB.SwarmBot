@@ -2,7 +2,6 @@
 using Mandril.Application;
 using Mandril.Application.DTOs;
 using MandrilBot.Handelers;
-using TGF.Common.Extensions;
 using TGF.Common.ROP.HttpResult;
 
 namespace MandrilBot.Services
@@ -46,16 +45,15 @@ namespace MandrilBot.Services
         /// <param name="aDiscordUserId"></param>
         /// <param name="aCancellationToken"></param>
         /// <returns></returns>
-        public async Task<IHttpResult<DiscordRoleDTO>> GetMemberHighestRole(ulong aDiscordUserId, CancellationToken aCancellationToken = default)
+        public async Task<IHttpResult<DiscordRoleDTO[]>> GetMemberRoleList(ulong aDiscordUserId, CancellationToken aCancellationToken = default)
             => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
                 .Bind(discordGuild => MembersHandler.GetAllDiscordMemberListAtmAsync(discordGuild, aCancellationToken))
                 .Map(allMemberList => allMemberList.FirstOrDefault(member => member.Id == aDiscordUserId))
                 .Verify(member => member is not null, DiscordBotErrors.Member.NotFoundId)
+                .Verify(member => member.Roles.Any(), DiscordBotErrors.Member.NotFoundAnyRole)
                 .Map(existingMember => existingMember.Roles
-                                        .OrderByDescending(role => role.Position)
-                                        .FirstOrDefault())
-                .Verify(highestRole => highestRole != null && !highestRole.Name.IsNullOrWhiteSpace(), DiscordBotErrors.Member.NotFoundAnyRole)
-                .Map(highestRole => new DiscordRoleDTO(highestRole.Id, highestRole.Name, (byte)highestRole.Position));
+                                        .Select(role => new DiscordRoleDTO(role.Id, role.Name, (byte)role.Position))
+                                        .OrderByDescending(role => role.Position).ToArray());
 
     }
 }

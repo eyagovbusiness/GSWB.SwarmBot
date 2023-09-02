@@ -32,6 +32,6 @@ namespace Mandril.Application
         /// <param name="aDiscordUserId"></param>
         /// <param name="aCancellationToken"></param>
         /// <returns></returns>
-        public Task<IHttpResult<DiscordRoleDTO>> GetMemberHighestRole(ulong aDiscordUserId, CancellationToken aCancellationToken = default);
+        public Task<IHttpResult<DiscordRoleDTO[]>> GetMemberRoleList(ulong aDiscordUserId, CancellationToken aCancellationToken = default);
     }
 }
