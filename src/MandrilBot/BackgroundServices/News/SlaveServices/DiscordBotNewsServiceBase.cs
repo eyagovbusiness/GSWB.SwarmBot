@@ -8,7 +8,7 @@ using TGF.Common.Net.Http;
 namespace MandrilBot.BackgroundServices.News.SlaveServices
 {
     /// <summary>
-    /// Abstract base class for all the slave DiscordBotNewsServices with some default common behaviours for slaves from <see cref="IDiscordBotNewsService"/> and needed common variables.
+    /// Abstract base class for all the slave DiscordBotNewsServices with some default common behaviors for slaves from <see cref="IDiscordBotNewsService"/> and needed common variables.
     /// </summary>
     /// <typeparam name="TMessageStruct"></typeparam>
     internal abstract class DiscordBotNewsServiceBase<TMessageStruct> : IDiscordBotNewsService // T from News.Messages

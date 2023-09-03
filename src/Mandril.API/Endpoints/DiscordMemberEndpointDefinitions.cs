@@ -16,6 +16,7 @@ namespace Maindril.API.Endpoints
         public void DefineEndpoints(WebApplication aWebApplication)
         {
             aWebApplication.MapGet("/getNumberOfOnlineMembers", GetNumberOfOnlineMembers).SetResponseMetadata<int>(200);
+            aWebApplication.MapGet("/getMemberNicknameFromId", GetMemberNicknameFromId).SetResponseMetadata<string>(200, 404);
             aWebApplication.MapGet("/getMemberRoleList", GetMemberRoleList).SetResponseMetadata<IEnumerable<DiscordRoleDTO>>(200, 404);
 
         }
@@ -34,6 +35,13 @@ namespace Maindril.API.Endpoints
         /// </summary>
         private async Task<IResult> GetNumberOfOnlineMembers(IMandrilMembersService aMandrilMembersService, CancellationToken aCancellationToken = default)
             => await aMandrilMembersService.GetNumberOfOnlineMembers(aCancellationToken)
+            .ToIResult();
+
+        /// <summary>
+        /// Get the member's server nickname from the Discord user id.
+        /// </summary>
+        private async Task<IResult> GetMemberNicknameFromId(string aDiscordUserId, IMandrilMembersService aMandrilMembersService, CancellationToken aCancellationToken = default)
+            => await aMandrilMembersService.GetMemberNicknameFromUserId(aDiscordUserId, aCancellationToken)
             .ToIResult();
 
         /// <summary>

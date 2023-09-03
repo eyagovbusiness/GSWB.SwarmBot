@@ -15,8 +15,15 @@ namespace Mandril.Application
         /// Gets the number of total members connected at this moment in the guild server.
         /// </summary>
         /// <param name="aCancellationToken"></param>
-        /// <returns><see cref="IHttpResult{int}"/> with the number of connected members and information about success or failureure on this operation.</returns>
+        /// <returns><see cref="IHttpResult{int}"/> with the number of connected members and information about success or failure on this operation.</returns>
         public Task<IHttpResult<int>> GetNumberOfOnlineMembers(CancellationToken aCancellationToken = default);
+
+        /// <summary>
+        ///  Get the member's server nickname from the Discord user id.
+        /// </summary>
+        /// <param name="aDiscordUserId">Discord user id.</param>
+        /// <returns><see cref="IHttpResult{string}"/> with the member's server nickname.</returns>
+        public Task<IHttpResult<string>> GetMemberNicknameFromUserId(string aDiscordUserId, CancellationToken aCancellationToken = default);
 
         /// <summary>
         /// Returns a list of guild members that satisfied the filter function conditions.

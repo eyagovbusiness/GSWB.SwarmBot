@@ -16,6 +16,7 @@ namespace MandrilBot.Services
         public MandrilMembersService(IMandrilDiscordBot aMandrilDiscordBot)
             => _guildsHandler = new GuildsHandler(aMandrilDiscordBot);
 
+
         /// <summary>
         /// Gets the number of total members connected at this moment in the guild server.
         /// </summary>
@@ -27,6 +28,15 @@ namespace MandrilBot.Services
                     .Map(discordMemberList => discordMemberList.Count(x => x.Presence != null
                                                                             && x.Presence.Status == UserStatus.Online
                                                                             && x.VoiceState?.Channel != null));
+        /// <summary>
+        ///  Get the member's server nickname from the Discord user id.
+        /// </summary>
+        /// <param name="aDiscordUserId">Discord user id.</param>
+        /// <returns><see cref="IHttpResult{string}"/> with the member's server nickname.</returns>
+        public async Task<IHttpResult<string>> GetMemberNicknameFromUserId(string aDiscordUserId, CancellationToken aCancellationToken = default)
+            => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
+                    .Bind(discordGuild => MembersHandler.GetAllDiscordMemberListAtmAsync(discordGuild, aCancellationToken))
+                    .Map(discordMemberList => discordMemberList.FirstOrDefault(member => member.Id == ulong.Parse(aDiscordUserId)).Nickname);
 
         /// <summary>
         /// Returns a list of guild members that satisfied the filter function conditions.
