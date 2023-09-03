@@ -42,7 +42,7 @@ namespace MandrilBot.BackgroundServices.News
         #region IDiscordBotNewsService
 
         /// <summary>
-        /// Triggers in parallel every asynchronous <see cref="IDiscordBotNewsService.InitAsync(IChannelsController)"/> of all the slave news services.
+        /// Triggers in parallel every asynchronous <see cref="IDiscordBotNewsService.InitAsync(IMandrilChannelsService, TimeSpan)"/> of all the slave news services.
         /// </summary>
         /// <param name="aDiscordChannelsService"></param>
         /// <returns>Awaitable <see cref="Task"/>.</returns>
@@ -52,11 +52,6 @@ namespace MandrilBot.BackgroundServices.News
                 tracker => tracker.InitAsync(aDiscordChannelsService, aTimeout)
                 );
 
-        /// <summary>
-        /// Sets the number of seconds that all the slave services healtchecks will use to consider if the slave service is healthy or not
-        /// depeding on the elapsed time between the last successful http get from news resource until the time of checking the service health.
-        /// </summary>
-        /// <param name="aSeconds"></param>
         public void SetHealthCheck_Healthy_MaxGetElapsedTime_InSeconds(int aSeconds)
             => _newsResourceTrackerList.ForEach(newsService => newsService.SetHealthCheck_Healthy_MaxGetElapsedTime_InSeconds(aSeconds));
 
@@ -72,18 +67,12 @@ namespace MandrilBot.BackgroundServices.News
                     aCancellationToken
                     );
 
-        /// <summary>
-        /// Gets a HealthCheck information about this service merging all the individual healthChecks from the slave news services.
-        /// </summary>
-        /// <param name="aCancellationToken"></param>
-        /// <returns>
-        /// <see cref="HealthCheckResult"/> healthy if all the slave news services are health, otherwise degraded if at least one is unhealthy.</returns>
         public HealthCheckResult GetHealthCheck(CancellationToken aCancellationToken = default)
         {
             aCancellationToken.ThrowIfCancellationRequested();
 
             var lHealthIssuesList = _newsResourceTrackerList
-                .Select(newsTrakcer => newsTrakcer.GetHealthCheck())
+                .Select(newsTracker => newsTracker.GetHealthCheck())
                 .ToArray();
 
             string lJoinedHealthDescriptions = string.Join($" {Environment.NewLine}", lHealthIssuesList.Select(healthCheckResult => healthCheckResult.Description));

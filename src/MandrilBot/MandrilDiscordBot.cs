@@ -15,7 +15,7 @@ using TGF.CA.Application;
 namespace MandrilBot
 {
     /// <summary>
-    /// Class designed as a service to provide comminication with an internal Discord bot in this service, with functionality accessible through the public interface.
+    /// Class designed as a service to provide communication with an internal Discord bot in this service, with functionality accessible through the public interface.
     /// </summary>
     public partial class MandrilDiscordBot : IMandrilDiscordBot
     {
@@ -38,13 +38,6 @@ namespace MandrilBot
 
         #region IMandrilDiscordBot
 
-        /// <summary>
-        /// Gets a HealthCheck information about this service by attempting to fetch the target discord guild through the bot client.
-        /// </summary>
-        /// <param name="aCancellationToken"></param>
-        /// <returns>
-        /// <see cref="HealthCheckResult"/> healthy if the bot is up and working under 150ms latency, 
-        /// dergraded in case latency is over 150ms and unhealthy in case the bot is down. </returns>
         public async Task<HealthCheckResult> GetHealthCheck(CancellationToken aCancellationToken = default)
         {
             aCancellationToken.ThrowIfCancellationRequested();
@@ -67,10 +60,6 @@ namespace MandrilBot
 
         }
 
-        /// <summary>
-        /// Attempts asynchronously to establish the connection of the internal configured bot with Discord.
-        /// </summary>
-        /// <returns>awaitable <see cref="Task"/></returns>
         public async Task StartAsync()
         {
             try
@@ -88,11 +77,6 @@ namespace MandrilBot
             }
         }
 
-        /// <summary>
-        /// Unsubscribe the event handler that do ban new bots joined temporarily.
-        /// </summary>
-        /// <param name="aMinutesAllowed">Number of minutes the new bots will be allowed to join the guild.</param>
-        /// <returns>True if the status changed from not allowed to allowed, false if nothing changed because it was allowed already at this time.</returns>
         public async Task<bool> AllowTemporarilyJoinNewBots(int aMinutesAllowed)
         {
             if (!mIsAutoBanBotsEnabled)

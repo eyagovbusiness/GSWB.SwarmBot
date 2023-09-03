@@ -27,57 +27,45 @@ namespace MandrilBot.BackgroundServices.NewMemberManager
         #region INewMemberManagerService
 
         /// <summary>
-        /// Executes the daily ckecking of every member with the <see cref="BotNewMembersManagerConfig.NoMediaRoleId"/> 
+        /// Executes the daily checking of every member with the <see cref="BotNewMembersManagerConfig.NoMediaRoleId"/> 
         /// and replaces the role by <see cref="BotNewMembersManagerConfig.MediaRoleId"/> if it proceeds according with the application settings(<see cref="BotNewMembersManagerConfig.NoMediaDays"/>).
         /// </summary>
         /// <param name="aStoppingToken"></param>
         /// <returns>awaitable <see cref="Task"/>.</returns>
         public async Task DoDailyTaskAsync(CancellationToken aStoppingToken)
         {
-            IEnumerable<DiscordMember> lDiscordmemberList = await GetNewDiscordMemberList(CheckMemberJoinedAt, aStoppingToken);
+            IEnumerable<DiscordMember> lDiscordMemberList = await GetNewDiscordMemberList(CheckMemberJoinedAt, aStoppingToken);
             //If there is any member ready to upgrade from the NoMediaRole to the MediaRole, then replace the role.
-            if (lDiscordmemberList.Any())
+            if (lDiscordMemberList.Any())
             {
-                using (var scope = _serviceScopeFactory.CreateScope())
-                {
-                    var lDiscordRolesControllerService = scope.ServiceProvider.GetRequiredService<IMandrilRolesService>();
-                    await lDiscordRolesControllerService.RevokeRoleToMemberList(_botNewMembersManagerConfig.NoMediaRoleId, lDiscordmemberList, aStoppingToken);
-                    await lDiscordRolesControllerService.AssignRoleToMemberList(_botNewMembersManagerConfig.MediaRoleId, lDiscordmemberList, aStoppingToken);
-                }
+                using var scope = _serviceScopeFactory.CreateScope();
+                var lDiscordRolesControllerService = scope.ServiceProvider.GetRequiredService<IMandrilRolesService>();
+                await lDiscordRolesControllerService.RevokeRoleToMemberList(_botNewMembersManagerConfig.NoMediaRoleId, lDiscordMemberList, aStoppingToken);
+                await lDiscordRolesControllerService.AssignRoleToMemberList(_botNewMembersManagerConfig.MediaRoleId, lDiscordMemberList, aStoppingToken);
             }
             await Task.CompletedTask;
         }
 
-        /// <summary>
-        /// Get all members with the NoMediaRole ready to be replaced by the MediaRole accordingly with the time they joined the guild and the appsettings.
-        /// </summary>
-        /// <param name="aStoppingToken"></param>
-        /// <returns>List with all members with the NoMediaRole ready to be replaced by the MediaRole accordingly with the time they joined the guild and the appsettings.</returns>
         public async Task<IEnumerable<DiscordMember>> GetNewDiscordMemberList(Func<DiscordMember, bool> aNewMemberFilterFunc, CancellationToken aStoppingToken = default)
         {
-            IEnumerable<DiscordMember> lDiscordmemberList = default;
+            IEnumerable<DiscordMember> lDiscordMemberList = default;
             using (var scope = _serviceScopeFactory.CreateScope())
             {
                 var lDiscordGuildControllerService = scope.ServiceProvider.GetRequiredService<IMandrilMembersService>();
-                var lDiscordmemberListResult = await lDiscordGuildControllerService.GetMemberList(
+                var lDiscordMemberListResult = await lDiscordGuildControllerService.GetMemberList(
                     member => member.Roles.Any(role =>
                         role.Id == _botNewMembersManagerConfig.NoMediaRoleId)
                         && aNewMemberFilterFunc(member)
                     , aStoppingToken);
-                if (!lDiscordmemberListResult.IsSuccess)
-                    throw new Exception($"Error getting the new members list from {nameof(NewMemberManagementService)}: {lDiscordmemberListResult}");
-                lDiscordmemberList = lDiscordmemberListResult.Value;
+                if (!lDiscordMemberListResult.IsSuccess)
+                    throw new Exception($"Error getting the new members list from {nameof(NewMemberManagementService)}: {lDiscordMemberListResult}");
+                lDiscordMemberList = lDiscordMemberListResult.Value;
             }
-            return lDiscordmemberList;
+            return lDiscordMemberList;
         }
 
-        /// <summary>
-        /// Get the number of no media days applied as a preemptive measure for new members.
-        /// </summary>
-        /// <returns><see cref="int"/> with the NoMediaDays configured for this service.</returns>
         public int GetNoMediaDays()
             => _botNewMembersManagerConfig.NoMediaDays;
-
 
         #endregion
 

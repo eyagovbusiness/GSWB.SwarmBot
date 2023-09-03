@@ -3,20 +3,20 @@
 namespace Mandril.Application
 {
     /// <summary>
-    /// Public interface to define the minimum behaviours a IDiscordBotNewsService class has to implement.
+    /// Public interface to define the minimum behaviors a DiscordBotNewsService class has to implement.
     /// </summary>
     public interface IDiscordBotNewsService
     {
         /// <summary>
-        /// Initializes the instance of this service with the requiered missin information it requieres to start working.
+        /// Initializes the instance of this service with the required missing information it requires to start working.
         /// </summary>
         /// <param name="aTimeout">Http client timeout when trying to get the web news resource.</param>
         /// <returns>Awaitable <see cref="Task"/>.</returns>
         Task InitAsync(IMandrilChannelsService aMandrilChannelsService, TimeSpan aTimeout);
 
         /// <summary>
-        /// Sets the number of seconds that the service healtcheck will use to consider if the service is healthy or not
-        /// depeding on the elapsed time between the last successful http get from news resource until the time of checking the service health.
+        /// Sets the number of seconds that the service health check will use to consider if the service is healthy or not
+        /// depending on the elapsed time between the last successful http get from news resource until the time of checking the service health.
         /// </summary>
         /// <param name="aSeconds"></param>
         public void SetHealthCheck_Healthy_MaxGetElapsedTime_InSeconds(int aSeconds);

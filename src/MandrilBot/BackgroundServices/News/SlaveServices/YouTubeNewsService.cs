@@ -15,7 +15,7 @@ using TGF.Common.Extensions;
 namespace MandrilBot.BackgroundServices.News.SlaveServices
 {
     /// <summary>
-    /// Service that will get from the youtube API v3 the last new videos from the StarCitizen official youtube channel.
+    /// Service that will get from the YouTube API v3 the last new videos from the StarCitizen official YouTube channel.
     /// </summary>
     internal class YouTubeNewsService : DiscordBotNewsServiceBase<YouTubeNewsMessage>, INewsWebTracker<YouTubeNewsMessage>
     {
@@ -70,7 +70,7 @@ namespace MandrilBot.BackgroundServices.News.SlaveServices
 
             List<YouTubeNewsMessage> lCurrentContentList = new();
             if (ActivitiesListResponse == null || ActivitiesListResponse.Items.IsNullOrEmpty())//If could not get the news resource return empty discord message list
-                return new List<YouTubeNewsMessage>(); //mLastGetElapsedTime will not be updated and healtcheck will update health if proceeds
+                return new List<YouTubeNewsMessage>(); //mLastGetElapsedTime will not be updated and health check will update health if proceeds
             mLastGetElapsedTime = DateTimeOffset.Now;
 
             return ActivitiesListResponse.Items
@@ -116,9 +116,9 @@ namespace MandrilBot.BackgroundServices.News.SlaveServices
         #region Private
 
         /// <summary>
-        /// Gets a new instance of <see cref="YouTubeNewsMessage"/> the youtube api response.
+        /// Gets a new instance of <see cref="YouTubeNewsMessage"/> the YouTube api response.
         /// </summary>
-        /// <param name="aSearchResult">youtube api result.</param>
+        /// <param name="aSearchResult">YouTube api result.</param>
         /// <returns>A new instance of <see cref="YouTubeNewsMessage"/>.</returns>
         private YouTubeNewsMessage GetMessageFromSearchResult(Activity aActivityResponse)
         => new()

@@ -14,11 +14,11 @@ namespace Mandril.Application
         /// Commands the discord bot to create a new category in the context server from the provided template. 
         /// </summary>
         /// <param name="aCategoryChannelTemplate"><see cref="CategoryChannelTemplateDTO"/> template to follow on creating the new category.</param>
-        /// <returns><see cref="IHttpResult{string}"/> with the Id of the created category channel and information about success or failureure on this operation.</returns>
+        /// <returns><see cref="IHttpResult{string}"/> with the Id of the created category channel and information about success or failure on this operation.</returns>
         public Task<IHttpResult<string>> CreateCategoryFromTemplate(CategoryChannelTemplateDTO aCategoryChannelTemplate, CancellationToken aCancellationToken = default);
 
         /// <summary>
-        /// Gets the first <see cref="DiscordChannel"/> frrom the context server channel list that statisfies the given filter conditions.
+        /// Gets the first <see cref="DiscordChannel"/> from the context server channel list that stratifies the given filter conditions.
         /// </summary>
         /// <param name="aFilterFunc">Filter function to get the required channel.</param>
         /// <param name="aCancellationToken"></param>
@@ -30,7 +30,7 @@ namespace Mandril.Application
         /// </summary>
         /// <param name="aDiscordCategoryName">Name of the category from which to get the Id</param>
         /// <param name="aCancellationToken"></param>
-        /// <returns><see cref="IHttpResult{string}"/> with valid DiscordChannel Id and information about success or failureure on this operation.</returns>
+        /// <returns><see cref="IHttpResult{string}"/> with valid DiscordChannel Id and information about success or failure on this operation.</returns>
         public Task<IHttpResult<string>> GetExistingCategoryId(string aDiscordCategoryName, CancellationToken aCancellationToken = default);
 
         /// <summary>
@@ -39,16 +39,16 @@ namespace Mandril.Application
         /// <param name="aDiscordCategoryId"></param>
         /// <param name="aCategoryChannelTemplate"></param>
         /// <param name="aCancellationToken"></param>
-        /// <returns>awaitable <see cref="Task"/> with <see cref="IHttpResult{Unit}"/> informing about success or failureure in operation.</returns>
+        /// <returns>awaitable <see cref="Task"/> with <see cref="IHttpResult{Unit}"/> informing about success or failure in operation.</returns>
         public Task<IHttpResult<Unit>> SyncExistingCategoryWithTemplate(ulong aDiscordCategoryId, CategoryChannelTemplateDTO aCategoryChannelTemplate, CancellationToken aCancellationToken = default);
 
         /// <summary>
         /// Commands this discord bot delete a given category channel and all inner channels. 
         /// </summary>
         /// <param name="aBot">Current discord bot that will execute the commands.</param>
-        /// <param name="aEventCategorylId">Id of the category channel</param>
+        /// <param name="aEventCategoryId">Id of the category channel</param>
         /// <returns><see cref="IHttpResult{Unit}"/> with information about success or failure on this operation.</returns>
-        public Task<IHttpResult<Unit>> DeleteCategoryFromId(ulong aEventCategorylId, CancellationToken aCancellationToken = default);
+        public Task<IHttpResult<Unit>> DeleteCategoryFromId(ulong aEventCategoryId, CancellationToken aCancellationToken = default);
 
         /// <summary>
         /// Commands this discord bot add a given list of users to a given category channel and all inner channels. 

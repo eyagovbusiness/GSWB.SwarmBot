@@ -5,7 +5,7 @@ namespace Mandril.Application
     public interface INewMemberManagementService
     {
         /// <summary>
-        /// Executes the daily ckecking of every member with the NoMediaRole.> 
+        /// Executes the daily checking of every member with the NoMediaRole.> 
         /// and replaces the role by the MediaRole if it proceeds according with the application settings (NoMediaDays).
         /// </summary>
         /// <param name="aStoppingToken"></param>

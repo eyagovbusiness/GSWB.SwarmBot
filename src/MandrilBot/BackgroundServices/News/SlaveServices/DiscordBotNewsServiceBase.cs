@@ -37,7 +37,7 @@ namespace MandrilBot.BackgroundServices.News.SlaveServices
             var lElapsedSecondsSinceTheLastGet = (DateTimeOffset.Now - mLastGetElapsedTime).TotalSeconds;
             return lElapsedSecondsSinceTheLastGet > mMaxGetElapsedTime
                 ? HealthCheckResult.Degraded($"The {GetType().Name}'s health is degraded. Failed to get the news resource, the last successful get was at {mLastGetElapsedTime}.")
-                : HealthCheckResult.Healthy($"The {GetType().Name} is healthy. Last news get was {lElapsedSecondsSinceTheLastGet.ToString("0.0")} seconds ago.");
+                : HealthCheckResult.Healthy($"The {GetType().Name} is healthy. Last news get was {lElapsedSecondsSinceTheLastGet:0.0} seconds ago.");
         }
 
         public virtual Task TickExecute(CancellationToken aCancellationToken)

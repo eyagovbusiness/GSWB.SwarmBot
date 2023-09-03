@@ -3,7 +3,7 @@
 namespace Mandril.Application
 {
     /// <summary>
-    /// Public interfacewith the accessible methods of the MandrilDiscordBot service.
+    /// Public interface with the accessible methods of the MandrillDiscordBot service.
     /// </summary>
     public interface IMandrilDiscordBot
     {
@@ -21,7 +21,7 @@ namespace Mandril.Application
         /// <param name="aCancellationToken"></param>
         /// <returns>
         /// <see cref="HealthCheckResult"/> healthy if the bot is up and working under 150ms latency, 
-        /// dergraded in case latency is over 150ms and unhealthy in case the bot is down. </returns>
+        /// degraded in case latency is over 150ms and unhealthy in case the bot is down. </returns>
         Task<HealthCheckResult> GetHealthCheck(CancellationToken aCancellationToken = default);
 
         /// <summary>
