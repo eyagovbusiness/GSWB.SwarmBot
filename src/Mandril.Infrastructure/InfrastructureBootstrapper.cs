@@ -25,7 +25,7 @@ namespace Mandril.Infrastructure
         public static void ConfigureInfrastructure(this WebApplicationBuilder aWebApplicationBuilder)
         {
             aWebApplicationBuilder.Services.AddDiscoveryService(aWebApplicationBuilder.Configuration);
-            aWebApplicationBuilder.Services.AddVaultSecretsManager(aWebApplicationBuilder.Configuration);
+            aWebApplicationBuilder.Services.AddVaultSecretsManager();
 
             aWebApplicationBuilder.Services.AddSingleton<IMandrilDiscordBot, MandrilDiscordBot>()
                 .AddMandrilBotPassiveServices()
