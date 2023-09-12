@@ -44,7 +44,7 @@ namespace MandrilBot.Commands
 
                 using (var scope = _serviceScopeFactory.CreateScope())
                 {
-                    var lNewMemberManagerService = scope.ServiceProvider.GetRequiredService<Mandril.Application.INewMemberManagementService>();
+                    var lNewMemberManagerService = scope.ServiceProvider.GetRequiredService<INewMemberManagementService>();
                     var lNoMediaDays = lNewMemberManagerService.GetNoMediaDays();
                     var lNewMemberList = await lNewMemberManagerService.GetNewDiscordMemberList((DiscordMember member) => true);
                     string lJoinString = $"{Environment.NewLine} {Environment.NewLine}";//jump line and leave one empty line below each entry

@@ -133,7 +133,7 @@ namespace MandrilBot
 
             Commands = Client.UseCommandsNext(lCommandsConfig);
             Commands.RegisterCommands<BotAdminCommands>();
-            Commands.RegisterCommands<BotCommands>();
+            Commands.RegisterCommands<BotTrustedMemberCommands>();
         }
 
         private IServiceProvider GetCommandsServiceProvider()
@@ -145,6 +145,7 @@ namespace MandrilBot
             var lServices = new ServiceCollection();
             lServices.AddSingleton<IMandrilDiscordBot>(this);
             lServices.AddScoped<IMandrilMembersService, MandrilMembersService>();
+            lServices.AddScoped<IMandrilRolesService, MandrilRolesService>();
             lServices.AddScoped<INewMemberManagementService, NewMemberManagementService>();
             lServices.AddSingleton<IConfiguration>(lNewConfiguration); // Register lNewConfiguration as IConfiguration
             return lServices.BuildServiceProvider();
