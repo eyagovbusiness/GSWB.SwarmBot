@@ -3,7 +3,6 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using Mandril.Application;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
@@ -12,21 +11,17 @@ namespace MandrilBot.Commands
     /// <summary>
     /// Class with definition of the Discord bot commands that can be used to interact with the bot from Discord only allowed to member with the defined Admin role.
     /// </summary>
-    internal class BotAdminCommands : BaseCommandModule
+    internal class BotAdminCommands : BotAuthorizedCommands
     {
         private readonly IMandrilDiscordBot _mandrilDiscordBot;
-        private readonly IServiceScopeFactory _serviceScopeFactory;
-        private readonly ulong _botAdminRoleId;
 
-        public BotAdminCommands(IMandrilDiscordBot aMandrilDiscordBot, IServiceScopeFactory aServiceScopeFactory, IConfiguration aConfiguration)
+        public BotAdminCommands
+            (IMandrilDiscordBot aMandrilDiscordBot, IServiceScopeFactory aServiceScopeFactory, IConfiguration aConfiguration) 
+                : base(aServiceScopeFactory, aConfiguration, "BotAdminRoleId")
         {
             _mandrilDiscordBot = aMandrilDiscordBot;
-            _serviceScopeFactory = aServiceScopeFactory;
-            _botAdminRoleId = aConfiguration.GetValue<ulong>("BotAdminRoleId");
         }
 
-        private bool HasAdminRole(DiscordMember aDiscordMember)
-            => aDiscordMember.Roles.Any(x => x.Id == _botAdminRoleId);
 
         /// <summary>
         /// This command makes the bot to reply a message with the list of the current members with the NoMediaRole 
@@ -39,7 +34,7 @@ namespace MandrilBot.Commands
         {
             try
             {
-                if (!HasAdminRole(aCommandContext.Member))
+                if (!await IsMemberAuthorized(aCommandContext.Member))
                     return;
 
                 using (var scope = _serviceScopeFactory.CreateScope())
@@ -81,7 +76,7 @@ namespace MandrilBot.Commands
         {
             try
             {
-                if (!HasAdminRole(aCommandContext.Member))
+                if (!await IsMemberAuthorized(aCommandContext.Member))
                     return;
 
                 await aCommandContext.Channel.SendMessageAsync("New bots will be allowed to join the server during the next 5 minutes...");

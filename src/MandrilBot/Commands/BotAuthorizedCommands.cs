@@ -8,8 +8,8 @@ namespace MandrilBot.Commands
 {
     internal abstract class BotAuthorizedCommands : BaseCommandModule
     {
-        private readonly Lazy<Task<int>> _authorizeCommandRolePosition;
-        private readonly IServiceScopeFactory _serviceScopeFactory;
+        protected readonly Lazy<Task<int>> _authorizeCommandRolePosition;
+        protected readonly IServiceScopeFactory _serviceScopeFactory;
 
         internal BotAuthorizedCommands(IServiceScopeFactory aServiceScopeFactory, IConfiguration aConfiguration, string aConfigKeyName)
         {
@@ -36,7 +36,7 @@ namespace MandrilBot.Commands
 
         }
 
-        internal async Task<bool> IsMemberAuthorized(DiscordMember aDiscordMember)
+        protected async Task<bool> IsMemberAuthorized(DiscordMember aDiscordMember)
         {
             var lMinRolePositionRequired = await _authorizeCommandRolePosition.Value;
             return aDiscordMember.Roles.Any(x => x.Position >= lMinRolePositionRequired);
