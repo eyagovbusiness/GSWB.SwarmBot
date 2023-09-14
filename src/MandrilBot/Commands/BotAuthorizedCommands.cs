@@ -6,6 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MandrilBot.Commands
 {
+    /// <summary>
+    /// Abstract base class extending <see cref="BaseCommandModule"/> with with support for custom authorization role-based rule to execute the commands registered in its derived classes. Only members with the authorization role specified in the constructor if this class will be authorized to call the commands.
+    /// </summary>
     internal abstract class BotAuthorizedCommands : BaseCommandModule
     {
         protected readonly Lazy<Task<int>> _authorizeCommandRolePosition;
