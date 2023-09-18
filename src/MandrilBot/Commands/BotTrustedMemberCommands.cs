@@ -14,7 +14,7 @@ namespace MandrilBot.Commands
     internal class BotTrustedMemberCommands : BotAuthorizedCommands
     {
         public BotTrustedMemberCommands
-            (IServiceScopeFactory aServiceScopeFactory, IConfiguration aConfiguration) 
+            (IServiceScopeFactory aServiceScopeFactory, IConfiguration aConfiguration)
                 : base(aServiceScopeFactory, aConfiguration, "TrustedMemberRoleId")
         {
         }
@@ -42,7 +42,7 @@ namespace MandrilBot.Commands
 
         [Command("moveRoleList")]
         [Description("Move to the target voice channel all members connected to the same voice channel as the command caller with at least one of the provided roles assigned.")]
-        public async Task MoveRoleList(CommandContext aContext,     
+        public async Task MoveRoleList(CommandContext aContext,
             [Description("Channel to move members to.")] DiscordChannel aTargetChannel,
             [Description("List of Roles to determine which members to move.")] params DiscordRole[] aRoleList)
         {

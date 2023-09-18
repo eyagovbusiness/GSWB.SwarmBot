@@ -26,7 +26,7 @@ namespace MandrilBot.Services
                 .Map(discordGuild => discordGuild.Roles
                                     .Select(rolePair => rolePair.Value)
                                     .Select(role => new DiscordRoleDTO(role.Id, role.Name, (byte)role.Position)).ToArray())
-                .Verify(roleList => roleList!= null && roleList.Length > 0, DiscordBotErrors.Role.GuildRolesFetchFailed);
+                .Verify(roleList => roleList != null && roleList.Length > 0, DiscordBotErrors.Role.GuildRolesFetchFailed);
 
         public async Task<IHttpResult<Unit>> AssignRoleToMember(ulong aRoleId, string aFullDiscordHandle, string aReason = null, CancellationToken aCancellationToken = default)
         {

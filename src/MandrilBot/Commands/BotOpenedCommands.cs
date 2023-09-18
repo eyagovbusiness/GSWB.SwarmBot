@@ -14,6 +14,12 @@ namespace MandrilBot.Commands
         }
 
 
+
+        /// <summary>
+        /// WIP
+        /// </summary>
+        /// <param name="aCommandContext"></param>
+        /// <returns></returns>
         [Command("start-service")]
         public async Task StartServiceBotCommand(CommandContext aCommandContext)
         {
@@ -25,6 +31,7 @@ namespace MandrilBot.Commands
                                      .PlaceInAsync(aCommandContext.Channel.Parent.Children
                                         .FirstOrDefault(x => x.Type == DSharpPlus.ChannelType.Voice))
                                      .ConfigureAwait(false);
+                throw new NotImplementedException();
             }
             catch (BadRequestException)
             {
@@ -32,39 +39,5 @@ namespace MandrilBot.Commands
             }
 
         }
-
-        [Command("members")]
-        public async Task GetMemberList(CommandContext aCommandContext)
-        {
-            try
-            {
-                //await aCommandContext.Channel.DeleteMessagesAsync(await aCommandContext.Channel.GetMessagesAsync());
-                var lMemberList = await aCommandContext.Guild
-                                         .GetAllMembersAsync()
-                                         .ConfigureAwait(false);
-                var lString = Utf8Json.JsonSerializer.ToJsonString(lMemberList.Select(x => $"{x.Username}#{x.Discriminator}").ToArray());
-                await aCommandContext.Channel.SendMessageAsync(lString);
-            }
-            catch (BadRequestException)
-            {
-                await aCommandContext.Channel.SendMessageAsync("Something went wrong!");
-            }
-
-        }
-
-        [Command("clear")]
-        public async Task Clear(CommandContext aCommandContext)
-        {
-            try
-            {
-                await aCommandContext.Channel.DeleteMessagesAsync(await aCommandContext.Channel.GetMessagesAsync());
-            }
-            catch (BadRequestException)
-            {
-                await aCommandContext.Channel.SendMessageAsync("Something went wrong!");
-            }
-
-        }
-
     }
 }

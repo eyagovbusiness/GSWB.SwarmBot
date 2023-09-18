@@ -16,8 +16,8 @@ namespace MandrilBot.Commands
 
         internal BotAuthorizedCommands(IServiceScopeFactory aServiceScopeFactory, IConfiguration aConfiguration, string aConfigKeyName)
         {
-            _serviceScopeFactory = aServiceScopeFactory;    
-            if(string.IsNullOrEmpty(aConfigKeyName))
+            _serviceScopeFactory = aServiceScopeFactory;
+            if (string.IsNullOrEmpty(aConfigKeyName))
                 throw new ArgumentNullException("Error, when crating a new instance of BotAuthorizedCommands derived classes, the argument aConfigKeyName must be provided with a valid value.");
             var lAuthorizeRoleId = aConfiguration.GetValue<ulong>(aConfigKeyName);
             _authorizeCommandRolePosition = new Lazy<Task<int>>(GetAuthorizeCommandRole(lAuthorizeRoleId));
@@ -33,7 +33,7 @@ namespace MandrilBot.Commands
             if (!lRoleList.IsSuccess)
                 throw new Exception("Error while lazy initializing value for '_authorizeCommandRole' in a derived class of BotAuthorizedCommands. Failure on fetching guild role list.");
 
-            var lAuthorizeCommandRole = lRoleList.Value.FirstOrDefault(role => role.Id == aAuthorizeRoleId) 
+            var lAuthorizeCommandRole = lRoleList.Value.FirstOrDefault(role => role.Id == aAuthorizeRoleId)
                 ?? throw new Exception("Error while lazy initializing value for '_authorizeCommandRole' in a derived class of BotAuthorizedCommands. No guild roleId matches the required roleId if to authorize this commands.");
             return lAuthorizeCommandRole.Position;
 

@@ -16,7 +16,7 @@ namespace MandrilBot.Commands
         private readonly IMandrilDiscordBot _mandrilDiscordBot;
 
         public BotAdminCommands
-            (IMandrilDiscordBot aMandrilDiscordBot, IServiceScopeFactory aServiceScopeFactory, IConfiguration aConfiguration) 
+            (IMandrilDiscordBot aMandrilDiscordBot, IServiceScopeFactory aServiceScopeFactory, IConfiguration aConfiguration)
                 : base(aServiceScopeFactory, aConfiguration, "BotAdminRoleId")
         {
             _mandrilDiscordBot = aMandrilDiscordBot;
