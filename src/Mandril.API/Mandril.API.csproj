@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\TheGoodFramework\src\CleanArchitecture\Presentation\TGF.CA.Presentation\TGF.CA.Presentation.csproj" />
-    <ProjectReference Include="..\..\..\TheGoodFramework\src\Common\TheGoodFramework.Common.ROP\TGF.Common.ROP.csproj" />
+    <ProjectReference Include="..\..\..\TheGoodFramework\src\Common\TGF.Common.ROP\TGF.Common.ROP.csproj" />
     <ProjectReference Include="..\Mandril.Infrastructure\Mandril.Infrastructure.csproj" />
   </ItemGroup>
 
