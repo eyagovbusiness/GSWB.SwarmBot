@@ -24,6 +24,11 @@ namespace MandrilBot.BackgroundServices.News.Messages
         /// Official source link of the post.
         /// </summary>
         public string SourceLink;
+        /// <summary>
+        /// Unique messageId identifying the dev message.
+        /// </summary>
+        public readonly string MessageId => SourceLink[(SourceLink.LastIndexOf('/') + 1)..];
+
     }
 
     /// <summary>
