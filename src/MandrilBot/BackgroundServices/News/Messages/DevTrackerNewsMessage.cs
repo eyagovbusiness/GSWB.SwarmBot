@@ -37,13 +37,9 @@ namespace MandrilBot.BackgroundServices.News.Messages
     internal class DevTrackerNewsMessageComparer : IEqualityComparer<DevTrackerNewsMessage>
     {
         public bool Equals(DevTrackerNewsMessage x, DevTrackerNewsMessage y)
-            => x.Author == y.Author
-               && x.Title == y.Title
-               && x.Description == y.Description
-               && x.SourceLink == y.SourceLink
-               && x.Group == y.Group;
+            => x.MessageId == y.MessageId;
 
         public int GetHashCode([DisallowNull] DevTrackerNewsMessage lObj)
-            => HashCode.Combine(lObj.Author, lObj.Title, lObj.Description, lObj.SourceLink, lObj.Group);
+            => HashCode.Combine(lObj.MessageId);
     }
 }
