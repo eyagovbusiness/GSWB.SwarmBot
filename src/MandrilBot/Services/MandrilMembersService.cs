@@ -16,6 +16,7 @@ namespace MandrilBot.Services
         public MandrilMembersService(IMandrilDiscordBot aMandrilDiscordBot)
             => _guildsHandler = new GuildsHandler(aMandrilDiscordBot);
 
+        #region IMandrilMembersService
 
         public async Task<IHttpResult<int>> GetNumberOfOnlineMembers(CancellationToken aCancellationToken = default)
             => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
@@ -23,10 +24,11 @@ namespace MandrilBot.Services
                     .Map(discordMemberList => discordMemberList.Count(x => x.Presence != null
                                                                             && x.Presence.Status == UserStatus.Online
                                                                             && x.VoiceState?.Channel != null));
-        public async Task<IHttpResult<string>> GetMemberNicknameFromUserId(string aDiscordUserId, CancellationToken aCancellationToken = default)
+        public async Task<IHttpResult<DiscordProfileDTO>> GetMemberProfileFromId(string aDiscordUserId, CancellationToken aCancellationToken = default)
             => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
                     .Bind(discordGuild => MembersHandler.GetAllDiscordMemberListAtmAsync(discordGuild, aCancellationToken))
-                    .Map(discordMemberList => discordMemberList.FirstOrDefault(member => member.Id == ulong.Parse(aDiscordUserId)).Nickname);
+                    .Map(discordMemberList => discordMemberList.FirstOrDefault(member => member.Id == ulong.Parse(aDiscordUserId)))
+                    .Map(discordMember => new DiscordProfileDTO(discordMember.Nickname, ReplaceImageSizeInUrl(discordMember.AvatarUrl, 64)));
 
         public async Task<IHttpResult<IEnumerable<DiscordMember>>> GetMemberList(Func<DiscordMember, bool> aFilterFunc, CancellationToken aCancellationToken = default)
             => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
@@ -43,5 +45,14 @@ namespace MandrilBot.Services
                                         .Select(role => new DiscordRoleDTO(role.Id, role.Name, (byte)role.Position))
                                         .OrderByDescending(role => role.Position).ToArray());
 
+        #endregion 
+
+        #region Private
+        public static string ReplaceImageSizeInUrl(string url, int newSize)
+        {
+            int index = url.LastIndexOf('=');
+            return index >= 0 ? url[..(index + 1)] + newSize : url;
+        }
+        #endregion
     }
 }
