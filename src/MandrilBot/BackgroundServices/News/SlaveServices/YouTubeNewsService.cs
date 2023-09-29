@@ -124,7 +124,7 @@ namespace MandrilBot.BackgroundServices.News.SlaveServices
         => new()
         {
             Title = aActivityResponse.Snippet.Title,
-            Description = aActivityResponse.Snippet.Description,
+            Description = GetTextBeforeDashes(aActivityResponse.Snippet.Description),
             VideoLink = mNewsTopicConfig.ResourcePath + aActivityResponse.ContentDetails.Upload.VideoId,
             ThumbnailLink = aActivityResponse.Snippet.Thumbnails.High.Url
         };
@@ -139,6 +139,14 @@ namespace MandrilBot.BackgroundServices.News.SlaveServices
             ApiKey = (await _secretsManager.GetValueObject("youtube", "ApiKey")).ToString(),
             ApplicationName = "SCYouTubeTracker"
         });
+
+        public static string GetTextBeforeDashes(string aText)
+        {
+            if (string.IsNullOrEmpty(aText)) return string.Empty;
+
+            var parts = aText.Split(new[] { "---" }, StringSplitOptions.None);
+            return parts.Length > 0 ? parts[0].Trim() : string.Empty;
+        }
 
         #endregion
 
