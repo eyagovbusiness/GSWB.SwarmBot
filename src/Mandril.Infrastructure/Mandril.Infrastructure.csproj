@@ -19,8 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DataAccess\DbContext\" />
     <Folder Include="Contracts\" />
+    <Folder Include="DataAccess\DbContext\" />
     <Folder Include="Repositories\" />
   </ItemGroup>
 
@@ -29,16 +29,18 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.10">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" Version="7.0.5" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\TheGoodFramework\src\CleanArchitecture\Infrastructure\Security\TGF.CA.Infrastructure.Secrets\TGF.CA.Infrastructure.Secrets.csproj" />
-    <ProjectReference Include="..\..\..\TheGoodFramework\src\CleanArchitecture\Infrastructure\TGF.CA.Infrastructure.Communication\TGF.CA.Infrastructure.Communication.csproj" />
     <ProjectReference Include="..\..\..\TheGoodFramework\src\CleanArchitecture\Infrastructure\TGF.CA.Infrastructure.Discovery\TGF.CA.Infrastructure.Discovery.csproj" />
-    <ProjectReference Include="..\..\..\TheGoodFramework\src\CleanArchitecture\Infrastructure\TGF.CA.Infrastructure\TGF.CA.Infrastructure.csproj" />
     <ProjectReference Include="..\Mandril.Application\Mandril.Application.csproj" />
-    <ProjectReference Include="..\Mandril.Domain\Mandril.Domain.csproj" />
     <ProjectReference Include="..\MandrilBot\MandrilBot.csproj" />
   </ItemGroup>
 

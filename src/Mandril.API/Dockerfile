@@ -17,7 +17,6 @@ COPY ["TheGoodFramework/src/CleanArchitecture/Infrastructure/TGF.CA.Infrastructu
 COPY ["TheGoodFramework/src/CleanArchitecture/Infrastructure/Security/TGF.CA.Infrastructure.Secrets/TGF.CA.Infrastructure.Secrets.csproj", "TheGoodFramework/src/CleanArchitecture/Infrastructure/Security/TGF.CA.Infrastructure.Secrets/"]
 COPY ["TheGoodFramework/src/CleanArchitecture/Infrastructure/TGF.CA.Infrastructure.Discovery/TGF.CA.Infrastructure.Discovery.csproj", "TheGoodFramework/src/CleanArchitecture/Infrastructure/TGF.CA.Infrastructure.Discovery/"]
 COPY ["Mandril/src/Mandril.Infrastructure/Mandril.Infrastructure.csproj", "Mandril/src/Mandril.Infrastructure/"]
-COPY ["TheGoodFramework/src/CleanArchitecture/Infrastructure/TGF.CA.Infrastructure.Communication/TGF.CA.Infrastructure.Communication.csproj", "TheGoodFramework/src/CleanArchitecture/Infrastructure/TGF.CA.Infrastructure.Communication/"]
 COPY ["Mandril/src/Mandril.Application/Mandril.Application.csproj", "Mandril/src/Mandril.Application/"]
 COPY ["Mandril/src/Mandril.Domain/Mandril.Domain.csproj", "Mandril/src/Mandril.Domain/"]
 COPY ["Mandril/src/MandrilBot/MandrilBot.csproj", "Mandril/src/MandrilBot/"]
