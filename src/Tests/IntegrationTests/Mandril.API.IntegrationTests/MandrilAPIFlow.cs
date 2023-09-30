@@ -40,9 +40,9 @@ namespace Mandril.API.IntegrationTests
         public async Task CreateNewRole_ThenAssignRoleToAllMembers_ThenRevokeRoleToAllMembers_ThenDeleteRole()
         {
             var lExpectedStatusCode = HttpStatusCode.OK;
-            var lString = $"{TestCommon.GetFullRoute(MandrilApiRoutes.roles_create)}?name=IntegrationTestRole";
+
             //CreateNewRole
-            var lCreateRoleRply = await TestCommon._httpClient.PostAsync($"{TestCommon.GetFullRoute(MandrilApiRoutes.roles_create)}?name=IntegrationTestRole", default);
+            var lCreateRoleRply = await TestCommon._httpClient.PostAsync($"{TestCommon.GetFullRoute(MandrilApiRoutes.roles_create)}?roleName=IntegrationTestRole", default);
             var lCreateRoleRes = await TestCommon.AssertResponseWithContentAsync(lCreateRoleRply, lExpectedStatusCode, (string lRes) => !lRes.IsNullOrEmpty());
 
             //AssignRoleToAllMembers
@@ -65,7 +65,7 @@ namespace Mandril.API.IntegrationTests
             var lExpectedStatusCode = HttpStatusCode.OK;
 
             //CreateNewRole
-            var lCreateRoleRply = await TestCommon._httpClient.PostAsync($"{TestCommon.GetFullRoute(MandrilApiRoutes.roles_create)}?name=IntegrationTestRoleSingle", default);
+            var lCreateRoleRply = await TestCommon._httpClient.PostAsync($"{TestCommon.GetFullRoute(MandrilApiRoutes.roles_create)}?roleName=IntegrationTestRoleSingle", default);
             var lCreateRoleRes = await TestCommon.AssertResponseWithContentAsync(lCreateRoleRply, lExpectedStatusCode, (string lRes) => !lRes.IsNullOrEmpty());
 
             //AssignRoleToMember

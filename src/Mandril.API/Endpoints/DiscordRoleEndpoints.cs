@@ -41,8 +41,8 @@ namespace Maindril.API.Endpoints
         /// <summary>
         /// Creates a new role in the discord's guild and response with the Id of the new Discord role created.
         /// </summary>
-        private async Task<IResult> Post_CreateRole(string name, IMandrilRolesService aMandrilRolesService, CancellationToken aCancellationToken = default)
-            => await aMandrilRolesService.CreateRole(name, aCancellationToken)
+        private async Task<IResult> Post_CreateRole(string roleName, IMandrilRolesService aMandrilRolesService, CancellationToken aCancellationToken = default)
+            => await aMandrilRolesService.CreateRole(roleName, aCancellationToken)
             .ToIResult();
 
         /// <summary>
