@@ -1,5 +1,6 @@
 ﻿using DSharpPlus;
 using DSharpPlus.CommandsNext;
+using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using Mandril.Application;
 using MandrilBot.BackgroundServices.NewMemberManager;
@@ -10,7 +11,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using TGF.CA.Application;
+using TGF.CA.Infrastructure.Communication.Publisher.Integration;
 
 namespace MandrilBot
 {
@@ -24,16 +27,18 @@ namespace MandrilBot
         private readonly ILoggerFactory _loggerFactory;
         private readonly IConfiguration _configuration;
         private readonly ISecretsManager _secretsManager;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
         internal BotConfig BotConfiguration { get; private set; }
 
         internal DiscordClient Client { get; private set; }
         internal CommandsNextExtension Commands { get; private set; }
 
-        public MandrilDiscordBot(ILoggerFactory aLoggerFactory, ISecretsManager aSecretsManager, IConfiguration aConfiguration)
+        public MandrilDiscordBot(ILoggerFactory aLoggerFactory, ISecretsManager aSecretsManager, IConfiguration aConfiguration, IServiceScopeFactory aServiceScopeFactory)
         {
             _loggerFactory = aLoggerFactory;
             _secretsManager = aSecretsManager;
             _configuration = aConfiguration;
+            _serviceScopeFactory = aServiceScopeFactory;
         }
 
         #region IMandrilDiscordBot
@@ -112,7 +117,41 @@ namespace MandrilBot
 
             Client = new DiscordClient(config);
             //By default the bot will be banning new bots unless it is temporary disabled via admin commands.
-            Client.GuildMemberAdded += BotOnGuildMemberAdded;
+            Client.GuildMemberAdded += OnGuildMemberAdded;
+            Client.GuildMemberUpdated += OnGuildMemberUpdated;
+            Client.GuildRoleCreated += OnGuildRoleCreated;
+            Client.GuildRoleDeleted += OnGuildRoleDeleted;
+            Client.GuildRoleUpdated += OnGuildRoleUpdated;
+        }
+
+        private Task OnGuildRoleUpdated(DiscordClient sender, GuildRoleUpdateEventArgs args)
+        {
+            //create role updated dto for message with changes about role name or position and include roleId and guildId
+            //args.RoleAfter.Id = null;
+            //if(args.RoleBefore.Name != args.RoleAfter.Name)
+            //    args.RoleAfter.Name = null;
+            //if (args.RoleBefore.Position != args.RoleAfter.Position)
+            //    args.RoleAfter.Position = null;
+            //args.Guild.Id = null;
+            return Task.CompletedTask;
+        }
+
+        private Task OnGuildRoleDeleted(DiscordClient sender, GuildRoleDeleteEventArgs args)
+        {
+            //create role deleted dto for message with roleId and guildId
+            //args.Role.Id = null;
+            //args.Guild.Id = null;
+            return Task.CompletedTask;
+        }
+
+        private Task OnGuildRoleCreated(DiscordClient sender, GuildRoleCreateEventArgs args)
+        {
+            //create role created dto for message with role id, name, position and include guildId      
+            //args.Role.Id = null;
+            //args.Role.Name = null;
+            //args.Role.Position = null;
+            //args.Guild.Id = null;
+            return Task.CompletedTask;
         }
 
         private async Task SetBotConfigurationAsync()
@@ -158,7 +197,7 @@ namespace MandrilBot
         /// <summary>
         /// Ban every new bot that joins the server unless it is allowed for short time by an admin using the admin command "?open-bots".
         /// </summary>
-        private async Task BotOnGuildMemberAdded(DiscordClient sender, GuildMemberAddEventArgs e)
+        private async Task OnGuildMemberAdded(DiscordClient sender, GuildMemberAddEventArgs e)
         {
             if (mIsAutoBanBotsEnabled && e.Guild.Id == BotConfiguration.DiscordTargetGuildId && e.Member.IsBot)
             {
@@ -167,7 +206,44 @@ namespace MandrilBot
             }
         }
 
+        private Task OnGuildMemberUpdated(DiscordClient sender, GuildMemberUpdateEventArgs e)
+        {
+            var lAddedRoles = e.RolesAfter.Except(e.RolesBefore).ToList();
+            var lRemovedRoles = e.RolesBefore.Except(e.RolesAfter).ToList();
+
+            if (lAddedRoles.Any())
+            {
+                SendRolesAddedMessage(lAddedRoles);
+            }
+
+            if (lRemovedRoles.Any())
+            {
+                SendRolesRevokedMessage(lRemovedRoles);
+                //Console.WriteLine($"{e.Member.Username} lost roles: {string.Join(", ", lRemovedRoles.Select(r => r.Name))}");
+            }
+
+            return Task.CompletedTask;
+        }
+
         #endregion
+
+        private void SendRolesAddedMessage(List<DiscordRole> aAddedRoleList)
+        {
+            //TO-DO:create dto with list fo roles, user id and a bool to indicate if the property is Removed or Added.Create an exchange that send the message to one queue to the members microservice and then the members send the message to api gateway when a member roles are updated.
+            //This is good because we centralize in the member microservice revocation(when an applicationn roles change permissiosn and when a member addd/remove a role)
+            //using var scope = _serviceScopeFactory.CreateScope();
+            //var lIntegrationMessagePublisher = scope.ServiceProvider.GetRequiredService<IIntegrationMessagePublisher>();
+            //lIntegrationMessagePublisher.Publish(aAddedRoleList, routingKey: "member.roles.update");
+        }
+
+        private void SendRolesRevokedMessage(List<DiscordRole> aAddedRoleList)
+        {
+            //TO-DO:create dto with list fo roles, user id and a bool to indicate if the property is Removed or Added.Create an exchange that send the message to one queue to the members microservice and then the members send the message to api gateway when a member roles are updated.
+            //This is good because we centralize in the member microservice revocation(when an applicationn roles change permissiosn and when a member addd/remove a role)
+            //using var scope = _serviceScopeFactory.CreateScope();
+            //var lIntegrationMessagePublisher = scope.ServiceProvider.GetRequiredService<IIntegrationMessagePublisher>();
+            //lIntegrationMessagePublisher.Publish(aAddedRoleList, routingKey: "member.roles.update");
+        }
 
     }
 }
