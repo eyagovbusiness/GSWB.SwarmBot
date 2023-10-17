@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
+﻿using DSharpPlus.AsyncEvents;
+using DSharpPlus.EventArgs;
+using DSharpPlus;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Mandril.Application
 {
@@ -7,6 +10,10 @@ namespace Mandril.Application
     /// </summary>
     public interface IMandrilDiscordBot
     {
+        public event AsyncEventHandler<DiscordClient, GuildMemberUpdateEventArgs> GuildMemberUpdated;
+        public event AsyncEventHandler<DiscordClient, GuildRoleCreateEventArgs> GuildRoleCreated;
+        public event AsyncEventHandler<DiscordClient, GuildRoleDeleteEventArgs> GuildRoleDeleted;
+        public event AsyncEventHandler<DiscordClient, GuildRoleUpdateEventArgs> GuildRoleUpdated;
 
         /// <summary>
         /// Unsubscribe the event handler that do ban new bots joined temporarily.
