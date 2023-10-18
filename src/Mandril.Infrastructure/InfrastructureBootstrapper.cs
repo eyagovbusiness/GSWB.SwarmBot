@@ -15,7 +15,7 @@ using TGF.CA.Infrastructure.Security.Secrets;
 namespace Mandril.Infrastructure
 {
     /// <summary>
-    /// Provides methods for configuring and using the application specific the infrastructure components.
+    /// Provides methods for configuring and using the application specific infrastructure layer components.
     /// </summary>
     public static class InfrastructureBootstrapper
     {
