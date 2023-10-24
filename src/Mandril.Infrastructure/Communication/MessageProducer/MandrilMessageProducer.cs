@@ -7,6 +7,7 @@ using TGF.CA.Infrastructure.Communication.Publisher.Integration;
 using Mandril.Infrastructure.Communication.Messages;
 using Mandril.Application.Mapping;
 using Mandril.Application.DTOs;
+using MandrilBot.Extensions;
 
 namespace Mandril.Infrastructure.Communication.MessageProducer
 {
@@ -40,15 +41,12 @@ namespace Mandril.Infrastructure.Communication.MessageProducer
         }
         #endregion
 
+        #region Event Handlers
         private async Task MandrilMessageProducer_GuildMemberUpdated(DiscordClient sender, GuildMemberUpdateEventArgs args)
         {
-            var lAddedRoles = args.RolesAfter.Except(args.RolesBefore).ToList();
-            var lRemovedRoles = args.RolesBefore.Except(args.RolesAfter).ToList();
-
-            if (lAddedRoles.Any())
-                await SendMessage(new MemberRoleAddedDTO(args.MemberAfter.Id, lAddedRoles.Select(role => role.ToDto()).ToArray()), aRoutingKey: "mandril.members.sync");
-            if (lRemovedRoles.Any())
-                await SendMessage(new MemberRoleRevokedDTO(args.MemberAfter.Id, lRemovedRoles.Select(role => role.ToDto()).ToArray()), aRoutingKey: "mandril.members.sync");
+            await SendIfGuildMemberRoleUpdate(args);
+            await SendIfGuildMemberDisplayNameUpdate(args);
+            await SendIfGuildMemberAvatarUpdate(args);
         }
 
         private async Task MandrilDiscordBot_GuildRoleUpdated(DiscordClient sender, GuildRoleUpdateEventArgs args)
@@ -60,12 +58,42 @@ namespace Mandril.Infrastructure.Communication.MessageProducer
         private async Task MandrilDiscordBot_GuildRoleCreated(DiscordClient sender, GuildRoleCreateEventArgs args)
             => await SendMessage(new RoleCreatedDTO(new DiscordRoleDTO(args.Role.Id, args.Role.Name, (byte)args.Role.Position)), aRoutingKey: "mandril.roles.sync");
 
+        #endregion
+
+        #region Helpers
         private async Task SendMessage(object aMessage, string? aRoutingKey = default)
         {
             using var lScope = _serviceScopeFactory.CreateScope();
             var lIntegrationMessagePublisher = lScope.ServiceProvider.GetRequiredService<IIntegrationMessagePublisher>();
             await lIntegrationMessagePublisher.Publish(aMessage, routingKey: aRoutingKey);
         }
+
+        private async Task SendIfGuildMemberRoleUpdate(GuildMemberUpdateEventArgs aGuildMemberUpdateEventArgs)
+        {
+            var lAddedRoles = aGuildMemberUpdateEventArgs.RolesAfter.Except(aGuildMemberUpdateEventArgs.RolesBefore).ToList();
+            var lRemovedRoles = aGuildMemberUpdateEventArgs.RolesBefore.Except(aGuildMemberUpdateEventArgs.RolesAfter).ToList();
+
+            if (lAddedRoles.Any())
+                await SendMessage(new MemberRoleAddedDTO(aGuildMemberUpdateEventArgs.MemberAfter.Id, lAddedRoles.Select(role => role.ToDto()).ToArray()), aRoutingKey: "mandril.members.sync");
+            if (lRemovedRoles.Any())
+                await SendMessage(new MemberRoleRevokedDTO(aGuildMemberUpdateEventArgs.MemberAfter.Id, lRemovedRoles.Select(role => role.ToDto()).ToArray()), aRoutingKey: "mandril.members.sync");
+        }
+
+        private async Task SendIfGuildMemberDisplayNameUpdate(GuildMemberUpdateEventArgs aGuildMemberUpdateEventArgs)
+        {
+            if(aGuildMemberUpdateEventArgs.NicknameAfter != aGuildMemberUpdateEventArgs.NicknameBefore
+                || aGuildMemberUpdateEventArgs.UsernameAfter != aGuildMemberUpdateEventArgs.UsernameBefore)
+                    await SendMessage(new MemberRenameDTO(aGuildMemberUpdateEventArgs.MemberAfter.Id, aGuildMemberUpdateEventArgs.MemberAfter.DisplayName));
+        }
+
+        private async Task SendIfGuildMemberAvatarUpdate(GuildMemberUpdateEventArgs aGuildMemberUpdateEventArgs)
+        {
+            if (aGuildMemberUpdateEventArgs.MemberAfter.GuildAvatarUrl != aGuildMemberUpdateEventArgs.MemberBefore.GuildAvatarUrl
+                || aGuildMemberUpdateEventArgs.MemberAfter.AvatarUrl != aGuildMemberUpdateEventArgs.MemberBefore.AvatarUrl)
+                    await SendMessage(new MemberAvatarUpdateDTO(aGuildMemberUpdateEventArgs.MemberAfter.Id, aGuildMemberUpdateEventArgs.MemberAfter.GetGuildAvatarUrlOrDefault()));
+        }
+
+        #endregion
 
     }
 }
