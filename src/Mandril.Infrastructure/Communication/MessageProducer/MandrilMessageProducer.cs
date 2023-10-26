@@ -50,13 +50,13 @@ namespace Mandril.Infrastructure.Communication.MessageProducer
         }
 
         private async Task MandrilDiscordBot_GuildRoleUpdated(DiscordClient sender, GuildRoleUpdateEventArgs args)
-            => await SendMessage(new RoleUpdatedDTO(new DiscordRoleDTO(args.RoleAfter.Id, args.RoleAfter.Name, (byte)args.RoleAfter.Position)), aRoutingKey: "mandril.roles.sync");
+            => await SendMessage(new RoleUpdatedDTO(new DiscordRoleDTO(args.RoleAfter.ToString(), args.RoleAfter.Name, (byte)args.RoleAfter.Position)), aRoutingKey: "mandril.roles.sync");
 
         private async Task MandrilDiscordBot_GuildRoleDeleted(DiscordClient sender, GuildRoleDeleteEventArgs args)
-            => await SendMessage(new RoleDeletedDTO(args.Role.Id), aRoutingKey: "mandril.roles.sync");
+            => await SendMessage(new RoleDeletedDTO(args.Role.ToString()), aRoutingKey: "mandril.roles.sync");
 
         private async Task MandrilDiscordBot_GuildRoleCreated(DiscordClient sender, GuildRoleCreateEventArgs args)
-            => await SendMessage(new RoleCreatedDTO(new DiscordRoleDTO(args.Role.Id, args.Role.Name, (byte)args.Role.Position)), aRoutingKey: "mandril.roles.sync");
+            => await SendMessage(new RoleCreatedDTO(new DiscordRoleDTO(args.Role.ToString(), args.Role.Name, (byte)args.Role.Position)), aRoutingKey: "mandril.roles.sync");
 
         #endregion
 
@@ -74,23 +74,23 @@ namespace Mandril.Infrastructure.Communication.MessageProducer
             var lRemovedRoles = aGuildMemberUpdateEventArgs.RolesBefore.Except(aGuildMemberUpdateEventArgs.RolesAfter).ToList();
 
             if (lAddedRoles.Any())
-                await SendMessage(new MemberRoleAddedDTO(aGuildMemberUpdateEventArgs.MemberAfter.Id, lAddedRoles.Select(role => role.ToDto()).ToArray()), aRoutingKey: "mandril.members.sync");
+                await SendMessage(new MemberRoleAddedDTO(aGuildMemberUpdateEventArgs.MemberAfter.ToString(), lAddedRoles.Select(role => role.ToDto()).ToArray()), aRoutingKey: "mandril.members.sync");
             if (lRemovedRoles.Any())
-                await SendMessage(new MemberRoleRevokedDTO(aGuildMemberUpdateEventArgs.MemberAfter.Id, lRemovedRoles.Select(role => role.ToDto()).ToArray()), aRoutingKey: "mandril.members.sync");
+                await SendMessage(new MemberRoleRevokedDTO(aGuildMemberUpdateEventArgs.MemberAfter.ToString(), lRemovedRoles.Select(role => role.ToDto()).ToArray()), aRoutingKey: "mandril.members.sync");
         }
 
         private async Task SendIfGuildMemberDisplayNameUpdate(GuildMemberUpdateEventArgs aGuildMemberUpdateEventArgs)
         {
             if(aGuildMemberUpdateEventArgs.NicknameAfter != aGuildMemberUpdateEventArgs.NicknameBefore
                 || aGuildMemberUpdateEventArgs.UsernameAfter != aGuildMemberUpdateEventArgs.UsernameBefore)
-                    await SendMessage(new MemberRenameDTO(aGuildMemberUpdateEventArgs.MemberAfter.Id, aGuildMemberUpdateEventArgs.MemberAfter.DisplayName));
+                    await SendMessage(new MemberRenameDTO(aGuildMemberUpdateEventArgs.MemberAfter.ToString(), aGuildMemberUpdateEventArgs.MemberAfter.DisplayName));
         }
 
         private async Task SendIfGuildMemberAvatarUpdate(GuildMemberUpdateEventArgs aGuildMemberUpdateEventArgs)
         {
             if (aGuildMemberUpdateEventArgs.MemberAfter.GuildAvatarUrl != aGuildMemberUpdateEventArgs.MemberBefore.GuildAvatarUrl
                 || aGuildMemberUpdateEventArgs.MemberAfter.AvatarUrl != aGuildMemberUpdateEventArgs.MemberBefore.AvatarUrl)
-                    await SendMessage(new MemberAvatarUpdateDTO(aGuildMemberUpdateEventArgs.MemberAfter.Id, aGuildMemberUpdateEventArgs.MemberAfter.GetGuildAvatarUrlOrDefault()));
+                    await SendMessage(new MemberAvatarUpdateDTO(aGuildMemberUpdateEventArgs.MemberAfter.ToString(), aGuildMemberUpdateEventArgs.MemberAfter.GetGuildAvatarUrlOrDefault()));
         }
 
         #endregion

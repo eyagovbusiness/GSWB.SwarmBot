@@ -2,5 +2,5 @@
 
 namespace Mandril.Infrastructure.Communication.Messages
 {
-    public record MemberRoleRevokedDTO(ulong DiscordUserId, DiscordRoleDTO[] DiscordRoleList);
+    public record MemberRoleRevokedDTO(string DiscordUserId, DiscordRoleDTO[] DiscordRoleList);
 }

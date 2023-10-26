@@ -1,5 +1,5 @@
 ﻿
 namespace Mandril.Infrastructure.Communication.Messages
 {
-    public record MemberRenameDTO(ulong DiscordUserId, string NewDisplayName);
+    public record MemberRenameDTO(string DiscordUserId, string NewDisplayName);
 }

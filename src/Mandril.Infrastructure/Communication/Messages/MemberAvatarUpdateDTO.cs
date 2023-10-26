@@ -1,5 +1,5 @@
 ﻿
 namespace Mandril.Infrastructure.Communication.Messages
 {
-    public record MemberAvatarUpdateDTO(ulong DiscordUserId, string NewAvatarUrl);
+    public record MemberAvatarUpdateDTO(string DiscordUserId, string NewAvatarUrl);
 }

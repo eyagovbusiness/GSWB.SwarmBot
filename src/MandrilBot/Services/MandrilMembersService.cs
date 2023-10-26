@@ -1,6 +1,7 @@
 ﻿using DSharpPlus.Entities;
 using Mandril.Application;
 using Mandril.Application.DTOs;
+using Mandril.Application.Mapping;
 using MandrilBot.Extensions;
 using MandrilBot.Handelers;
 using TGF.Common.ROP.HttpResult;
@@ -43,7 +44,7 @@ namespace MandrilBot.Services
                 .Verify(member => member is not null, DiscordBotErrors.Member.NotFoundId)
                 .Verify(member => member.Roles.Any(), DiscordBotErrors.Member.NotFoundAnyRole)
                 .Map(existingMember => existingMember.Roles
-                                        .Select(role => new DiscordRoleDTO(role.Id, role.Name, (byte)role.Position))
+                                        .Select(role => role.ToDto())
                                         .OrderByDescending(role => role.Position).ToArray());
 
         #endregion 
