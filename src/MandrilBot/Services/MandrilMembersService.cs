@@ -1,6 +1,7 @@
 ﻿using DSharpPlus.Entities;
 using Mandril.Application;
 using Mandril.Application.DTOs;
+using MandrilBot.Extensions;
 using MandrilBot.Handelers;
 using TGF.Common.ROP.HttpResult;
 
@@ -28,7 +29,7 @@ namespace MandrilBot.Services
             => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
                     .Bind(discordGuild => MembersHandler.GetAllDiscordMemberListAtmAsync(discordGuild, aCancellationToken))
                     .Map(discordMemberList => discordMemberList.FirstOrDefault(member => member.Id == ulong.Parse(aDiscordUserId)))
-                    .Map(discordMember => new DiscordProfileDTO(discordMember.Nickname, ReplaceImageSizeInUrl(discordMember.AvatarUrl, 64)));
+                    .Map(discordMember => new DiscordProfileDTO(discordMember.Nickname, discordMember.GetGuildAvatarUrlOrDefault()));
 
         public async Task<IHttpResult<IEnumerable<DiscordMember>>> GetMemberList(Func<DiscordMember, bool> aFilterFunc, CancellationToken aCancellationToken = default)
             => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
@@ -47,12 +48,5 @@ namespace MandrilBot.Services
 
         #endregion 
 
-        #region Private
-        public static string ReplaceImageSizeInUrl(string url, int newSize)
-        {
-            int index = url.LastIndexOf('=');
-            return index >= 0 ? url[..(index + 1)] + newSize : url;
-        }
-        #endregion
     }
 }
