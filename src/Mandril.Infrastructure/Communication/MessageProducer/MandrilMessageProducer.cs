@@ -83,14 +83,14 @@ namespace Mandril.Infrastructure.Communication.MessageProducer
         {
             if(aGuildMemberUpdateEventArgs.NicknameAfter != aGuildMemberUpdateEventArgs.NicknameBefore
                 || aGuildMemberUpdateEventArgs.UsernameAfter != aGuildMemberUpdateEventArgs.UsernameBefore)
-                    await SendMessage(new MemberRenameDTO(aGuildMemberUpdateEventArgs.MemberAfter.ToString(), aGuildMemberUpdateEventArgs.MemberAfter.DisplayName));
+                    await SendMessage(new MemberRenameDTO(aGuildMemberUpdateEventArgs.MemberAfter.Id.ToString(), aGuildMemberUpdateEventArgs.MemberAfter.DisplayName), aRoutingKey: "mandril.members.sync");
         }
 
         private async Task SendIfGuildMemberAvatarUpdate(GuildMemberUpdateEventArgs aGuildMemberUpdateEventArgs)
         {
             if (aGuildMemberUpdateEventArgs.MemberAfter.GuildAvatarUrl != aGuildMemberUpdateEventArgs.MemberBefore.GuildAvatarUrl
                 || aGuildMemberUpdateEventArgs.MemberAfter.AvatarUrl != aGuildMemberUpdateEventArgs.MemberBefore.AvatarUrl)
-                    await SendMessage(new MemberAvatarUpdateDTO(aGuildMemberUpdateEventArgs.MemberAfter.ToString(), aGuildMemberUpdateEventArgs.MemberAfter.GetGuildAvatarUrlOrDefault()));
+                    await SendMessage(new MemberAvatarUpdateDTO(aGuildMemberUpdateEventArgs.MemberAfter.ToString(), aGuildMemberUpdateEventArgs.MemberAfter.GetGuildAvatarUrlOrDefault()), aRoutingKey: "mandril.members.sync");
         }
 
         #endregion
