@@ -4,10 +4,10 @@ using Mandril.Application;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TGF.CA.Infrastructure.Communication.Publisher.Integration;
-using Mandril.Infrastructure.Communication.Messages;
 using Mandril.Application.Mapping;
 using Mandril.Application.DTOs;
 using MandrilBot.Extensions;
+using Mandril.Application.DTOs.Messages;
 
 namespace Mandril.Infrastructure.Communication.MessageProducer
 {
