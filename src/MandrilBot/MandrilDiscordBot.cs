@@ -140,36 +140,6 @@ namespace MandrilBot
             AddEventHandlers(Client);
         }
 
-        private Task OnGuildRoleUpdated(DiscordClient sender, GuildRoleUpdateEventArgs args)
-        {
-            //create role updated dto for message with changes about role name or position and include roleId and guildId
-            //args.RoleAfter.Id = null;
-            //if(args.RoleBefore.Name != args.RoleAfter.Name)
-            //    args.RoleAfter.Name = null;
-            //if (args.RoleBefore.Position != args.RoleAfter.Position)
-            //    args.RoleAfter.Position = null;
-            //args.Guild.Id = null;
-            return Task.CompletedTask;
-        }
-
-        private Task OnGuildRoleDeleted(DiscordClient sender, GuildRoleDeleteEventArgs args)
-        {
-            //create role deleted dto for message with roleId and guildId
-            //args.Role.Id = null;
-            //args.Guild.Id = null;
-            return Task.CompletedTask;
-        }
-
-        private Task OnGuildRoleCreated(DiscordClient sender, GuildRoleCreateEventArgs args)
-        {
-            //create role created dto for message with role id, name, position and include guildId      
-            //args.Role.Id = null;
-            //args.Role.Name = null;
-            //args.Role.Position = null;
-            //args.Guild.Id = null;
-            return Task.CompletedTask;
-        }
-
         private async Task SetBotConfigurationAsync()
         {
             BotConfiguration = await _secretsManager.Get<BotConfig>("mandrilbot");
