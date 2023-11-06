@@ -41,6 +41,8 @@ namespace MandrilBot
         public readonly AsyncEventHandler<DiscordClient, GuildRoleCreateEventArgs> _guildRoleCreatedHandler;
         public readonly AsyncEventHandler<DiscordClient, GuildRoleDeleteEventArgs> _guildRoleDeletedHandler;
         public readonly AsyncEventHandler<DiscordClient, GuildRoleUpdateEventArgs> _guildRoleUpdatedHandler;
+        public readonly AsyncEventHandler<DiscordClient, GuildBanAddEventArgs> _guildGuildBanAdded;
+        public readonly AsyncEventHandler<DiscordClient, GuildBanRemoveEventArgs> _guildBanRemoved;
         #endregion
 
         public MandrilDiscordBot(ILoggerFactory aLoggerFactory, ISecretsManager aSecretsManager, IConfiguration aConfiguration, IServiceScopeFactory aServiceScopeFactory)
@@ -54,6 +56,8 @@ namespace MandrilBot
             _guildRoleCreatedHandler = (client, args) => GuildRoleCreated?.Invoke(client, args);
             _guildRoleDeletedHandler = (client, args) => GuildRoleDeleted?.Invoke(client, args);
             _guildRoleUpdatedHandler = (client, args) => GuildRoleUpdated?.Invoke(client, args);
+            _guildGuildBanAdded = (client, args) => GuildBanAdded?.Invoke(client, args);
+            _guildBanRemoved = (client, args) => GuildBanRemoved?.Invoke(client, args);
 
         }
 
@@ -63,6 +67,8 @@ namespace MandrilBot
         public event AsyncEventHandler<DiscordClient, GuildRoleCreateEventArgs> GuildRoleCreated;
         public event AsyncEventHandler<DiscordClient, GuildRoleDeleteEventArgs> GuildRoleDeleted;
         public event AsyncEventHandler<DiscordClient, GuildRoleUpdateEventArgs> GuildRoleUpdated;
+        public event AsyncEventHandler<DiscordClient, GuildBanAddEventArgs> GuildBanAdded;
+        public event AsyncEventHandler<DiscordClient, GuildBanRemoveEventArgs> GuildBanRemoved;
 
         public async Task<HealthCheckResult> GetHealthCheck(CancellationToken aCancellationToken = default)
         {
@@ -189,6 +195,8 @@ namespace MandrilBot
             aDiscordClient.GuildRoleCreated += _guildRoleCreatedHandler;
             aDiscordClient.GuildRoleDeleted += _guildRoleDeletedHandler;
             aDiscordClient.GuildRoleUpdated += _guildRoleUpdatedHandler;
+            aDiscordClient.GuildBanAdded += _guildGuildBanAdded;
+            aDiscordClient.GuildBanRemoved += _guildBanRemoved;
         }
 
         private void RemoveEventHandlers(DiscordClient aDiscordClient)
@@ -200,6 +208,8 @@ namespace MandrilBot
             aDiscordClient.GuildRoleCreated -= _guildRoleCreatedHandler;
             aDiscordClient.GuildRoleDeleted -= _guildRoleDeletedHandler;
             aDiscordClient.GuildRoleUpdated -= _guildRoleUpdatedHandler;
+            aDiscordClient.GuildBanAdded -= _guildGuildBanAdded;
+            aDiscordClient.GuildBanRemoved -= _guildBanRemoved;
         }
 
         /// <summary>

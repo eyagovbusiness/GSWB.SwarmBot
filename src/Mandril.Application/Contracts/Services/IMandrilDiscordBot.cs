@@ -14,6 +14,8 @@ namespace Mandril.Application
         public event AsyncEventHandler<DiscordClient, GuildRoleCreateEventArgs> GuildRoleCreated;
         public event AsyncEventHandler<DiscordClient, GuildRoleDeleteEventArgs> GuildRoleDeleted;
         public event AsyncEventHandler<DiscordClient, GuildRoleUpdateEventArgs> GuildRoleUpdated;
+        public event AsyncEventHandler<DiscordClient, GuildBanAddEventArgs> GuildBanAdded;
+        public event AsyncEventHandler<DiscordClient, GuildBanRemoveEventArgs> GuildBanRemoved;
 
         /// <summary>
         /// Unsubscribe the event handler that do ban new bots joined temporarily.
