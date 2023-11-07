@@ -45,6 +45,8 @@ namespace Mandril.Infrastructure.Communication.MessageProducer
             _mandrilDiscordBot.GuildRoleCreated -= MandrilDiscordBot_GuildRoleCreated;
             _mandrilDiscordBot.GuildRoleDeleted -= MandrilDiscordBot_GuildRoleDeleted;
             _mandrilDiscordBot.GuildRoleUpdated -= MandrilDiscordBot_GuildRoleUpdated;
+            _mandrilDiscordBot.GuildBanAdded -= MandrilDiscordBot_GuildBanAdded;
+            _mandrilDiscordBot.GuildBanRemoved -= MandrilDiscordBot_GuildBanRemoved;
             return Task.CompletedTask;
         }
         #endregion
