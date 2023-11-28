@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="AngleSharp" Version="1.0.5" />
-    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.4.2" />
+    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.4.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
   </ItemGroup>
 
