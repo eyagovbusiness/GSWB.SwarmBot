@@ -11,7 +11,7 @@ namespace MandrilBot.Handlers
     public static class ChannelsHandler
     {
 
-        public static async Task<IHttpResult<string>> CreateTemplateChannelsAtmAsync(DiscordGuild aDiscordGuild, DiscordRole aDiscordEveryoneRole, CategoryChannelTemplateDTO aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
+        public static async Task<IHttpResult<ulong>> CreateTemplateChannelsAtmAsync(DiscordGuild aDiscordGuild, DiscordRole aDiscordEveryoneRole, CategoryChannelTemplateDTO aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
         {
             DiscordOverwriteBuilder[] lMakepublicDiscordOverwriteBuilder = default;
             return await Result.CancellationTokenResultAsync(aCancellationToken)
@@ -21,7 +21,7 @@ namespace MandrilBot.Handlers
                                         MandrilDiscordBot._maxDegreeOfParallelism,
                                         x => aDiscordGuild.CreateChannelAsync(x.Name, x.ChannelType, position: x.Position, parent: newCategory, overwrites: lMakepublicDiscordOverwriteBuilder),
                                         aCancellationToken))
-                   .Map(newCategory => newCategory.Id.ToString());
+                   .Map(newCategory => newCategory.Id);
 
         }
 
