@@ -3,6 +3,7 @@ using Mandril.Application.DTOs;
 using TGF.CA.Presentation;
 using TGF.CA.Presentation.Middleware;
 using TGF.CA.Presentation.MinimalAPI;
+using TGF.Common.ROP.HttpResult;
 
 namespace Maindril.API.Endpoints
 {
@@ -16,7 +17,7 @@ namespace Maindril.API.Endpoints
         public void DefineEndpoints(WebApplication aWebApplication)
         {
             aWebApplication.MapGet(MandrilApiRoutes.roles_serverRoles, Get_GuildServerRoles).SetResponseMetadata<DiscordRoleDTO[]>(200);
-            aWebApplication.MapPost(MandrilApiRoutes.roles_create, Post_CreateRole).SetResponseMetadata<string>(200, 404);
+            aWebApplication.MapPost(MandrilApiRoutes.roles_create, Post_CreateRole).SetResponseMetadata<ulong>(200, 404);
             aWebApplication.MapDelete(MandrilApiRoutes.roles_delete, Delete_Role).SetResponseMetadata(200, 404);
             aWebApplication.MapPut(MandrilApiRoutes.roles_assignToMemberList, Post_AssignRoleToMemberList).SetResponseMetadata(200, 404);
             aWebApplication.MapPut(MandrilApiRoutes.roles_revokeForMemberList, Put_RevokeRoleToMemberList).SetResponseMetadata(200, 404);
@@ -43,6 +44,7 @@ namespace Maindril.API.Endpoints
         /// </summary>
         private async Task<IResult> Post_CreateRole(string roleName, IMandrilRolesService aMandrilRolesService, CancellationToken aCancellationToken = default)
             => await aMandrilRolesService.CreateRole(roleName, aCancellationToken)
+            .Map(roleId => roleId.ToString())
             .ToIResult();
 
         /// <summary>

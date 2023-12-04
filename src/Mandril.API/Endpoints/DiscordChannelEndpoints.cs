@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using TGF.CA.Presentation;
 using TGF.CA.Presentation.Middleware;
 using TGF.CA.Presentation.MinimalAPI;
+using TGF.Common.ROP.HttpResult;
 
 namespace Maindril.API.Endpoints
 {
@@ -16,8 +17,8 @@ namespace Maindril.API.Endpoints
         /// <inheritdoc/>
         public void DefineEndpoints(WebApplication aWebApplication)
         {
-            aWebApplication.MapGet(MandrilApiRoutes.channels_categories_getId, GetExistingCategoryId).SetResponseMetadata<string>(200, 404);
-            aWebApplication.MapPost(MandrilApiRoutes.channels_categories_create, PostCreateCategoryFromTemplate).SetResponseMetadata<string>(200, 404);
+            aWebApplication.MapGet(MandrilApiRoutes.channels_categories_getId, GetExistingCategoryId).SetResponseMetadata<ulong>(200, 404);
+            aWebApplication.MapPost(MandrilApiRoutes.channels_categories_create, PostCreateCategoryFromTemplate).SetResponseMetadata<ulong>(200, 404);
             aWebApplication.MapPut(MandrilApiRoutes.channels_categories_addMemberList, PutAddMemberListToCategory).SetResponseMetadata(200, 404);
             aWebApplication.MapPut(MandrilApiRoutes.channels_categories_update, PutUpdateCategoryFromTemplate).SetResponseMetadata(200, 404);
             aWebApplication.MapDelete(MandrilApiRoutes.channels_categories_delete, DeleteCategory).SetResponseMetadata(200, 404);
@@ -38,6 +39,7 @@ namespace Maindril.API.Endpoints
         /// </summary>
         private async Task<IResult> GetExistingCategoryId(string categoryName, IMandrilChannelsService aMandrilChannelsService, CancellationToken aCancellationToken = default)
             => await aMandrilChannelsService.GetExistingCategoryId(categoryName, aCancellationToken)
+            .Map(categoryId => categoryId.ToString())
             .ToIResult();
 
         /// <summary>
@@ -45,6 +47,7 @@ namespace Maindril.API.Endpoints
         /// </summary>
         private async Task<IResult> PostCreateCategoryFromTemplate([FromBody] CategoryChannelTemplateDTO aTemplate, IMandrilChannelsService aMandrilChannelsService, CancellationToken aCancellationToken = default)
             => await aMandrilChannelsService.CreateCategoryFromTemplate(aTemplate, aCancellationToken)
+            .Map(newCategoryId => newCategoryId.ToString())
             .ToIResult();
 
         /// <summary>

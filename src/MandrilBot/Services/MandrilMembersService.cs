@@ -26,10 +26,10 @@ namespace MandrilBot.Services
                     .Map(discordMemberList => discordMemberList.Count(x => x.Presence != null
                                                                             && x.Presence.Status == UserStatus.Online
                                                                             && x.VoiceState?.Channel != null));
-        public async Task<IHttpResult<DiscordProfileDTO>> GetMemberProfileFromId(string aDiscordUserId, CancellationToken aCancellationToken = default)
+        public async Task<IHttpResult<DiscordProfileDTO>> GetMemberProfileFromId(ulong aDiscordUserId, CancellationToken aCancellationToken = default)
             => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
                     .Bind(discordGuild => MembersHandler.GetAllDiscordMemberListAtmAsync(discordGuild, aCancellationToken))
-                    .Map(discordMemberList => discordMemberList.FirstOrDefault(member => member.Id == ulong.Parse(aDiscordUserId)))
+                    .Map(discordMemberList => discordMemberList.FirstOrDefault(member => member.Id == aDiscordUserId))
                     .Map(discordMember => new DiscordProfileDTO(discordMember.DisplayName, discordMember.GetGuildAvatarUrlOrDefault()));
 
         public async Task<IHttpResult<IEnumerable<DiscordMember>>> GetMemberList(Func<DiscordMember, bool> aFilterFunc, CancellationToken aCancellationToken = default)

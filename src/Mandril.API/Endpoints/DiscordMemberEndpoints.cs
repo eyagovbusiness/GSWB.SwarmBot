@@ -40,7 +40,7 @@ namespace Maindril.API.Endpoints
         /// <summary>
         /// Get the member's server nickname from the Discord user id.
         /// </summary>
-        private async Task<IResult> GetMemberProfileFromId(string discordUserId, IMandrilMembersService aMandrilMembersService, CancellationToken aCancellationToken = default)
+        private async Task<IResult> GetMemberProfileFromId(ulong discordUserId, IMandrilMembersService aMandrilMembersService, CancellationToken aCancellationToken = default)
             => await aMandrilMembersService.GetMemberProfileFromId(discordUserId, aCancellationToken)
             .ToIResult();
 

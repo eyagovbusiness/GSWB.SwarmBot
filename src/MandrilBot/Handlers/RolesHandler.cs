@@ -14,11 +14,11 @@ namespace MandrilBot.Handlers
                     .Map(_ => aDiscordGuild.GetRole(aRoleId))
                     .Verify(discordRole => discordRole != null, DiscordBotErrors.Role.NotFoundId);
 
-        public static async Task<IHttpResult<string>> CreateRoleAtmAsync(DiscordGuild aDiscordGuild, string aRoleName, CancellationToken aCancellationToken = default)
+        public static async Task<IHttpResult<ulong>> CreateRoleAtmAsync(DiscordGuild aDiscordGuild, string aRoleName, CancellationToken aCancellationToken = default)
             => await Result.CancellationTokenResultAsync(aCancellationToken)
                     .Map(_ => aDiscordGuild.CreateRoleAsync(aRoleName))
                     .Verify(newRole => newRole != null, DiscordBotErrors.Role.RoleNotCreated)
-                    .Map(newRole => newRole.Id.ToString());
+                    .Map(newRole => newRole.Id);
 
         public static async Task<IHttpResult<Unit>> DeleteRoleAtmAsync(DiscordGuild aDiscordGuild, ulong aRoleId, CancellationToken aCancellationToken = default)
         => await Result.CancellationTokenResultAsync(aCancellationToken)

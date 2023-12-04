@@ -77,8 +77,8 @@ namespace Mandril.Application
         /// Commands this discord bot to create a new Role in the context server.
         /// </summary>
         /// <param name="aRoleName">string that will name the new Role.</param>
-        /// <returns><see cref="IHttpResult{string}"/> with information about success or fail on this operation and the Id of the new Role if succeed.</returns>
-        public Task<IHttpResult<string>> CreateRole(string aRoleName, CancellationToken aCancellationToken = default);
+        /// <returns><see cref="IHttpResult{ulong}"/> with information about success or fail on this operation and the Id of the new Role if succeed.</returns>
+        public Task<IHttpResult<ulong>> CreateRole(string aRoleName, CancellationToken aCancellationToken = default);
 
         /// <summary>
         /// Commands this discord bot to delete a given Role in the context server.
