@@ -25,8 +25,8 @@ namespace MandrilBot.Services
         /// Commands the discord bot to create a new category in the context server from the provided template. 
         /// </summary>
         /// <param name="aCategoryChannelTemplate"><see cref="CategoryChannelTemplateDTO"/> template to follow on creating the new category.</param>
-        /// <returns><see cref="IHttpResult{string}"/> with the Id of the created category channel and information about success or failure on this operation.</returns>
-        public async Task<IHttpResult<string>> CreateCategoryFromTemplate(CategoryChannelTemplateDTO aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
+        /// <returns><see cref="IHttpResult{ulong}"/> with the Id of the created category channel and information about success or failure on this operation.</returns>
+        public async Task<IHttpResult<ulong>> CreateCategoryFromTemplate(CategoryChannelTemplateDTO aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
             => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
                     .Bind(discordGuild => RolesHandler.GetDiscordRoleAtm(discordGuild, discordGuild.Id, aCancellationToken)
                     .Bind(discordEveryoneRole => ChannelsHandler.CreateTemplateChannelsAtmAsync(discordGuild, discordEveryoneRole, aCategoryChannelTemplate, aCancellationToken)));
@@ -46,11 +46,11 @@ namespace MandrilBot.Services
         /// </summary>
         /// <param name="aDiscordCategoryName">Name of the category from which to get the Id</param>
         /// <param name="aCancellationToken"></param>
-        /// <returns><see cref="IHttpResult{string}"/> with valid DiscordChannel Id and information about success or failure on this operation.</returns>
-        public async Task<IHttpResult<string>> GetExistingCategoryId(string aDiscordCategoryName, CancellationToken aCancellationToken = default)
+        /// <returns><see cref="IHttpResult{ulong}"/> with valid DiscordChannel Id and information about success or failure on this operation.</returns>
+        public async Task<IHttpResult<ulong>> GetExistingCategoryId(string aDiscordCategoryName, CancellationToken aCancellationToken = default)
             => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
                     .Bind(discordGuild => ChannelsHandler.GetDiscordCategory(discordGuild, channel => channel.Name == aDiscordCategoryName, aCancellationToken))
-                    .Map(discordChannel => discordChannel.Id.ToString());
+                    .Map(discordChannel => discordChannel.Id);
 
         /// <summary>
         /// Synchronizes an existing <see cref="DiscordChannel"/> with the given <see cref="CategoryChannelTemplateDTO"/> template, removing not matching channels and adding missing ones.

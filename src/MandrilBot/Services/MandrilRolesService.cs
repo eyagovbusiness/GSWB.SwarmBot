@@ -1,6 +1,7 @@
 ﻿using DSharpPlus.Entities;
 using Mandril.Application;
 using Mandril.Application.DTOs;
+using Mandril.Application.Mapping;
 using MandrilBot.Handelers;
 using MandrilBot.Handlers;
 using TGF.Common.ROP;
@@ -25,7 +26,7 @@ namespace MandrilBot.Services
             => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
                 .Map(discordGuild => discordGuild.Roles
                                     .Select(rolePair => rolePair.Value)
-                                    .Select(role => new DiscordRoleDTO(role.Id, role.Name, (byte)role.Position)).ToArray())
+                                    .Select(role => role.ToDto()).ToArray())
                 .Verify(roleList => roleList != null && roleList.Length > 0, DiscordBotErrors.Role.GuildRolesFetchFailed);
 
         public async Task<IHttpResult<Unit>> AssignRoleToMember(ulong aRoleId, string aFullDiscordHandle, string aReason = null, CancellationToken aCancellationToken = default)
@@ -96,7 +97,7 @@ namespace MandrilBot.Services
                         .Bind(discordMemberList => RolesHandler.RevokeRoleToMemberListAtmAsync(discordMemberList, lDiscordRole)));
         }
 
-        public async Task<IHttpResult<string>> CreateRole(string aRoleName, CancellationToken aCancellationToken = default)
+        public async Task<IHttpResult<ulong>> CreateRole(string aRoleName, CancellationToken aCancellationToken = default)
             => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
                     .Bind(discordGuild => RolesHandler.CreateRoleAtmAsync(discordGuild, aRoleName, aCancellationToken));
 

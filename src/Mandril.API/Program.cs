@@ -1,26 +1,16 @@
 using Mandril.API;
 using Mandril.Application;
 using Mandril.Infrastructure;
-using System.Reflection;
-using TGF.CA.Presentation;
 
+WebApplicationBuilder lMandrilApplicationBuilder = WebApplication.CreateBuilder();
 
-var lXmlDocFileName = $"{Assembly.GetEntryAssembly()?.GetName().Name}.xml";
-var lXmlDocFilePath = Path.Combine(AppContext.BaseDirectory, lXmlDocFileName);
+lMandrilApplicationBuilder.ConfigureInfrastructure();
+lMandrilApplicationBuilder.Services.RegisterApplicationServices();
+lMandrilApplicationBuilder.ConfigurePresentation();
 
-WebApplicationBuilder lApplicationBuilder = WebApplication.CreateBuilder();
+var lMandrilWebApplication = lMandrilApplicationBuilder.Build();
 
-lApplicationBuilder.ConfigureInfrastructure();
-lApplicationBuilder.Services.RegisterApplicationServices();
-lApplicationBuilder.ConfigureDefaultPresentation(
-    new List<string> { lXmlDocFilePath },
-    aBaseSwaggerPath: "mandril-ms",
-    aScanMarkerList: typeof(Errors));
+lMandrilWebApplication.UseInfrastructure();
+lMandrilWebApplication.UsePresentation();
 
-
-var lWebApplication = lApplicationBuilder.Build();
-
-lWebApplication.UseInfrastructure();
-lWebApplication.UseDefaultPresentationConfigurations(aUseIdentity: false, aUseCORS: false);
-
-await lWebApplication.RunAsync();
+await lMandrilWebApplication.RunAsync();

@@ -19,7 +19,7 @@
 
   <ItemGroup>
     <PackageReference Include="DSharpPlus" Version="4.4.2" />
-    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="7.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="7.0.13" />
   </ItemGroup>
 
 </Project>

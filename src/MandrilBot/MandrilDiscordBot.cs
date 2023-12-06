@@ -1,4 +1,5 @@
 ﻿using DSharpPlus;
+using DSharpPlus.AsyncEvents;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.EventArgs;
 using Mandril.Application;
@@ -17,26 +18,57 @@ namespace MandrilBot
     /// <summary>
     /// Class designed as a service to provide communication with an internal Discord bot in this service, with functionality accessible through the public interface.
     /// </summary>
-    public partial class MandrilDiscordBot : IMandrilDiscordBot
+    public partial class MandrilDiscordBot : IMandrilDiscordBot, IDisposable
     {
         public static readonly byte _maxDegreeOfParallelism = Convert.ToByte(Math.Ceiling(Environment.ProcessorCount * 0.75));
-        private bool mIsAutoBanBotsEnabled = true;
+
+        #region DI 
         private readonly ILoggerFactory _loggerFactory;
         private readonly IConfiguration _configuration;
         private readonly ISecretsManager _secretsManager;
-        internal BotConfig BotConfiguration { get; private set; }
+        private readonly IServiceScopeFactory _serviceScopeFactory;
+        #endregion
 
+        #region Bot
+        private bool mIsAutoBanBotsEnabled = true;
+        internal BotConfig BotConfiguration { get; private set; }
         internal DiscordClient Client { get; private set; }
         internal CommandsNextExtension Commands { get; private set; }
+        #endregion
 
-        public MandrilDiscordBot(ILoggerFactory aLoggerFactory, ISecretsManager aSecretsManager, IConfiguration aConfiguration)
+        #region EventDelegates
+        private readonly AsyncEventHandler<DiscordClient, GuildMemberUpdateEventArgs> _guildMemberUpdatedHandler;
+        public readonly AsyncEventHandler<DiscordClient, GuildRoleCreateEventArgs> _guildRoleCreatedHandler;
+        public readonly AsyncEventHandler<DiscordClient, GuildRoleDeleteEventArgs> _guildRoleDeletedHandler;
+        public readonly AsyncEventHandler<DiscordClient, GuildRoleUpdateEventArgs> _guildRoleUpdatedHandler;
+        public readonly AsyncEventHandler<DiscordClient, GuildBanAddEventArgs> _guildGuildBanAdded;
+        public readonly AsyncEventHandler<DiscordClient, GuildBanRemoveEventArgs> _guildBanRemoved;
+        #endregion
+
+        public MandrilDiscordBot(ILoggerFactory aLoggerFactory, ISecretsManager aSecretsManager, IConfiguration aConfiguration, IServiceScopeFactory aServiceScopeFactory)
         {
             _loggerFactory = aLoggerFactory;
             _secretsManager = aSecretsManager;
             _configuration = aConfiguration;
+            _serviceScopeFactory = aServiceScopeFactory;
+
+            _guildMemberUpdatedHandler = (client, args) => GuildMemberUpdated?.Invoke(client, args);
+            _guildRoleCreatedHandler = (client, args) => GuildRoleCreated?.Invoke(client, args);
+            _guildRoleDeletedHandler = (client, args) => GuildRoleDeleted?.Invoke(client, args);
+            _guildRoleUpdatedHandler = (client, args) => GuildRoleUpdated?.Invoke(client, args);
+            _guildGuildBanAdded = (client, args) => GuildBanAdded?.Invoke(client, args);
+            _guildBanRemoved = (client, args) => GuildBanRemoved?.Invoke(client, args);
+
         }
 
         #region IMandrilDiscordBot
+
+        public event AsyncEventHandler<DiscordClient, GuildMemberUpdateEventArgs> GuildMemberUpdated;
+        public event AsyncEventHandler<DiscordClient, GuildRoleCreateEventArgs> GuildRoleCreated;
+        public event AsyncEventHandler<DiscordClient, GuildRoleDeleteEventArgs> GuildRoleDeleted;
+        public event AsyncEventHandler<DiscordClient, GuildRoleUpdateEventArgs> GuildRoleUpdated;
+        public event AsyncEventHandler<DiscordClient, GuildBanAddEventArgs> GuildBanAdded;
+        public event AsyncEventHandler<DiscordClient, GuildBanRemoveEventArgs> GuildBanRemoved;
 
         public async Task<HealthCheckResult> GetHealthCheck(CancellationToken aCancellationToken = default)
         {
@@ -111,8 +143,7 @@ namespace MandrilBot
             };
 
             Client = new DiscordClient(config);
-            //By default the bot will be banning new bots unless it is temporary disabled via admin commands.
-            Client.GuildMemberAdded += BotOnGuildMemberAdded;
+            AddEventHandlers(Client);
         }
 
         private async Task SetBotConfigurationAsync()
@@ -155,18 +186,51 @@ namespace MandrilBot
 
         #region BotEvents
 
+        private void AddEventHandlers(DiscordClient aDiscordClient)
+        {
+            if (aDiscordClient == null)
+                return;
+            aDiscordClient.GuildMemberAdded += OnGuildMemberAdded;//By default the bot will be banning new bots unless it is temporary disabled via admin commands.
+            aDiscordClient.GuildMemberUpdated += _guildMemberUpdatedHandler;
+            aDiscordClient.GuildRoleCreated += _guildRoleCreatedHandler;
+            aDiscordClient.GuildRoleDeleted += _guildRoleDeletedHandler;
+            aDiscordClient.GuildRoleUpdated += _guildRoleUpdatedHandler;
+            aDiscordClient.GuildBanAdded += _guildGuildBanAdded;
+            aDiscordClient.GuildBanRemoved += _guildBanRemoved;
+        }
+
+        private void RemoveEventHandlers(DiscordClient aDiscordClient)
+        {
+            if (aDiscordClient == null)
+                return;
+            aDiscordClient.GuildMemberAdded -= OnGuildMemberAdded;
+            aDiscordClient.GuildMemberUpdated -= _guildMemberUpdatedHandler;
+            aDiscordClient.GuildRoleCreated -= _guildRoleCreatedHandler;
+            aDiscordClient.GuildRoleDeleted -= _guildRoleDeletedHandler;
+            aDiscordClient.GuildRoleUpdated -= _guildRoleUpdatedHandler;
+            aDiscordClient.GuildBanAdded -= _guildGuildBanAdded;
+            aDiscordClient.GuildBanRemoved -= _guildBanRemoved;
+        }
+
         /// <summary>
         /// Ban every new bot that joins the server unless it is allowed for short time by an admin using the admin command "?open-bots".
         /// </summary>
-        private async Task BotOnGuildMemberAdded(DiscordClient sender, GuildMemberAddEventArgs e)
+        private async Task OnGuildMemberAdded(DiscordClient sender, GuildMemberAddEventArgs e)
         {
             if (mIsAutoBanBotsEnabled && e.Guild.Id == BotConfiguration.DiscordTargetGuildId && e.Member.IsBot)
-            {
                 await e.Member.BanAsync(reason: "Bot detected.");
-                Console.WriteLine($"Banned bot: {e.Member.Username}#{e.Member.Discriminator}.");
-            }
         }
 
+        #endregion
+
+        #region IDisposable
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+            RemoveEventHandlers(Client);
+            Commands.Dispose();
+            Client.Dispose();
+        }
         #endregion
 
     }

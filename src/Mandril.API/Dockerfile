@@ -21,6 +21,8 @@ COPY ["TheGoodFramework/src/CleanArchitecture/Infrastructure/TGF.CA.Infrastructu
 COPY ["Mandril/src/Mandril.Application/Mandril.Application.csproj", "Mandril/src/Mandril.Application/"]
 COPY ["Mandril/src/Mandril.Domain/Mandril.Domain.csproj", "Mandril/src/Mandril.Domain/"]
 COPY ["Mandril/src/MandrilBot/MandrilBot.csproj", "Mandril/src/MandrilBot/"]
+COPY ["TheGoodFramework/src/CleanArchitecture/Infrastructure/Communication/TGF.CA.Infrastructure.Communication.RabbitMQ/TGF.CA.Infrastructure.Communication.RabbitMQ.csproj", "TheGoodFramework/src/CleanArchitecture/Infrastructure/Communication/TGF.CA.Infrastructure.Communication.RabbitMQ/"]
+COPY ["TheGoodFramework/src/CleanArchitecture/Infrastructure/Communication/TGF.CA.Infrastructure.Communication/TGF.CA.Infrastructure.Communication.csproj", "TheGoodFramework/src/CleanArchitecture/Infrastructure/Communication/TGF.CA.Infrastructure.Communication/"]
 COPY ["TheGoodFramework/src/Common/TGF.Common.Extensions/TGF.Common.Extensions.csproj", "TheGoodFramework/src/Common/TGF.Common.Extensions/"]
 COPY ["TheGoodFramework/src/Common/TGF.Common.Net/TGF.Common.Net.csproj", "TheGoodFramework/src/Common/TGF.Common.Net/"]
 RUN dotnet restore "Mandril/src/Mandril.API/Mandril.API.csproj"

@@ -1,5 +1,6 @@
 ﻿namespace Mandril.Application.DTOs
 {
-    public record DiscordProfileDTO(string Nickname, string AvatarUrl);
+    //TO-DO: GSWB-27, User.DisplayName is borken in DSharpPlus. Worarrounded in IMemberService.AddNewMember using DiscordCookieUserInfo.GivenName which will be removed when after a DSharpPlus fix is released.
+    public record DiscordProfileDTO(string UserDisplayName, string AvatarUrl);
 
 }

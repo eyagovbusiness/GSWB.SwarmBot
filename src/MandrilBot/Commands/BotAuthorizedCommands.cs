@@ -25,6 +25,7 @@ namespace MandrilBot.Commands
 
         private async Task<int> GetAuthorizeCommandRole(ulong aAuthorizeRoleId)
         {
+            string lAuthorizeRoleId = aAuthorizeRoleId.ToString();
             using var lScope = _serviceScopeFactory.CreateScope();
 
             var lMandrilRolesService = lScope.ServiceProvider.GetRequiredService<IMandrilRolesService>();
@@ -33,7 +34,7 @@ namespace MandrilBot.Commands
             if (!lRoleList.IsSuccess)
                 throw new Exception("Error while lazy initializing value for '_authorizeCommandRole' in a derived class of BotAuthorizedCommands. Failure on fetching guild role list.");
 
-            var lAuthorizeCommandRole = lRoleList.Value.FirstOrDefault(role => role.Id == aAuthorizeRoleId)
+            var lAuthorizeCommandRole = lRoleList.Value.FirstOrDefault(role => role.Id == lAuthorizeRoleId)
                 ?? throw new Exception("Error while lazy initializing value for '_authorizeCommandRole' in a derived class of BotAuthorizedCommands. No guild roleId matches the required roleId if to authorize this commands.");
             return lAuthorizeCommandRole.Position;
 

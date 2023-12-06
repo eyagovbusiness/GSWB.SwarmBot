@@ -23,7 +23,7 @@ namespace Mandril.Application
         /// </summary>
         /// <param name="aDiscordUserId">Discord user id.</param>
         /// <returns><see cref="IHttpResult{DiscordProfileDTO}"/> with the member's discord profile basic info.</returns>
-        public Task<IHttpResult<DiscordProfileDTO>> GetMemberProfileFromId(string aDiscordUserId, CancellationToken aCancellationToken = default);
+        public Task<IHttpResult<DiscordProfileDTO>> GetMemberProfileFromId(ulong aDiscordUserId, CancellationToken aCancellationToken = default);
 
         /// <summary>
         /// Returns a list of guild members that satisfied the filter function conditions.

@@ -14,8 +14,8 @@ namespace Mandril.Application
         /// Commands the discord bot to create a new category in the context server from the provided template. 
         /// </summary>
         /// <param name="aCategoryChannelTemplate"><see cref="CategoryChannelTemplateDTO"/> template to follow on creating the new category.</param>
-        /// <returns><see cref="IHttpResult{string}"/> with the Id of the created category channel and information about success or failure on this operation.</returns>
-        public Task<IHttpResult<string>> CreateCategoryFromTemplate(CategoryChannelTemplateDTO aCategoryChannelTemplate, CancellationToken aCancellationToken = default);
+        /// <returns><see cref="IHttpResult{ulong}"/> with the Id of the created category channel and information about success or failure on this operation.</returns>
+        public Task<IHttpResult<ulong>> CreateCategoryFromTemplate(CategoryChannelTemplateDTO aCategoryChannelTemplate, CancellationToken aCancellationToken = default);
 
         /// <summary>
         /// Gets the first <see cref="DiscordChannel"/> from the context server channel list that stratifies the given filter conditions.
@@ -30,8 +30,8 @@ namespace Mandril.Application
         /// </summary>
         /// <param name="aDiscordCategoryName">Name of the category from which to get the Id</param>
         /// <param name="aCancellationToken"></param>
-        /// <returns><see cref="IHttpResult{string}"/> with valid DiscordChannel Id and information about success or failure on this operation.</returns>
-        public Task<IHttpResult<string>> GetExistingCategoryId(string aDiscordCategoryName, CancellationToken aCancellationToken = default);
+        /// <returns><see cref="IHttpResult{ulong}"/> with valid DiscordChannel Id and information about success or failure on this operation.</returns>
+        public Task<IHttpResult<ulong>> GetExistingCategoryId(string aDiscordCategoryName, CancellationToken aCancellationToken = default);
 
         /// <summary>
         /// Synchronizes an existing <see cref="DiscordChannel"/> with the given <see cref="CategoryChannelTemplateDTO"/> template, removing not matching channels and adding missing ones.

@@ -1,4 +1,5 @@
 ﻿using Mandril.Application;
+using Mandril.Infrastructure.Communication.MessageProducer;
 using MandrilBot;
 using MandrilBot.BackgroundServices.NewMemberManager;
 using MandrilBot.BackgroundServices.News;
@@ -7,13 +8,14 @@ using MandrilBot.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using TGF.CA.Infrastructure.Communication.RabbitMQ;
 using TGF.CA.Infrastructure.Discovery;
 using TGF.CA.Infrastructure.Security.Secrets;
 
 namespace Mandril.Infrastructure
 {
     /// <summary>
-    /// Provides methods for configuring and using the application specific the infrastructure components.
+    /// Provides methods for configuring and using the application specific infrastructure layer components.
     /// </summary>
     public static class InfrastructureBootstrapper
     {
@@ -26,6 +28,8 @@ namespace Mandril.Infrastructure
         {
             aWebApplicationBuilder.Services.AddDiscoveryService(aWebApplicationBuilder.Configuration);
             aWebApplicationBuilder.Services.AddVaultSecretsManager();
+
+            aWebApplicationBuilder.AddCommunicationServices();
 
             aWebApplicationBuilder.Services.AddSingleton<IMandrilDiscordBot, MandrilDiscordBot>()
                 .AddMandrilBotPassiveServices()
@@ -44,6 +48,7 @@ namespace Mandril.Infrastructure
 
             aServiceList.AddSingleton<INewMemberManagementService, NewMemberManagementService>();
             aServiceList.AddHostedService<BackgroundTasks>();
+            aServiceList.AddHostedService<MandrilMessageProducer>();
 
             return aServiceList;
 
@@ -76,6 +81,12 @@ namespace Mandril.Infrastructure
                 .AddCheck<MandrilAPI_HealthCheck>(nameof(MandrilAPI_HealthCheck))
                 .AddCheck<DiscordBotNewsService_HealthCheck>(nameof(DiscordBotNewsService_HealthCheck));
             return aServiceList;
+        }
+
+        public static WebApplicationBuilder AddCommunicationServices(this WebApplicationBuilder aWebApplicationBuilder)
+        {
+             aWebApplicationBuilder.Services.AddServiceBusIntegrationPublisher(aWebApplicationBuilder.Configuration);
+            return aWebApplicationBuilder;
         }
 
 
