@@ -2,7 +2,7 @@ using Mandril.API;
 using Mandril.Application;
 using Mandril.Infrastructure;
 
-WebApplicationBuilder lMandrilApplicationBuilder = WebApplication.CreateBuilder();
+WebApplicationBuilder lMandrilApplicationBuilder = WebApplication.CreateBuilder(args);
 
 lMandrilApplicationBuilder.ConfigureInfrastructure();
 lMandrilApplicationBuilder.Services.RegisterApplicationServices();
