@@ -1,12 +1,15 @@
 #See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS base
+USER root
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+EXPOSE 8080
+EXPOSE 8081
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
+COPY ["Directory.Build.props", "."]
 COPY ["Mandril/src/Mandril.API/Mandril.API.csproj", "Mandril/src/Mandril.API/"]
 COPY ["TheGoodFramework/src/CleanArchitecture/Presentation/TGF.CA.Presentation/TGF.CA.Presentation.csproj", "TheGoodFramework/src/CleanArchitecture/Presentation/TGF.CA.Presentation/"]
 COPY ["TheGoodFramework/src/Common/TGF.Common.Logging/TGF.Common.Logging.csproj", "TheGoodFramework/src/Common/TGF.Common.Logging/"]
@@ -25,13 +28,14 @@ COPY ["TheGoodFramework/src/CleanArchitecture/Infrastructure/Communication/TGF.C
 COPY ["TheGoodFramework/src/CleanArchitecture/Infrastructure/Communication/TGF.CA.Infrastructure.Communication/TGF.CA.Infrastructure.Communication.csproj", "TheGoodFramework/src/CleanArchitecture/Infrastructure/Communication/TGF.CA.Infrastructure.Communication/"]
 COPY ["TheGoodFramework/src/Common/TGF.Common.Extensions/TGF.Common.Extensions.csproj", "TheGoodFramework/src/Common/TGF.Common.Extensions/"]
 COPY ["TheGoodFramework/src/Common/TGF.Common.Net/TGF.Common.Net.csproj", "TheGoodFramework/src/Common/TGF.Common.Net/"]
-RUN dotnet restore "Mandril/src/Mandril.API/Mandril.API.csproj"
+RUN dotnet restore "./Mandril/src/Mandril.API/./Mandril.API.csproj"
 COPY . .
 WORKDIR "/src/Mandril/src/Mandril.API"
-RUN dotnet build "Mandril.API.csproj" -c Release -o /app/build
+RUN dotnet build "./Mandril.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Mandril.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./Mandril.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
