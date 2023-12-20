@@ -1,6 +1,6 @@
-﻿using DSharpPlus.AsyncEvents;
+﻿using DSharpPlus;
+using DSharpPlus.AsyncEvents;
 using DSharpPlus.EventArgs;
-using DSharpPlus;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Mandril.Application

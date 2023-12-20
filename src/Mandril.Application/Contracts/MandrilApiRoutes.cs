@@ -24,5 +24,5 @@ namespace Mandril.Application
         public const string channels_categories_delete = "channels/categories/delete";
 
     }
-    
+
 }

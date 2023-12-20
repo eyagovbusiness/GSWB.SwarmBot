@@ -1,5 +1,5 @@
-using Mandril.Application.DTOs;
 using Mandril.Application;
+using Mandril.Application.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using TGF.Common.Extensions;

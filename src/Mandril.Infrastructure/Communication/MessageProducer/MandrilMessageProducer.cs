@@ -1,13 +1,13 @@
-﻿using DSharpPlus.EventArgs;
-using DSharpPlus;
+﻿using DSharpPlus;
+using DSharpPlus.EventArgs;
 using Mandril.Application;
+using Mandril.Application.DTOs;
+using Mandril.Application.DTOs.Messages;
+using Mandril.Application.Mapping;
+using MandrilBot.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TGF.CA.Infrastructure.Communication.Publisher.Integration;
-using Mandril.Application.Mapping;
-using Mandril.Application.DTOs;
-using MandrilBot.Extensions;
-using Mandril.Application.DTOs.Messages;
 
 namespace Mandril.Infrastructure.Communication.MessageProducer
 {
@@ -92,9 +92,9 @@ namespace Mandril.Infrastructure.Communication.MessageProducer
         private async Task SendIfGuildMemberDisplayNameUpdate(GuildMemberUpdateEventArgs aGuildMemberUpdateEventArgs)
         {
             //TO-DO: GSWB-46
-            if(aGuildMemberUpdateEventArgs.NicknameAfter != aGuildMemberUpdateEventArgs.NicknameBefore
+            if (aGuildMemberUpdateEventArgs.NicknameAfter != aGuildMemberUpdateEventArgs.NicknameBefore
                 || aGuildMemberUpdateEventArgs.UsernameAfter != aGuildMemberUpdateEventArgs.UsernameBefore)
-                    await SendMessage(new MemberRenameDTO(aGuildMemberUpdateEventArgs.MemberAfter.Id.ToString(), aGuildMemberUpdateEventArgs.MemberAfter.DisplayName), aRoutingKey: "mandril.members.sync");
+                await SendMessage(new MemberRenameDTO(aGuildMemberUpdateEventArgs.MemberAfter.Id.ToString(), aGuildMemberUpdateEventArgs.MemberAfter.DisplayName), aRoutingKey: "mandril.members.sync");
         }
 
         private async Task SendIfGuildMemberAvatarUpdate(GuildMemberUpdateEventArgs aGuildMemberUpdateEventArgs)
@@ -102,7 +102,7 @@ namespace Mandril.Infrastructure.Communication.MessageProducer
             //TO-DO: GSWB-28
             if (aGuildMemberUpdateEventArgs.GuildAvatarHashAfter != aGuildMemberUpdateEventArgs.GuildAvatarHashBefore
                 || aGuildMemberUpdateEventArgs.AvatarHashAfter != aGuildMemberUpdateEventArgs.AvatarHashBefore)
-                    await SendMessage(new MemberAvatarUpdateDTO(aGuildMemberUpdateEventArgs.MemberAfter.Id.ToString(), aGuildMemberUpdateEventArgs.MemberAfter.GetGuildAvatarUrlOrDefault()), aRoutingKey: "mandril.members.sync");
+                await SendMessage(new MemberAvatarUpdateDTO(aGuildMemberUpdateEventArgs.MemberAfter.Id.ToString(), aGuildMemberUpdateEventArgs.MemberAfter.GetGuildAvatarUrlOrDefault()), aRoutingKey: "mandril.members.sync");
         }
 
         #endregion
