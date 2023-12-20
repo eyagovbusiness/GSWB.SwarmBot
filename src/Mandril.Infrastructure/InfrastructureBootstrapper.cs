@@ -85,7 +85,7 @@ namespace Mandril.Infrastructure
 
         public static WebApplicationBuilder AddCommunicationServices(this WebApplicationBuilder aWebApplicationBuilder)
         {
-             aWebApplicationBuilder.Services.AddServiceBusIntegrationPublisher();
+            aWebApplicationBuilder.Services.AddServiceBusIntegrationPublisher();
             return aWebApplicationBuilder;
         }
 
