@@ -1,5 +1,6 @@
 ﻿using Mandril.Application;
 using Mandril.Infrastructure.Communication.MessageProducer;
+using Mandril.Infrastructure.Services;
 using MandrilBot;
 using MandrilBot.BackgroundServices.NewMemberManager;
 using MandrilBot.BackgroundServices.News;
@@ -63,6 +64,7 @@ namespace Mandril.Infrastructure
             aServiceList.AddScoped<IMandrilChannelsService, MandrilChannelsService>();
             aServiceList.AddScoped<IMandrilMembersService, MandrilMembersService>();
             aServiceList.AddScoped<IMandrilRolesService, MandrilRolesService>();
+            aServiceList.AddScoped<IScToolsService, ScToolsService>();
 
             return aServiceList;
 
