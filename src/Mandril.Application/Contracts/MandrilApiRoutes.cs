@@ -23,6 +23,7 @@ namespace Mandril.Application
         public const string channels_categories_update = "channels/categories/update";
         public const string channels_categories_delete = "channels/categories/delete";
 
+        public const string sc_tools_list_ships = "scTools/listShip";
     }
 
 }

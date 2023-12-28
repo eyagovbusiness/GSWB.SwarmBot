@@ -12,7 +12,6 @@
     <Folder Include="DomainHelpers\" />
     <Folder Include="Contracts\External\" />
     <Folder Include="Contracts\" />
-    <Folder Include="ValueObjects\" />
   </ItemGroup>
 
 </Project>
