@@ -70,13 +70,21 @@ namespace Mandril.Infrastructure.Services
             string responseContent = await response.Content.ReadAsStringAsync();
 
             var ListShip = new List<ScShip>();
-            var RawDataShips = JObject.Parse(responseContent)["data"]["to"]["ships"];
+            
+            var RawDataShips = JObject.Parse(responseContent)["data"]["from"]["ships"];
             RawDataShips.ForEach(dataShip =>
             {
                 string Id = dataShip["id"].ToString();
                 string Name = dataShip["name"].ToString();
                 float Price = Convert.ToSingle(dataShip["msrp"]) / 100;
-                bool IsConcept = dataShip["flyableStatus"].ToString() == "Flyable";
+                bool IsConcept = dataShip["flyableStatus"].ToString() == "Concept";
+                ListShip.Add(new ScShip() { Id = Id, Name = Name, Price = Price, IsConcept = IsConcept });
+            });
+
+            RawDataShips = JObject.Parse(responseContent)["data"]["to"]["ships"];
+            RawDataShips.ForEach(dataShip =>
+            {
+                var index = ListShip.FindIndex(Ship => Ship.Id == dataShip["id"].ToString());
                 List<Ccu> CcuList = new List<Ccu>();
                 foreach (var CcuData in dataShip["skus"])
                 {
@@ -85,8 +93,7 @@ namespace Mandril.Infrastructure.Services
                     float CcuPrice = Convert.ToSingle(CcuData["price"]) / 100;
                     CcuList.Add(new Ccu() { Id = CcuId, Name = CcuName, Price = CcuPrice });
                 }
-
-                ListShip.Add(new ScShip() { Id = Id, Name = Name, Price = Price, IsConcept = IsConcept, CcuList = CcuList });
+                ListShip[index].CcuList =CcuList;
             });
 
 
