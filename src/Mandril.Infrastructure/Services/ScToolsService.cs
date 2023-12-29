@@ -89,6 +89,7 @@ namespace Mandril.Infrastructure.Services
                 ListShip.Add(new ScShip() { Id = Id, Name = Name, Price = Price, IsConcept = IsConcept, CcuList = CcuList });
             });
 
+
             return Result.SuccessHttp(ListShip as IEnumerable<ScShip>);
         }
     }
