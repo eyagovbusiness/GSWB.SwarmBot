@@ -44,7 +44,7 @@ namespace Mandril.Infrastructure.Services
             return JObject.Parse(lJsonString)["data"]!.ToString();
         }
 
-        public async Task<IHttpResult<IEnumerable<ScShip>>> GetRsiShipList()
+        public async Task<IHttpResult<IEnumerable<Ship>>> GetRsiShipList()
         {
             var RsiAuthToken = await this.GetRsiAuthToken();
 
@@ -62,42 +62,59 @@ namespace Mandril.Infrastructure.Services
                     fromFilters = Array.Empty<string>(),
                     toFilters = Array.Empty<string>(),
                 },
-                query = "query filterShips($fromId: Int, $toId: Int, $fromFilters: [FilterConstraintValues], $toFilters: [FilterConstraintValues]) {\n from(to: $toId, filters: $fromFilters) {\n ships {\n id\n name\n flyableStatus\n msrp\n skus {\n id\n title\n price\n }\n }\n }\n to(from: $fromId, filters: $toFilters) {\n ships {\n id\n name\n flyableStatus\n msrp\n skus {\n id\n title\n price\n }\n } \n} \n}\n",
+                query = "query filterShips($fromId: Int, $toId: Int, $fromFilters: [FilterConstraintValues], $toFilters: [FilterConstraintValues]) {\n from(to: $toId, filters: $fromFilters) {\n ships {\n id\n name\n medias {\n productThumbMediumAndSmall\n slideShow\n }\n manufacturer {\n id\n name\n }\n focus\n type\n flyableStatus\n msrp\n link\n skus {\n id\n title\n price\n items {\n id\n title\n}\n }\n }\n }\n to(from: $fromId, filters: $toFilters) {\n ships {\n id\n name\n flyableStatus\n msrp\n skus {\n id\n title\n price\n items {\n id\n title\n }\n }\n } \n} \n}\n",
             };
             string jsonQuery = JsonConvert.SerializeObject(query);
             var content = new StringContent(jsonQuery, Encoding.UTF8, "application/json");
             HttpResponseMessage response = await client.PostAsync("https://robertsspaceindustries.com/pledge-store/api/upgrade/graphql", content);
             string responseContent = await response.Content.ReadAsStringAsync();
 
-            var ListShip = new List<ScShip>();
+            var ListShip = new List<Ship>();
             
-            var RawDataShips = JObject.Parse(responseContent)["data"]["from"]["ships"];
+            var RawDataShips = JObject.Parse(responseContent)["data"]!["from"]!["ships"];
             RawDataShips.ForEach(dataShip =>
             {
-                string Id = dataShip["id"].ToString();
-                string Name = dataShip["name"].ToString();
+                string Id = dataShip["id"]!.ToString();
+                string Name = dataShip["name"]!.ToString();
                 float Price = Convert.ToSingle(dataShip["msrp"]) / 100;
-                bool IsConcept = dataShip["flyableStatus"].ToString() == "Concept";
-                ListShip.Add(new ScShip() { Id = Id, Name = Name, Price = Price, IsConcept = IsConcept });
+                bool IsConcept = dataShip["flyableStatus"]!.ToString() == "Concept";
+                ListShip.Add(
+                    new Ship() {
+                        Id = Id,
+                        Name = Name,
+                        Price = Price,
+                        IsConcept = IsConcept,
+                        Images = new ShipImages() {
+                            Small = dataShip["medias"]!["productThumbMediumAndSmall"]!.ToString(),
+                            Medium = dataShip["medias"]!["slideShow"]!.ToString(),
+                        },
+                        Manufacturer = new ShipManufacturer()
+                        {
+                            Id = dataShip["manufacturer"]!["id"]!.ToString(),
+                            Name = dataShip["manufacturer"]!["name"]!.ToString()
+                        },
+                        Focus = dataShip["focus"]!.ToString(),
+                        Type = dataShip["type"]!.ToString(),
+                        Link = dataShip["link"]!.ToString()
+                    });
             });
 
-            RawDataShips = JObject.Parse(responseContent)["data"]["to"]["ships"];
-            RawDataShips.ForEach(dataShip =>
+            RawDataShips = JObject.Parse(responseContent)["data"]!["to"]!["ships"];
+            RawDataShips!.ForEach(dataShip =>
             {
-                var index = ListShip.FindIndex(Ship => Ship.Id == dataShip["id"].ToString());
-                List<Ccu> CcuList = new List<Ccu>();
-                foreach (var CcuData in dataShip["skus"])
+                var index = ListShip.FindIndex(Ship => Ship.Id == dataShip["id"]!.ToString());
+                List<ShipCcu> CcuList = new List<ShipCcu>();
+                foreach (var CcuData in dataShip["skus"]!)
                 {
-                    string CcuId = CcuData["id"].ToString();
-                    string CcuName = CcuData["title"].ToString();
+                    string CcuId = CcuData["id"]!.ToString();
+                    string CcuName = CcuData["title"]!.ToString();
                     float CcuPrice = Convert.ToSingle(CcuData["price"]) / 100;
-                    CcuList.Add(new Ccu() { Id = CcuId, Name = CcuName, Price = CcuPrice });
+                    CcuList.Add(new ShipCcu() { Id = CcuId, Name = CcuName, Price = CcuPrice });
                 }
                 ListShip[index].CcuList =CcuList;
             });
 
-
-            return Result.SuccessHttp(ListShip as IEnumerable<ScShip>);
+            return Result.SuccessHttp(ListShip as IEnumerable<Ship>);
         }
     }
 }

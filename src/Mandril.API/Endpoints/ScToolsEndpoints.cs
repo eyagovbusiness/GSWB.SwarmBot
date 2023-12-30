@@ -15,7 +15,7 @@ namespace Maindril.API.Endpoints
         /// <inheritdoc/>
         public void DefineEndpoints(WebApplication aWebApplication)
         {
-            aWebApplication.MapGet(MandrilApiRoutes.sc_tools_list_ships, GetListShips).SetResponseMetadata<ScShip[]>(200);
+            aWebApplication.MapGet(MandrilApiRoutes.sc_tools_list_ships, GetListShips).SetResponseMetadata<Ship[]>(200);
         }
 
         /// <inheritdoc/>
