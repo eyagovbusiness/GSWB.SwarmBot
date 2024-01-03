@@ -5,7 +5,7 @@
         public required string Id { get; set; }
         public required string Name { get; set; }
         public required float Price { get; set; }
-        public required bool IsConcept { get; set; }
+        public required string FlyableStatus { get; set; }
         public required ShipImages Images { get; set; }
         public required ShipManufacturer Manufacturer { get; set; }
         public required string Focus { get; set; }

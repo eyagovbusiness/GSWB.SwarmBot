@@ -77,13 +77,12 @@ namespace Mandril.Infrastructure.Services
                 string Id = dataShip["id"]!.ToString();
                 string Name = dataShip["name"]!.ToString();
                 float Price = Convert.ToSingle(dataShip["msrp"]) / 100;
-                bool IsConcept = dataShip["flyableStatus"]!.ToString() == "Concept";
                 ListShip.Add(
                     new Ship() {
                         Id = Id,
                         Name = Name,
                         Price = Price,
-                        IsConcept = IsConcept,
+                        FlyableStatus = dataShip["flyableStatus"]!.ToString(),
                         Images = new ShipImages() {
                             Small = dataShip["medias"]!["productThumbMediumAndSmall"]!.ToString(),
                             Medium = dataShip["medias"]!["slideShow"]!.ToString(),
