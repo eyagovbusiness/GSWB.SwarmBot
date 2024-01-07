@@ -50,10 +50,52 @@ namespace Mandril.Infrastructure.Services
 
             CookieContainer cookies = new CookieContainer();
             HttpClientHandler handler = new HttpClientHandler();
-            cookies.Add(new Uri("https://robertsspaceindustries.com"), new Cookie("Rsi-Account-Auth", RsiAuthToken));
+
+            cookies.Add(new Uri("https://robertsspaceindustries.com"), new Cookie("Rsi-XSRF", RsiAuthToken));
             handler.CookieContainer = cookies;
             handler.UseCookies = true;
             var client = new HttpClient(handler);
+            HttpResponseMessage response = await client.PostAsync("https://robertsspaceindustries.com/ship-matrix/index", null);
+            string responseContent = await response.Content.ReadAsStringAsync();
+
+            var ListShip = new List<Ship>();
+
+            var RawDataShips = JObject.Parse(responseContent)["data"]!;
+            RawDataShips.ForEach(dataShip =>
+            {
+                string Id = dataShip["id"]!.ToString();
+                string Name = dataShip["name"]!.ToString();
+                float Price = 0;
+                ListShip.Add(
+                    new Ship()
+                    {
+                        Id = Id,
+                        Name = Name,
+                        Price = Price,
+                        FlyableStatus = dataShip["production_status"]!.ToString(),
+                        Images = new ShipImages()
+                        {
+                            Small = dataShip["media"]![0]!["images"]!["store_small"]!.ToString(),
+                            Medium = dataShip["media"]![0]!["images"]!["store_large"]!.ToString(),
+                        },
+                        Manufacturer = new ShipManufacturer()
+                        {
+                            Id = dataShip["manufacturer"]!["id"]!.ToString(),
+                            Name = dataShip["manufacturer"]!["name"]!.ToString()
+                        },
+                        Focus = dataShip["focus"]!.ToString(),
+                        Type = dataShip["type"]!.ToString(),
+                        Link = dataShip["url"]!.ToString()
+                    });
+            });
+
+            CookieContainer cookiesPledge = new CookieContainer();
+            HttpClientHandler handlerPledge = new HttpClientHandler();
+
+            cookiesPledge.Add(new Uri("https://robertsspaceindustries.com"), new Cookie("Rsi-Account-Auth", RsiAuthToken));
+            handlerPledge.CookieContainer = cookiesPledge;
+            handlerPledge.UseCookies = true;
+            var clientPledge = new HttpClient(handlerPledge);
             var query = new
             {
                 operationName = "filterShips",
@@ -66,42 +108,21 @@ namespace Mandril.Infrastructure.Services
             };
             string jsonQuery = JsonConvert.SerializeObject(query);
             var content = new StringContent(jsonQuery, Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await client.PostAsync("https://robertsspaceindustries.com/pledge-store/api/upgrade/graphql", content);
-            string responseContent = await response.Content.ReadAsStringAsync();
+            HttpResponseMessage responsePledge = await clientPledge.PostAsync("https://robertsspaceindustries.com/pledge-store/api/upgrade/graphql", content);
+            string responseContentPledge = await responsePledge.Content.ReadAsStringAsync();
 
-            var ListShip = new List<Ship>();
-            
-            var RawDataShips = JObject.Parse(responseContent)["data"]!["from"]!["ships"];
-            RawDataShips.ForEach(dataShip =>
-            {
-                string Id = dataShip["id"]!.ToString();
-                string Name = dataShip["name"]!.ToString();
-                float Price = Convert.ToSingle(dataShip["msrp"]) / 100;
-                ListShip.Add(
-                    new Ship() {
-                        Id = Id,
-                        Name = Name,
-                        Price = Price,
-                        FlyableStatus = dataShip["flyableStatus"]!.ToString(),
-                        Images = new ShipImages() {
-                            Small = dataShip["medias"]!["productThumbMediumAndSmall"]!.ToString(),
-                            Medium = dataShip["medias"]!["slideShow"]!.ToString(),
-                        },
-                        Manufacturer = new ShipManufacturer()
-                        {
-                            Id = dataShip["manufacturer"]!["id"]!.ToString(),
-                            Name = dataShip["manufacturer"]!["name"]!.ToString()
-                        },
-                        Focus = dataShip["focus"]!.ToString(),
-                        Type = dataShip["type"]!.ToString(),
-                        Link = dataShip["link"]!.ToString()
-                    });
-            });
-
-            RawDataShips = JObject.Parse(responseContent)["data"]!["to"]!["ships"];
+            RawDataShips = JObject.Parse(responseContentPledge)["data"]!["from"]!["ships"];
             RawDataShips!.ForEach(dataShip =>
             {
                 var index = ListShip.FindIndex(Ship => Ship.Id == dataShip["id"]!.ToString());
+                ListShip[index].Price = (Convert.ToSingle(dataShip["msrp"]) / 100);
+            });
+
+            RawDataShips = JObject.Parse(responseContentPledge)["data"]!["to"]!["ships"];
+            RawDataShips!.ForEach(dataShip =>
+            {
+                var index = ListShip.FindIndex(Ship => Ship.Id == dataShip["id"]!.ToString());
+                
                 List<ShipCcu> CcuList = new List<ShipCcu>();
                 foreach (var CcuData in dataShip["skus"]!)
                 {
