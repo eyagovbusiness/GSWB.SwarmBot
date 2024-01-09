@@ -36,6 +36,7 @@ namespace Mandril.Infrastructure
                 .AddMandrilBotPassiveServices()
                 .AddMandrilBotActiveServices()
                 .AddMandrilHealthChceckServices();
+            aWebApplicationBuilder.Services.AddHostedService<ScToolsBackgroundTasks>();
         }
 
         /// <summary>
