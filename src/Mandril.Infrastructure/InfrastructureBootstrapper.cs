@@ -49,7 +49,7 @@ namespace Mandril.Infrastructure
 
             aServiceList.AddSingleton<INewMemberManagementService, NewMemberManagementService>();
             aServiceList.AddHostedService<BackgroundTasks>();
-            aServiceList.AddHostedService<MandrilMessageProducer>();
+            aServiceList.AddHostedService<MandrilIntegrationMessageProducer>();
 
             return aServiceList;
 
