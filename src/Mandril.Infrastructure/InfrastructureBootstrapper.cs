@@ -49,7 +49,7 @@ namespace Mandril.Infrastructure
             .AddSingleton<IDiscordBotNewsService, DiscordBotNewsMasterService>();
 
             aServiceList.AddSingleton<INewMemberManagementService, NewMemberManagementService>();
-            aServiceList.AddHostedService<BackgroundTasks>();
+            aServiceList.AddHostedService<MandrilBackgroundTasks>();
             aServiceList.AddHostedService<MandrilIntegrationMessageProducer>();
 
             return aServiceList;
