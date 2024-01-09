@@ -1,5 +1,7 @@
 ﻿using Mandril.Application;
 using Mandril.Domain.ValueObjects;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net;
@@ -12,6 +14,19 @@ namespace Mandril.Infrastructure.Services
 {
     internal class ScToolsService : IScToolsService
     {
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly string _scToolsbaseUrlRsi;
+        private readonly ILogger _logger;
+        private readonly string _defaultFilePath = "/app/data/rsiData.json";
+
+        public ScToolsService(IHttpClientFactory aHttpClientFactory, IConfiguration aConfiguration, ILogger<ScToolsService> aLogger)
+        {
+            _httpClientFactory = aHttpClientFactory;
+            _logger = aLogger;
+            _scToolsbaseUrlRsi = aConfiguration.GetValue<string>("ScToolsbaseUrlRsi")
+                ?? throw new ArgumentNullException("Failed on fetching 'ScToolsbaseUrlRsi' from config, a value is required.");
+        }
+
         public async Task<string> GetCookiesFromResponse(string url)
         {
             var cookieContainer = new CookieContainer();
@@ -45,6 +60,13 @@ namespace Mandril.Infrastructure.Services
         }
 
         public async Task<IHttpResult<IEnumerable<Ship>>> GetRsiShipList()
+        {
+            var json = await File.ReadAllTextAsync(_defaultFilePath);
+            var data = System.Text.Json.JsonSerializer.Deserialize<IEnumerable<Ship>>(json);
+            return Result.SuccessHttp(data);
+        }
+
+        public async Task GetRsiData()
         {
             var RsiAuthToken = await this.GetRsiAuthToken();
 
@@ -122,7 +144,7 @@ namespace Mandril.Infrastructure.Services
             RawDataShips!.ForEach(dataShip =>
             {
                 var index = ListShip.FindIndex(Ship => Ship.Id == dataShip["id"]!.ToString());
-                
+
                 List<ShipCcu> CcuList = new List<ShipCcu>();
                 foreach (var CcuData in dataShip["skus"]!)
                 {
@@ -131,10 +153,13 @@ namespace Mandril.Infrastructure.Services
                     float CcuPrice = Convert.ToSingle(CcuData["price"]) / 100;
                     CcuList.Add(new ShipCcu() { Id = CcuId, Name = CcuName, Price = CcuPrice });
                 }
-                ListShip[index].CcuList =CcuList;
+                ListShip[index].CcuList = CcuList;
             });
 
-            return Result.SuccessHttp(ListShip as IEnumerable<Ship>);
+            var json = System.Text.Json.JsonSerializer.Serialize(ListShip as IEnumerable<Ship>);
+            FileInfo file = new FileInfo(_defaultFilePath);
+            file.Directory.Create();
+            await File.WriteAllTextAsync(_defaultFilePath, json);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Mandril.Infrastructure
     /// BackgroundService to start asynchronously in the background the connection of the internal configured bot with Discord.
     /// </summary>
     /// <remarks>Depends on <see cref="IMandrilDiscordBot"/>, <see cref="IDiscordBotNewsService"/> and <see cref="INewMemberManagementService"/>.</remarks>
-    public class BackgroundTasks : BackgroundService
+    public class MandrilBackgroundTasks : BackgroundService
     {
         private readonly IMandrilDiscordBot _mandrilDiscordBotService;
         private readonly INewMemberManagementService _newMemberManagerService;
@@ -19,7 +19,7 @@ namespace Mandril.Infrastructure
         private readonly ILogger _logger;
         private readonly int _backgroundTick_InSeconds = 10;
 
-        public BackgroundTasks(
+        public MandrilBackgroundTasks(
             IMandrilDiscordBot aMandrilDiscordBot,
             INewMemberManagementService aNewMemberManagerService,
             IDiscordBotNewsService aDiscordBotNewsService,
@@ -31,7 +31,7 @@ namespace Mandril.Infrastructure
             _newMemberManagerService = aNewMemberManagerService;
             _discordBotNewsService = aDiscordBotNewsService;
             _serviceScopeFactory = aServiceScopeFactory;
-            _logger = aLoggerFactory.CreateLogger(typeof(BackgroundTasks));
+            _logger = aLoggerFactory.CreateLogger(typeof(MandrilBackgroundTasks));
             _backgroundTick_InSeconds = aConfiguration.GetValue<int>("BackgroundServicesTickInSeconds");
         }
 

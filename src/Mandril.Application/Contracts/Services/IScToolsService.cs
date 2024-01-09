@@ -6,5 +6,6 @@ namespace Mandril.Application
     public interface IScToolsService
     {
         public Task<IHttpResult<IEnumerable<Ship>>> GetRsiShipList();
+        public Task GetRsiData();
     }
 }
