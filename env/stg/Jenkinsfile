@@ -1,0 +1,74 @@
+pipeline {
+    agent {
+        label 'npmagentdocker'
+    }
+    environment {
+        container = "dockertainer"
+        REGISTRY='registry.guildswarm.org'
+        SSH_USER_PASS = "jenkins-stg-ionos"
+        HOST = credentials('host-stg')
+    }
+    stages {
+        stage('Docker Build') {
+            steps {
+                script {
+                    container("${env.container}") {
+                        if (env.CHANGE_ID != null) {
+                            withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'harbor-staging', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD']]) {
+                                sh "docker login -u \'${DOCKER_USERNAME}' -p \'${DOCKER_PASSWORD} $REGISTRY"
+                                sh 'docker build -t registry.guildswarm.org/staging/mandril:latest . -f Mandril/src/Mandril.API/Dockerfile'
+                                //sh "docker build -t registry.guildswarm.org/staging/myhangar-staging:'${params.IMAGE_VERSION}' . -f /home/app/web/Dockerfile"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('Docker Push') {
+            steps {
+                script {
+                    container("${env.container}") {
+                        if (env.CHANGE_ID != null) {
+                            withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'harbor-staging', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD']]) {
+                                sh 'docker push  registry.guildswarm.org/staging/mandril:latest'
+                                sh 'docker logout'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('Docker Clean') {
+            steps {
+                script {
+                    container("${env.container}") {
+                        if (env.CHANGE_ID != null) {
+                            sh 'docker rmi  registry.guildswarm.org/staging/mandril:latest'
+                            sh 'docker system prune -a -f'
+                        }
+                    }
+                }
+            }
+        }
+        stage('Docker-compose up -d') {
+            steps {
+                script {
+                    container("${env.container}") {
+                        if (env.CHANGE_ID != null) {
+                            sh 'pwd'
+                            sh "mkdir ~/.ssh"
+                            sh "echo 'Host *' >> ~/.ssh/config"
+                            sh "echo '   LogLevel ERROR' >> ~/.ssh/config"
+                            sh "ssh-keyscan $host >> ~/.ssh/known_hosts"
+                            // THIS IS LEGACY PLEASE MIGRATE
+                            sshagent(credentials: ['jenkins2']) {
+                                sh 'docker rmi registry.guildswarm.org/staging/mandril:latest'
+                                sh 'ssh  $SSH_USER_PASS@$HOST "cd /home/GuildManager/Backend && docker-compose down && docker-compose up -d"'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
