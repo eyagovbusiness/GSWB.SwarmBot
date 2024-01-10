@@ -157,6 +157,7 @@ namespace Mandril.Infrastructure.Services
             });
 
             var json = System.Text.Json.JsonSerializer.Serialize(ListShip as IEnumerable<Ship>);
+
             FileInfo file = new FileInfo(_defaultFilePath);
             file.Directory.Create();
             await File.WriteAllTextAsync(_defaultFilePath, json);
