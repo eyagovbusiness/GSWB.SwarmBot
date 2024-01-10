@@ -15,8 +15,8 @@ pipeline {
                     container("${env.container}") {
                         if (env.CHANGE_ID != null) {
                             withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'harbor-staging', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD']]) {
-                                sh "docker login -u \'${DOCKER_USERNAME}' -p \'${DOCKER_PASSWORD} $REGISTRY"
-                                sh 'docker build -t registry.guildswarm.org/staging/mandril:latest . -f Mandril/src/Mandril.API/Dockerfile'
+                                sh "docker login -u \'${DOCKER_USERNAME}' -p \'${DOCKER_PASSWORD}' $REGISTRY"
+                                sh 'docker build -t registry.guildswarm.org/staging/mandril:latest . -f src/Mandril.API/Dockerfile'
                                 //sh "docker build -t registry.guildswarm.org/staging/myhangar-staging:'${params.IMAGE_VERSION}' . -f /home/app/web/Dockerfile"
                             }
                         }
