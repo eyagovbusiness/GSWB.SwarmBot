@@ -107,7 +107,7 @@ namespace Mandril.Infrastructure.Services
                         },
                         Focus = dataShip["focus"]!.ToString(),
                         Type = dataShip["type"]!.ToString(),
-                        Link = dataShip["url"]!.ToString()
+                        Link = "link_de_prueba"
                     });
             });
 
