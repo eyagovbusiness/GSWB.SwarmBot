@@ -45,7 +45,7 @@ namespace Mandril.Infrastructure.Services
 
         private async Task<IHttpResult<string>> GetRsiToken()
         {
-            var rsiToken = await this.GetCookiesFromResponse("https://robertsspaceindustries.com/pledge");
+            var rsiToken = await this.GetCookiesFromResponse(_scToolsbaseUrlRsi + "/pledge");
             _logger.LogInformation("[SC_TOOLS_SERVICES] [SUCCESS] Get Info from RSI web: RsiToken");
             return Result.SuccessHttp(rsiToken);
         }
@@ -55,7 +55,7 @@ namespace Mandril.Infrastructure.Services
             var rsiToken = (await this.GetRsiToken()).Value;
             var client = new HttpClient(new HttpClientHandler());
             client.DefaultRequestHeaders.Add("x-rsi-token", rsiToken);
-            HttpResponseMessage response = await client.PostAsync("https://robertsspaceindustries.com/api/account/v2/setAuthToken", null);
+            HttpResponseMessage response = await client.PostAsync(_scToolsbaseUrlRsi + "/api/account/v2/setAuthToken", null);
             var lJsonString = await response.Content.ReadAsStringAsync();
             _logger.LogInformation("[SC_TOOLS_SERVICES] [SUCCESS] Get Info from RSI web: RsiAuthToken");
             return JObject.Parse(lJsonString)["data"]!.ToString();
@@ -131,25 +131,19 @@ namespace Mandril.Infrastructure.Services
         }
 
         private async Task<JToken> GetRsiShipMatrixData(string RsiAuthToken) {
-            CookieContainer cookies = new CookieContainer();
-            HttpClientHandler handler = new HttpClientHandler();
-            cookies.Add(new Uri("https://robertsspaceindustries.com"), new Cookie("Rsi-XSRF", RsiAuthToken));
-            handler.CookieContainer = cookies;
-            handler.UseCookies = true;
-            var client = new HttpClient(handler);
-            HttpResponseMessage response = await client.PostAsync("https://robertsspaceindustries.com/ship-matrix/index", null);
-            string responseContent = await response.Content.ReadAsStringAsync();
+            HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, _scToolsbaseUrlRsi + "/ship-matrix/index");
+            httpRequestMessage.Headers.Add("Cookie", "Rsi-Account-Auth=" + RsiAuthToken);
+            HttpClient HttpClient = _httpClientFactory.CreateClient();
+            HttpResponseMessage lHttpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+            string Content = await lHttpResponseMessage.Content.ReadAsStringAsync();
+            JToken RsiShipMatrixData = JObject.Parse(Content)["data"]!;
             _logger.LogInformation("[SC_TOOLS_SERVICES] [SUCCESS] Get Info from RSI web: ShipMatrixData");
-            return JObject.Parse(responseContent)["data"]!;
+            return RsiShipMatrixData;
         }
 
         private async Task<JToken> GetRsiShipCcuData(string RsiAuthToken) {
-            CookieContainer cookiesPledge = new CookieContainer();
-            HttpClientHandler handlerPledge = new HttpClientHandler();
-            cookiesPledge.Add(new Uri("https://robertsspaceindustries.com"), new Cookie("Rsi-Account-Auth", RsiAuthToken));
-            handlerPledge.CookieContainer = cookiesPledge;
-            handlerPledge.UseCookies = true;
-            var clientPledge = new HttpClient(handlerPledge);
+            HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, _scToolsbaseUrlRsi + "/pledge-store/api/upgrade/graphql");
+            httpRequestMessage.Headers.Add("Cookie", "Rsi-Account-Auth=" + RsiAuthToken);
             var query = new
             {
                 operationName = "filterShips",
@@ -161,11 +155,13 @@ namespace Mandril.Infrastructure.Services
                 query = "query filterShips($fromId: Int, $toId: Int, $fromFilters: [FilterConstraintValues], $toFilters: [FilterConstraintValues]) {\n from(to: $toId, filters: $fromFilters) {\n ships {\n id\n name\n medias {\n productThumbMediumAndSmall\n slideShow\n }\n manufacturer {\n id\n name\n }\n focus\n type\n flyableStatus\n msrp\n link\n skus {\n id\n title\n price\n items {\n id\n title\n}\n }\n }\n }\n to(from: $fromId, filters: $toFilters) {\n ships {\n id\n name\n flyableStatus\n msrp\n skus {\n id\n title\n price\n items {\n id\n title\n }\n }\n } \n} \n}\n",
             };
             string jsonQuery = JsonConvert.SerializeObject(query);
-            var content = new StringContent(jsonQuery, Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await clientPledge.PostAsync("https://robertsspaceindustries.com/pledge-store/api/upgrade/graphql", content);
-            string responseContent = await response.Content.ReadAsStringAsync();
+            httpRequestMessage.Content = new StringContent(jsonQuery, Encoding.UTF8, "application/json");
+            HttpClient HttpClient = _httpClientFactory.CreateClient();
+            HttpResponseMessage lHttpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+            string Content = await lHttpResponseMessage.Content.ReadAsStringAsync();
+            JToken RsiShipCcuData = JObject.Parse(Content)["data"]!;
             _logger.LogInformation("[SC_TOOLS_SERVICES] [SUCCESS] Get Info from RSI web: RsiShipCcuData");
-            return JObject.Parse(responseContent)["data"]!;
+            return RsiShipCcuData;
         }
 
         private async Task SaveRsiDataOnFile (List<Ship> rsiData) {
