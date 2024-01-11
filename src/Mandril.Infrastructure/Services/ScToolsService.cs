@@ -46,6 +46,7 @@ namespace Mandril.Infrastructure.Services
         private async Task<IHttpResult<string>> GetRsiToken()
         {
             var rsiToken = await this.GetCookiesFromResponse("https://robertsspaceindustries.com/pledge");
+            _logger.LogInformation("[SC_TOOLS_SERVICES] [SUCCESS] Get Info from RSI web: RsiToken");
             return Result.SuccessHttp(rsiToken);
         }
 
@@ -56,6 +57,7 @@ namespace Mandril.Infrastructure.Services
             client.DefaultRequestHeaders.Add("x-rsi-token", rsiToken);
             HttpResponseMessage response = await client.PostAsync("https://robertsspaceindustries.com/api/account/v2/setAuthToken", null);
             var lJsonString = await response.Content.ReadAsStringAsync();
+            _logger.LogInformation("[SC_TOOLS_SERVICES] [SUCCESS] Get Info from RSI web: RsiAuthToken");
             return JObject.Parse(lJsonString)["data"]!.ToString();
         }
 
@@ -70,20 +72,10 @@ namespace Mandril.Infrastructure.Services
         {
             var RsiAuthToken = await this.GetRsiAuthToken();
 
-            CookieContainer cookies = new CookieContainer();
-            HttpClientHandler handler = new HttpClientHandler();
+            List<Ship> ListShip = new List<Ship>();
 
-            cookies.Add(new Uri("https://robertsspaceindustries.com"), new Cookie("Rsi-XSRF", RsiAuthToken));
-            handler.CookieContainer = cookies;
-            handler.UseCookies = true;
-            var client = new HttpClient(handler);
-            HttpResponseMessage response = await client.PostAsync("https://robertsspaceindustries.com/ship-matrix/index", null);
-            string responseContent = await response.Content.ReadAsStringAsync();
-
-            var ListShip = new List<Ship>();
-
-            var RawDataShips = JObject.Parse(responseContent)["data"]!;
-            RawDataShips.ForEach(dataShip =>
+            JToken ShipMatrixData = await this.GetRsiShipMatrixData(RsiAuthToken);
+            ShipMatrixData.ForEach(dataShip =>
             {
                 string Id = dataShip["id"]!.ToString();
                 string Name = dataShip["name"]!.ToString();
@@ -111,9 +103,49 @@ namespace Mandril.Infrastructure.Services
                     });
             });
 
+            JToken ShipCcuData = await this.GetRsiShipCcuData(RsiAuthToken);
+
+            ShipCcuData["from"]!["ships"]!.ForEach(dataShip =>
+            {
+                var index = ListShip.FindIndex(Ship => Ship.Id == dataShip["id"]!.ToString());
+                ListShip[index].Price = (Convert.ToSingle(dataShip["msrp"]) / 100);
+            });
+
+            ShipCcuData["to"]!["ships"]!.ForEach(dataShip =>
+            {
+                var index = ListShip.FindIndex(Ship => Ship.Id == dataShip["id"]!.ToString());
+
+                List<ShipCcu> CcuList = new List<ShipCcu>();
+                foreach (var CcuData in dataShip["skus"]!)
+                {
+                    string CcuId = CcuData["id"]!.ToString();
+                    string CcuName = CcuData["title"]!.ToString();
+                    float CcuPrice = Convert.ToSingle(CcuData["price"]) / 100;
+                    CcuList.Add(new ShipCcu() { Id = CcuId, Name = CcuName, Price = CcuPrice });
+                }
+                ListShip[index].CcuList = CcuList;
+            });
+
+
+            await this.SaveRsiDataOnFile(ListShip);
+        }
+
+        private async Task<JToken> GetRsiShipMatrixData(string RsiAuthToken) {
+            CookieContainer cookies = new CookieContainer();
+            HttpClientHandler handler = new HttpClientHandler();
+            cookies.Add(new Uri("https://robertsspaceindustries.com"), new Cookie("Rsi-XSRF", RsiAuthToken));
+            handler.CookieContainer = cookies;
+            handler.UseCookies = true;
+            var client = new HttpClient(handler);
+            HttpResponseMessage response = await client.PostAsync("https://robertsspaceindustries.com/ship-matrix/index", null);
+            string responseContent = await response.Content.ReadAsStringAsync();
+            _logger.LogInformation("[SC_TOOLS_SERVICES] [SUCCESS] Get Info from RSI web: ShipMatrixData");
+            return JObject.Parse(responseContent)["data"]!;
+        }
+
+        private async Task<JToken> GetRsiShipCcuData(string RsiAuthToken) {
             CookieContainer cookiesPledge = new CookieContainer();
             HttpClientHandler handlerPledge = new HttpClientHandler();
-
             cookiesPledge.Add(new Uri("https://robertsspaceindustries.com"), new Cookie("Rsi-Account-Auth", RsiAuthToken));
             handlerPledge.CookieContainer = cookiesPledge;
             handlerPledge.UseCookies = true;
@@ -130,37 +162,18 @@ namespace Mandril.Infrastructure.Services
             };
             string jsonQuery = JsonConvert.SerializeObject(query);
             var content = new StringContent(jsonQuery, Encoding.UTF8, "application/json");
-            HttpResponseMessage responsePledge = await clientPledge.PostAsync("https://robertsspaceindustries.com/pledge-store/api/upgrade/graphql", content);
-            string responseContentPledge = await responsePledge.Content.ReadAsStringAsync();
+            HttpResponseMessage response = await clientPledge.PostAsync("https://robertsspaceindustries.com/pledge-store/api/upgrade/graphql", content);
+            string responseContent = await response.Content.ReadAsStringAsync();
+            _logger.LogInformation("[SC_TOOLS_SERVICES] [SUCCESS] Get Info from RSI web: RsiShipCcuData");
+            return JObject.Parse(responseContent)["data"]!;
+        }
 
-            RawDataShips = JObject.Parse(responseContentPledge)["data"]!["from"]!["ships"];
-            RawDataShips!.ForEach(dataShip =>
-            {
-                var index = ListShip.FindIndex(Ship => Ship.Id == dataShip["id"]!.ToString());
-                ListShip[index].Price = (Convert.ToSingle(dataShip["msrp"]) / 100);
-            });
-
-            RawDataShips = JObject.Parse(responseContentPledge)["data"]!["to"]!["ships"];
-            RawDataShips!.ForEach(dataShip =>
-            {
-                var index = ListShip.FindIndex(Ship => Ship.Id == dataShip["id"]!.ToString());
-
-                List<ShipCcu> CcuList = new List<ShipCcu>();
-                foreach (var CcuData in dataShip["skus"]!)
-                {
-                    string CcuId = CcuData["id"]!.ToString();
-                    string CcuName = CcuData["title"]!.ToString();
-                    float CcuPrice = Convert.ToSingle(CcuData["price"]) / 100;
-                    CcuList.Add(new ShipCcu() { Id = CcuId, Name = CcuName, Price = CcuPrice });
-                }
-                ListShip[index].CcuList = CcuList;
-            });
-
-            var json = System.Text.Json.JsonSerializer.Serialize(ListShip as IEnumerable<Ship>);
-
+        private async Task SaveRsiDataOnFile (List<Ship> rsiData) {
+            var json = System.Text.Json.JsonSerializer.Serialize(rsiData);
             FileInfo file = new FileInfo(_defaultFilePath);
             file.Directory.Create();
             await File.WriteAllTextAsync(_defaultFilePath, json);
+            _logger.LogInformation("[SC_TOOLS_SERVICES] [SUCCESS] Save RSI web data on a file in server");
         }
     }
 }
