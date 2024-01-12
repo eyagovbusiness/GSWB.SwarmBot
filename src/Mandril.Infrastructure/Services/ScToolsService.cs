@@ -66,7 +66,9 @@ namespace Mandril.Infrastructure.Services
                         },
                         Focus = dataShip["focus"]!.ToString(),
                         Type = dataShip["type"]!.ToString(),
-                        Link = dataShip["url"]!.ToString()
+                        Link = dataShip["url"]!.ToString(),
+                        CcuList = new List<ShipCcu>(),
+                        StandaloneList = new List<ShipStandalone>()
                     });
             });
 
@@ -81,16 +83,46 @@ namespace Mandril.Infrastructure.Services
             ShipCcuData["to"]!["ships"]!.ForEach(dataShip =>
             {
                 var index = ListShip.FindIndex(Ship => Ship.Id == dataShip["id"]!.ToString());
-
-                List<ShipCcu> CcuList = new List<ShipCcu>();
                 foreach (var CcuData in dataShip["skus"]!)
                 {
                     string CcuId = CcuData["id"]!.ToString();
                     string CcuName = CcuData["title"]!.ToString();
                     float CcuPrice = Convert.ToSingle(CcuData["price"]) / 100;
-                    CcuList.Add(new ShipCcu() { Id = CcuId, Name = CcuName, Price = CcuPrice });
+                    ListShip[index].CcuList.Add(new ShipCcu() { Id = CcuId, Name = CcuName, Price = CcuPrice });
                 }
-                ListShip[index].CcuList = CcuList;
+            });
+
+            JToken ShipStandaloneData = await GetRsiShipStandaloneData(RsiAuthToken);
+
+            ShipStandaloneData.ForEach(standalone => {
+
+                var index = ListShip.FindIndex(Ship => Ship.Name == standalone["name"]!.ToString());
+                if (index >= 0) {
+                    ListShip[index].StandaloneList.Add(
+                        new ShipStandalone()
+                        {
+                            Id = standalone["id"]!.ToString(),
+                            Name = standalone["name"]!.ToString(),
+                            Title = standalone["title"]!.ToString(),
+                            Subtitle = standalone["subtitle"]!.ToString(),
+                            Url = standalone["url"]!.ToString(),
+                            Body = standalone["body"]!.ToString(),
+                            Excerpt = standalone["excerpt"]!.ToString(),
+                            Type = standalone["type"]!.ToString(),
+                            Images = new ShipImages()
+                            {
+                                Small = standalone["media"]!["thumbnail"]!["storeSmall"]!.ToString(),
+                                Medium = standalone["media"]!["thumbnail"]!["slideshow"]!.ToString(),
+                            },
+                            Price = Convert.ToSingle(standalone["nativePrice"]!["amount"]!.ToString()) / 100,
+                            PriceWithTax = Convert.ToSingle(standalone["price"]!["amount"]!.ToString()) / 100,
+                            TaxDescription = standalone["price"]!["taxDescription"]!.ToString(),
+                            IsWarbond = Convert.ToBoolean(standalone["isWarbond"]!.ToString()),
+                            IsPackage = Convert.ToBoolean(standalone["isPackage"]!.ToString()),
+                        }
+                    );
+                } 
+                
             });
 
             await SaveRsiDataOnFile(ListShip);
@@ -157,6 +189,42 @@ namespace Mandril.Infrastructure.Services
             JToken RsiShipCcuData = JObject.Parse(Content)["data"]!;
             _logger.LogInformation("[SC_TOOLS_SERVICES] [SUCCESS] Get Info from RSI web: RsiShipCcuData");
             return RsiShipCcuData;
+        }
+
+        private async Task<JToken> GetRsiShipStandaloneData(string RsiAuthToken)
+        {
+            HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, _scToolsbaseUrlRsi + "/graphql");
+            httpRequestMessage.Headers.Add("Cookie", "Rsi-XSRF=" + RsiAuthToken);
+            var query = new
+            {
+                operationName = "GetBrowseListingQuery",
+                variables = new
+                {
+                    query= new
+                    {
+                        skus= new
+                        {
+                            products= new string[] {"72"}
+                        },
+                        limit= 10000,
+                        page= 1,
+                        sort= new
+                        {
+                            field= "weight",
+                            direction= "desc"
+                        }
+                    }
+                },
+                query = "query GetBrowseListingQuery($query: SearchQuery) {\n  store(browse: true) {\n    listing: search(query: $query) {\n      resources {\n        ...TyItemFragment\n        __typename\n      }\n      __typename\n    }\n    __typename\n  }\n}\n\nfragment TyItemFragment on TyItem {\n  id\n  slug\n  name\n  title\n  subtitle\n  url\n  body\n  excerpt\n  type\n  media {\n    thumbnail {\n      slideshow\n      storeSmall\n      __typename\n    }\n    list {\n      slideshow\n      __typename\n    }\n    __typename\n  }\n  nativePrice {\n    amount\n    discounted\n    discountDescription\n    __typename\n  }\n  price {\n    amount\n    discounted\n    taxDescription\n    discountDescription\n    __typename\n  }\n  stock {\n    ...TyStockFragment\n    __typename\n  }\n  tags {\n    ...TyHeapTagFragment\n    __typename\n  }\n  ... on TySku {\n    label\n    customizable\n    isWarbond\n    isPackage\n    isVip\n    isDirectCheckout\n    __typename\n  }\n  ... on TyProduct {\n    skus {\n      id\n      title\n      isDirectCheckout\n      __typename\n    }\n    isVip\n    __typename\n  }\n  ... on TyBundle {\n    isVip\n    media {\n      thumbnail {\n        slideshow\n        __typename\n      }\n      __typename\n    }\n    discount {\n      ...TyDiscountFragment\n      __typename\n    }\n    __typename\n  }\n  __typename\n}\n\nfragment TyHeapTagFragment on HeapTag {\n  name\n  excerpt\n  __typename\n}\n\nfragment TyDiscountFragment on TyDiscount {\n  id\n  title\n  skus {\n    ...TyBundleSkuFragment\n    __typename\n  }\n  products {\n    ...TyBundleProductFragment\n    __typename\n  }\n  __typename\n}\n\nfragment TyBundleSkuFragment on TySku {\n  id\n  title\n  label\n  excerpt\n  subtitle\n  url\n  type\n  isWarbond\n  isDirectCheckout\n  media {\n    thumbnail {\n      storeSmall\n      slideshow\n      __typename\n    }\n    __typename\n  }\n  gameItems {\n    __typename\n  }\n  stock {\n    ...TyStockFragment\n    __typename\n  }\n  price {\n    amount\n    taxDescription\n    __typename\n  }\n  tags {\n    ...TyHeapTagFragment\n    __typename\n  }\n  __typename\n}\n\nfragment TyStockFragment on TyStock {\n  unlimited\n  show\n  available\n  backOrder\n  qty\n  backOrderQty\n  level\n  __typename\n}\n\nfragment TyBundleProductFragment on TyProduct {\n  id\n  name\n  title\n  subtitle\n  url\n  type\n  excerpt\n  stock {\n    ...TyStockFragment\n    __typename\n  }\n  media {\n    thumbnail {\n      storeSmall\n      slideshow\n      __typename\n    }\n    __typename\n  }\n  nativePrice {\n    amount\n    discounted\n    __typename\n  }\n  price {\n    amount\n    discounted\n    taxDescription\n    __typename\n  }\n  skus {\n    ...TyBundleSkuFragment\n    __typename\n  }\n  __typename\n}\n",
+            };
+            string jsonQuery = JsonConvert.SerializeObject(query);
+            httpRequestMessage.Content = new StringContent(jsonQuery, Encoding.UTF8, "application/json");
+            HttpClient HttpClient = _httpClientFactory.CreateClient();
+            HttpResponseMessage lHttpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+            string Content = await lHttpResponseMessage.Content.ReadAsStringAsync();
+            JToken RsiShipStandaloneData = JObject.Parse(Content)["data"]!["store"]!["listing"]!["resources"]!;
+            _logger.LogInformation("[SC_TOOLS_SERVICES] [SUCCESS] Get Info from RSI web: RsiShipStandaloneData");
+            return RsiShipStandaloneData;
         }
 
         private async Task SaveRsiDataOnFile (List<Ship> rsiData) {

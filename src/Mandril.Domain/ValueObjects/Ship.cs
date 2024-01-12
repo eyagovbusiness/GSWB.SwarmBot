@@ -12,5 +12,7 @@
         public required string Type { get; set; }
         public required string Link { get; set; }
         public List<ShipCcu> CcuList { get; set; } = [];
+
+        public List<ShipStandalone> StandaloneList { get; set; } = [];
     }
 }
