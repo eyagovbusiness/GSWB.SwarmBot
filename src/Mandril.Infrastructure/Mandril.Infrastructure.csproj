@@ -7,11 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="appsettings.Design.json" />
+    <None Remove="appsettings.DesignRenamed.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="appsettings.Design.json">
+    <Content Include="appsettings.DesignRenamed.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
