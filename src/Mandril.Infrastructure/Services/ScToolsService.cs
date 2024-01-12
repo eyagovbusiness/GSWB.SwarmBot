@@ -18,7 +18,8 @@ namespace Mandril.Infrastructure.Services
         private readonly string _scToolsbaseUrlRsi;
         private readonly ILogger _logger;
         private readonly string _defaultFilePath = "/app/data/rsiData.json";
-
+        private readonly string _defaultPath = "/app/data";
+        
         public ScToolsService(IHttpClientFactory aHttpClientFactory, IConfiguration aConfiguration, ILogger<ScToolsService> aLogger)
         {
             _httpClientFactory = aHttpClientFactory;
@@ -27,54 +28,20 @@ namespace Mandril.Infrastructure.Services
                 ?? throw new ArgumentNullException("Failed on fetching 'ScToolsbaseUrlRsi' from config, a value is required.");
         }
 
-        public async Task<string> GetCookiesFromResponse(string url)
-        {
-            var cookieContainer = new CookieContainer();
-            var handler = new HttpClientHandler
-            {
-                CookieContainer = cookieContainer
-            };
-
-            using (var client = new HttpClient(handler))
-            {
-                HttpResponseMessage response = await client.GetAsync(url);
-                Uri uri = new Uri(url);
-                return cookieContainer.GetCookies(uri)[0].Value;
-            }
-        }
-
-        private async Task<IHttpResult<string>> GetRsiToken()
-        {
-            var rsiToken = await this.GetCookiesFromResponse(_scToolsbaseUrlRsi + "/pledge");
-            _logger.LogInformation("[SC_TOOLS_SERVICES] [SUCCESS] Get Info from RSI web: RsiToken");
-            return Result.SuccessHttp(rsiToken);
-        }
-
-        private async Task<string> GetRsiAuthToken()
-        {
-            var rsiToken = (await this.GetRsiToken()).Value;
-            var client = new HttpClient(new HttpClientHandler());
-            client.DefaultRequestHeaders.Add("x-rsi-token", rsiToken);
-            HttpResponseMessage response = await client.PostAsync(_scToolsbaseUrlRsi + "/api/account/v2/setAuthToken", null);
-            var lJsonString = await response.Content.ReadAsStringAsync();
-            _logger.LogInformation("[SC_TOOLS_SERVICES] [SUCCESS] Get Info from RSI web: RsiAuthToken");
-            return JObject.Parse(lJsonString)["data"]!.ToString();
-        }
-
-        public async Task<IHttpResult<IEnumerable<Ship>>> GetRsiShipList()
+        public async Task<IHttpResult<List<Ship>>> GetRsiShipList()
         {
             var json = await File.ReadAllTextAsync(_defaultFilePath);
-            var data = System.Text.Json.JsonSerializer.Deserialize<IEnumerable<Ship>>(json);
+            var data = System.Text.Json.JsonSerializer.Deserialize<List<Ship>>(json);
             return Result.SuccessHttp(data);
         }
 
         public async Task GetRsiData()
         {
-            var RsiAuthToken = await this.GetRsiAuthToken();
+            string RsiAuthToken = await GetRsiAuthToken();
 
             List<Ship> ListShip = new List<Ship>();
 
-            JToken ShipMatrixData = await this.GetRsiShipMatrixData(RsiAuthToken);
+            JToken ShipMatrixData = await GetRsiShipMatrixData(RsiAuthToken);
             ShipMatrixData.ForEach(dataShip =>
             {
                 string Id = dataShip["id"]!.ToString();
@@ -103,7 +70,7 @@ namespace Mandril.Infrastructure.Services
                     });
             });
 
-            JToken ShipCcuData = await this.GetRsiShipCcuData(RsiAuthToken);
+            JToken ShipCcuData = await GetRsiShipCcuData(RsiAuthToken);
 
             ShipCcuData["from"]!["ships"]!.ForEach(dataShip =>
             {
@@ -126,8 +93,36 @@ namespace Mandril.Infrastructure.Services
                 ListShip[index].CcuList = CcuList;
             });
 
+            await SaveRsiDataOnFile(ListShip);
+        }
 
-            await this.SaveRsiDataOnFile(ListShip);
+        private async Task<string> GetRsiAuthToken()
+        {
+            string rsiToken = await GetRsiToken();
+            HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, _scToolsbaseUrlRsi + "/api/account/v2/setAuthToken");
+            httpRequestMessage.Headers.Add("x-rsi-token", rsiToken);
+            HttpClient HttpClient = _httpClientFactory.CreateClient();
+            HttpResponseMessage lHttpResponseMessage = await HttpClient.SendAsync(httpRequestMessage);
+            string Content = await lHttpResponseMessage.Content.ReadAsStringAsync();
+            string RsiAuthToken = JObject.Parse(Content)["data"]!.ToString();
+            _logger.LogInformation("[SC_TOOLS_SERVICES] [SUCCESS] Get Info from RSI web: RsiAuthToken");
+            return RsiAuthToken;
+        }
+        private async Task<string> GetRsiToken()
+        {
+            var cookieContainer = new CookieContainer();
+            var handler = new HttpClientHandler
+            {
+                CookieContainer = cookieContainer
+            };
+            using (var client = new HttpClient(handler))
+            {
+                HttpResponseMessage response = await client.GetAsync(_scToolsbaseUrlRsi + "/pledge");
+                Uri uri = new Uri(_scToolsbaseUrlRsi + "/pledge");
+                var rsiToken = cookieContainer.GetCookies(uri)[0].Value;
+                _logger.LogInformation("[SC_TOOLS_SERVICES] [SUCCESS] Get Info from RSI web: RsiToken");
+                return rsiToken.ToString();
+            }
         }
 
         private async Task<JToken> GetRsiShipMatrixData(string RsiAuthToken) {
@@ -165,9 +160,9 @@ namespace Mandril.Infrastructure.Services
         }
 
         private async Task SaveRsiDataOnFile (List<Ship> rsiData) {
-            var json = System.Text.Json.JsonSerializer.Serialize(rsiData);
-            FileInfo file = new FileInfo(_defaultFilePath);
-            file.Directory.Create();
+            DirectoryInfo Directory = new DirectoryInfo(_defaultPath);
+            Directory.Create();
+            string json = System.Text.Json.JsonSerializer.Serialize(rsiData);
             await File.WriteAllTextAsync(_defaultFilePath, json);
             _logger.LogInformation("[SC_TOOLS_SERVICES] [SUCCESS] Save RSI web data on a file in server");
         }
