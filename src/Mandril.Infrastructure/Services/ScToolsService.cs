@@ -1,4 +1,5 @@
-﻿using Mandril.Application;
+﻿using AngleSharp.Dom;
+using Mandril.Application;
 using Mandril.Domain.ValueObjects;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -19,6 +20,11 @@ namespace Mandril.Infrastructure.Services
         private readonly ILogger _logger;
         private readonly string _defaultFilePath = "/app/data/rsiData.json";
         private readonly string _defaultPath = "/app/data";
+        private readonly IDictionary<string, string> _shipNameDictionary = new Dictionary<string, string>{
+            { "Hornet", "F7C Hornet" },
+            { "Hornet F7C", "F7C Hornet" },
+            { "Ursa Rover", "Ursa" }
+        };
 
         public ScToolsService(IHttpClientFactory aHttpClientFactory, IConfiguration aConfiguration, ILogger<ScToolsService> aLogger)
         {
@@ -39,7 +45,27 @@ namespace Mandril.Infrastructure.Services
         {
             string RsiAuthToken = await GetRsiAuthToken();
 
-            List<Ship> ListShip = new List<Ship>();
+            List<Ship> ListShip = new List<Ship> { new Ship() {
+                Id = "ptv",
+                Name = "PTV Buggy",
+                Price = 0,
+                FlyableStatus = "flight-ready",
+                Images = new ShipImages()
+                {
+                    Small = "",
+                    Medium = "",
+                },
+                Manufacturer = new ShipManufacturer()
+                {
+                    Id = "17",
+                    Name = "Greycat Industrial"
+                },
+                Focus = "Transport",
+                Type = "ground",
+                Link = "",
+                CcuList = new List<ShipCcu>(),
+                StandaloneList = new List<ShipStandalone>()
+            }};
 
             JToken ShipMatrixData = await GetRsiShipMatrixData(RsiAuthToken);
             ShipMatrixData.ForEach(dataShip =>
@@ -77,7 +103,7 @@ namespace Mandril.Infrastructure.Services
             ShipCcuData["from"]!["ships"]!.ForEach(dataShip =>
             {
                 var index = ListShip.FindIndex(Ship => Ship.Id == dataShip["id"]!.ToString());
-                ListShip[index].Price = (Convert.ToSingle(dataShip["msrp"]) / 100);
+                ListShip[index].Price = NormalizePrice(dataShip["msrp"]!.ToString());
             });
 
             ShipCcuData["to"]!["ships"]!.ForEach(dataShip =>
@@ -87,7 +113,7 @@ namespace Mandril.Infrastructure.Services
                 {
                     string CcuId = CcuData["id"]!.ToString();
                     string CcuName = CcuData["title"]!.ToString();
-                    float CcuPrice = Convert.ToSingle(CcuData["price"]) / 100;
+                    float CcuPrice = NormalizePrice(CcuData["price"]!.ToString());
                     ListShip[index].CcuList.Add(new ShipCcu() { Id = CcuId, Name = CcuName, Price = CcuPrice });
                 }
             });
@@ -96,9 +122,21 @@ namespace Mandril.Infrastructure.Services
 
             ShipStandaloneData.ForEach(standalone => {
                 
-                string ShipName = Convert.ToBoolean(standalone["isPackage"]!.ToString()) ? NormalizePackageName(standalone["name"]!.ToString()) : standalone["name"]!.ToString();
+                string ShipName = Convert.ToBoolean(standalone["isPackage"]!.ToString()) ? NormalizePackageName(standalone["name"]!.ToString()) : NormalizeShipName(standalone["name"]!.ToString());
                 var index = ListShip.FindIndex(Ship => Ship.Name.ToLower().Trim() == ShipName.ToLower().Trim());
-                if (index >= 0) {
+
+                if (ShipName == "PTV Buggy") {
+                    ListShip[index].Price = NormalizePrice(standalone["nativePrice"]!["amount"]!.ToString());
+                    ListShip[index].Link = standalone["url"]!.ToString();
+                    ListShip[index].Images = new ShipImages()
+                    {
+                        Small = standalone["media"]!["thumbnail"]!["storeSmall"]!.ToString(),
+                        Medium = standalone["media"]!["thumbnail"]!["slideshow"]!.ToString(),
+                    };
+                }
+
+                if (index >= 0)
+                {
                     string taxDescription = NormalizeTaxDescription(standalone["price"]!["taxDescription"]!.ToString());
                     ListShip[index].StandaloneList.Add(
                         new ShipStandalone()
@@ -116,8 +154,8 @@ namespace Mandril.Infrastructure.Services
                                 Small = standalone["media"]!["thumbnail"]!["storeSmall"]!.ToString(),
                                 Medium = standalone["media"]!["thumbnail"]!["slideshow"]!.ToString(),
                             },
-                            Price = Convert.ToSingle(standalone["nativePrice"]!["amount"]!.ToString()) / 100,
-                            PriceWithTax = Convert.ToSingle(standalone["price"]!["amount"]!.ToString()) / 100,
+                            Price = NormalizePrice(standalone["nativePrice"]!["amount"]!.ToString()),
+                            PriceWithTax = NormalizePrice(standalone["price"]!["amount"]!.ToString()),
                             TaxDescription = taxDescription,
                             IsWarbond = Convert.ToBoolean(standalone["isWarbond"]!.ToString()),
                             IsPackage = Convert.ToBoolean(standalone["isPackage"]!.ToString()),
@@ -142,6 +180,7 @@ namespace Mandril.Infrastructure.Services
             _logger.LogInformation("[SC_TOOLS_SERVICES] [SUCCESS] Get Info from RSI web: RsiAuthToken");
             return RsiAuthToken;
         }
+
         private async Task<string> GetRsiToken()
         {
             var cookieContainer = new CookieContainer();
@@ -230,9 +269,17 @@ namespace Mandril.Infrastructure.Services
         }
 
 
-        
+        private float NormalizePrice(string Price) {
+            return Convert.ToSingle(Price) / 100;
+        }
+
+        private string NormalizeShipName(string ShipName)
+        {
+            return _shipNameDictionary.ContainsKey(ShipName) ? _shipNameDictionary[ShipName] : ShipName;
+        }
         private string NormalizePackageName (string PackageName) {
-            return PackageName.Split(" Starter Pack")[0].Replace(" -", "");
+            string NormalizePackageName = PackageName.Split(" Starter Pack")[0].Replace(" -", "");
+            return _shipNameDictionary.ContainsKey(NormalizePackageName) ? _shipNameDictionary[NormalizePackageName] : NormalizePackageName;
         }
 
         private string NormalizeTaxDescription(string TaxDescription)
