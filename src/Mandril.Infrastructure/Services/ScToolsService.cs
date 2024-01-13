@@ -98,6 +98,7 @@ namespace Mandril.Infrastructure.Services
 
                 var index = ListShip.FindIndex(Ship => Ship.Name == standalone["name"]!.ToString());
                 if (index >= 0) {
+                    string taxDescription = standalone["price"]!["taxDescription"]!.ToString().Replace("[", "").Replace("]", "").Replace("\"", "").Trim();
                     ListShip[index].StandaloneList.Add(
                         new ShipStandalone()
                         {
@@ -116,7 +117,7 @@ namespace Mandril.Infrastructure.Services
                             },
                             Price = Convert.ToSingle(standalone["nativePrice"]!["amount"]!.ToString()) / 100,
                             PriceWithTax = Convert.ToSingle(standalone["price"]!["amount"]!.ToString()) / 100,
-                            TaxDescription = standalone["price"]!["taxDescription"]!.ToString(),
+                            TaxDescription = taxDescription,
                             IsWarbond = Convert.ToBoolean(standalone["isWarbond"]!.ToString()),
                             IsPackage = Convert.ToBoolean(standalone["isPackage"]!.ToString()),
                         }
