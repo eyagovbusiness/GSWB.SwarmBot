@@ -4,8 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-
     <IsPackable>false</IsPackable>
+    <DockerBuild>false</DockerBuild>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,8 +22,12 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\MandrilBot\MandrilBot.csproj" />
+  <ItemGroup Condition="'$(DockerBuild)'=='false'" >
+    <ProjectReference Include="..\..\..\src\MandrilBot\MandrilBot.csproj" />
   </ItemGroup>
-
+  
+  <ItemGroup Condition="'$(DockerBuild)'=='true'" >
+    <ProjectReference Include="../../../src/MandrilBot/MandrilBot.csproj" />
+  </ItemGroup>
+  
 </Project>

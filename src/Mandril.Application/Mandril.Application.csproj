@@ -4,22 +4,26 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <DockerBuild>false</DockerBuild>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\TheGoodFramework\src\Common\TGF.Common.ROP\TGF.Common.ROP.csproj" />
-    <ProjectReference Include="..\Mandril.Domain\Mandril.Domain.csproj">
-      <TreatAsUsed>true</TreatAsUsed>
-    </ProjectReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Contracts\Repositories\" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="DSharpPlus" Version="4.4.3" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="8.0.0" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(DockerBuild)'=='false'" >
+    <ProjectReference Include="..\Mandril.Domain\Mandril.Domain.csproj">
+      <TreatAsUsed>true</TreatAsUsed>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\GSWB.Common\src\Common.Application\Common.Application.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(DockerBuild)'=='true'" >
+    <ProjectReference Include="../Mandril.Domain/Mandril.Domain.csproj">
+      <TreatAsUsed>true</TreatAsUsed>
+    </ProjectReference>
+    <PackageReference Include="Common.Application" Version="1.0.0" />
+  </ItemGroup>
+  
 </Project>

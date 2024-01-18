@@ -4,23 +4,21 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>67727d1f-1840-4608-8a6f-ecd69da7f45e</UserSecretsId>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <GenerateDocumentationFile>False</GenerateDocumentationFile>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <ServerGarbageCollection>false</ServerGarbageCollection>
-    <DockerfileContext>..\..\..</DockerfileContext>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <RuntimeIdentifiers>linux-musl-x64;win-x64</RuntimeIdentifiers>
+    <DockerBuild>false</DockerBuild>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.5" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\TheGoodFramework\src\CleanArchitecture\Presentation\TGF.CA.Presentation\TGF.CA.Presentation.csproj" />
-    <ProjectReference Include="..\..\..\TheGoodFramework\src\Common\TGF.Common.ROP\TGF.Common.ROP.csproj" />
+  <ItemGroup Condition="'$(DockerBuild)'=='false'">
     <ProjectReference Include="..\Mandril.Infrastructure\Mandril.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\GSWB.Common\src\Common.Presentation\Common.Presentation.csproj" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(DockerBuild)'=='true'">
+    <ProjectReference Include="../Mandril.Infrastructure/Mandril.Infrastructure.csproj" />
+    <PackageReference Include="Common.Presentation" Version="1.0.0" />
+  </ItemGroup>
+  
 </Project>

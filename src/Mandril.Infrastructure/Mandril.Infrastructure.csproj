@@ -4,25 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <DockerBuild>false</DockerBuild>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="appsettings.DesignRenamed.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="appsettings.DesignRenamed.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Contracts\" />
-    <Folder Include="DataAccess\DbContext\" />
-    <Folder Include="Repositories\" />
-  </ItemGroup>
 
   <ItemGroup>
     <!--ESSENTIAL TO ADD MIGRATIONS AT DESIGN TIME-->
@@ -34,14 +17,17 @@
   </ItemGroup>
   
   <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" Version="7.0.5" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" Version="8.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\TheGoodFramework\src\CleanArchitecture\Infrastructure\Security\TGF.CA.Infrastructure.Secrets\TGF.CA.Infrastructure.Secrets.csproj" />
-    <ProjectReference Include="..\..\..\TheGoodFramework\src\CleanArchitecture\Infrastructure\TGF.CA.Infrastructure.Discovery\TGF.CA.Infrastructure.Discovery.csproj" />
-    <ProjectReference Include="..\Mandril.Application\Mandril.Application.csproj" />
+  <ItemGroup Condition="'$(DockerBuild)'=='false'" >
+    <ProjectReference Include="..\..\..\GSWB.Common\src\Common.Infrastructure\Common.Infrastructure.csproj" />
     <ProjectReference Include="..\MandrilBot\MandrilBot.csproj" />
   </ItemGroup>
-
+  
+  <ItemGroup Condition="'$(DockerBuild)'=='true'" >
+    <ProjectReference Include="../MandrilBot/MandrilBot.csproj" />
+    <PackageReference Include="Common.Infrastructure" Version="1.0.0" />
+  </ItemGroup>
+  
 </Project>
