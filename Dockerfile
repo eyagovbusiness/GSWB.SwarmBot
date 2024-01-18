@@ -1,4 +1,4 @@
-FROM gswb-common:latest AS base
+FROM gswb.common:latest AS base
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build 
 ARG BUILD_CONFIGURATION=Release
