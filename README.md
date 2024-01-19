@@ -1,4 +1,4 @@
-# Mandril
+# SwarmBot
 
 **.NET-based cloud-native microservice integrating a Discord Bot, allowing full communication and state synchronization between any distributed cloud application and Discord community servers.** Wrapping this integration into its own independent Docker container mitigates the risk of service failure impacting the entire web application and allows for replication and "zero" downtime. Some of the features this service can provide to a cloud web application include:
 
