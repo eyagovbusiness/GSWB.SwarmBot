@@ -9,23 +9,23 @@ COPY projectfiles.tar .
 
 # Restore dependencies in a docker cache friendly way
 RUN tar -xvf projectfiles.tar \
-    && dotnet restore "src/Mandril.API/Mandril.API.csproj" --configfile ./NuGet.config /p:DockerBuild=true \
+    && dotnet restore "src/SwarmBot.API/SwarmBot.API.csproj" --configfile ./NuGet.config /p:DockerBuild=true \
     && rm projectfiles.tar  # Remove the tar file to reduce image size
 
 COPY . .
-RUN dotnet build "src/Mandril.API/Mandril.API.csproj" -c $BUILD_CONFIGURATION --no-restore /p:DockerBuild=true
+RUN dotnet build "src/SwarmBot.API/SwarmBot.API.csproj" -c $BUILD_CONFIGURATION --no-restore /p:DockerBuild=true
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "src/Mandril.API/Mandril.API.csproj" -c $BUILD_CONFIGURATION --no-build -o /app/publish /p:UseAppHost=false
-#RUN dotnet publish "src/Mandril.API/Mandril.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:DockerBuild=true /p:PublishReadyToRun=true /p:PublishSingleFile=true /p:UseAppHost=true /p:RuntimeIdentifier=linux-musl-x64
+RUN dotnet publish "src/SwarmBot.API/SwarmBot.API.csproj" -c $BUILD_CONFIGURATION --no-build -o /app/publish /p:UseAppHost=false
+#RUN dotnet publish "src/SwarmBot.API/SwarmBot.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:DockerBuild=true /p:PublishReadyToRun=true /p:PublishSingleFile=true /p:UseAppHost=true /p:RuntimeIdentifier=linux-musl-x64
 
 FROM base AS final 
 WORKDIR /app
 COPY --from=publish /app/publish .
-COPY Infrastructure/MandrilEntrypointOverride.sh ./entrypoint.sh
+COPY Infrastructure/SwarmBotEntrypointOverride.sh ./entrypoint.sh
 COPY Infrastructure/ServiceAwait/wait_for_service.sh ./wait_for_service.sh
 COPY Infrastructure/ServiceAwait/IsReadyServer.sh ./IsReadyServer.sh
 #RUN chmod +x ./IsReadyServer.sh
 ENTRYPOINT ["sh", "entrypoint.sh"]
-#ENTRYPOINT ["dotnet", "Mandril.API.dll"]
+#ENTRYPOINT ["dotnet", "SwarmBot.API.dll"]
