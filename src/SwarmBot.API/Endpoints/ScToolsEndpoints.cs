@@ -30,7 +30,7 @@ namespace Maindril.API.Endpoints
         /// <summary>
         /// Get all ship data from RSI web and available CCU in json format.
         /// </summary>
-        private async Task<IResult> GetListShips(IScToolsService aScToolsService, CancellationToken aCancellationToken = default)
+        private async Task<IResult> GetListShips(IScToolsService aScToolsService, CancellationToken? aCancellationToken = default)
             => await aScToolsService.GetRsiShipList().ToIResult();
 
         #endregion

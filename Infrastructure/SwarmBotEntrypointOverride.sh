@@ -33,7 +33,8 @@ main() {
     execute_before_start
 
     echo "Calling base Entrypoint"
-    dotnet SwarmBot.API.dll &
+    #dotnet SwarmBot.API.dll &
+	./SwarmBot.API &
     local baseentry_pid=$!
 	
     execute_after_start &

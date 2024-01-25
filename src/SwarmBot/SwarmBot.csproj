@@ -22,7 +22,7 @@
     <ProjectReference Include="..\..\..\TheGoodFramework\src\Common\TGF.Common.Extensions\TGF.Common.Extensions.csproj" />
     <ProjectReference Include="..\..\..\TheGoodFramework\src\Common\TGF.Common.Net\TGF.Common.Net.csproj" />
     <ProjectReference Include="..\..\..\TheGoodFramework\src\Common\TGF.Common.Serialization\TGF.Common.Serialization.csproj" />
-    <ProjectReference Include="..\..\..\TheGoodFramework\src\CleanArchitecture\Infrastructure\Communication\TGF.CA.Infrastructure.Communication.RabbitMQ\TGF.CA.Infrastructure.Communication.RabbitMQ.csproj" />
+    <ProjectReference Include="..\..\..\TheGoodFramework\src\CleanArchitecture\Infrastructure\Comm\TGF.CA.Infrastructure.Comm.RabbitMQ\TGF.CA.Infrastructure.Comm.RabbitMQ.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(DockerBuild)'=='true'">
@@ -30,7 +30,7 @@
     <PackageReference Include="TGF.Common.Extensions" Version="1.0.0" />
     <PackageReference Include="TGF.Common.Net" Version="1.0.0" />
     <PackageReference Include="TGF.Common.Serialization" Version="1.0.0" />
-    <PackageReference Include="TGF.CA.Infrastructure.Communication.RabbitMQ" Version="1.0.0" />
+    <PackageReference Include="TGF.CA.Infrastructure.Comm.RabbitMQ" Version="1.0.0" />
   </ItemGroup>
 
 </Project>
