@@ -1,5 +1,5 @@
 ﻿using SwarmBot.Application;
-using SwarmBot.Application.DTOs;
+using Common.Application.DTOs.Discord;
 using Microsoft.AspNetCore.Mvc;
 using TGF.CA.Presentation;
 using TGF.CA.Presentation.Middleware;
@@ -37,38 +37,38 @@ namespace Maindril.API.Endpoints
         /// <summary>
         /// Get a valid Id from a given discord channel by its name if it is a Category channel and exist.
         /// </summary>
-        private async Task<IResult> GetExistingCategoryId(string categoryName, ISwarmBotChannelsService aSwarmBotChannelsService, CancellationToken? aCancellationToken = default)
-            => await aSwarmBotChannelsService.GetExistingCategoryId(categoryName, aCancellationToken.GetValueOrDefault())
+        private async Task<IResult> GetExistingCategoryId(string categoryName, ISwarmBotChannelsService aSwarmBotChannelsService, CancellationToken aCancellationToken = default)
+            => await aSwarmBotChannelsService.GetExistingCategoryId(categoryName, aCancellationToken)
             .Map(categoryId => categoryId.ToString())
             .ToIResult();
 
         /// <summary>
         /// Create a new category in the context server from the provided template. 
         /// </summary>
-        private async Task<IResult> PostCreateCategoryFromTemplate([FromBody] CategoryChannelTemplateDTO aTemplate, ISwarmBotChannelsService aSwarmBotChannelsService, CancellationToken? aCancellationToken = default)
-            => await aSwarmBotChannelsService.CreateCategoryFromTemplate(aTemplate, aCancellationToken.GetValueOrDefault())
+        private async Task<IResult> PostCreateCategoryFromTemplate([FromBody] CategoryChannelTemplateDTO aTemplate, ISwarmBotChannelsService aSwarmBotChannelsService, CancellationToken aCancellationToken = default)
+            => await aSwarmBotChannelsService.CreateCategoryFromTemplate(aTemplate, aCancellationToken)
             .Map(newCategoryId => newCategoryId.ToString())
             .ToIResult();
 
         /// <summary>
         /// Add a given list of members to a given category channel and all inner channels. 
         /// </summary>
-        private async Task<IResult> PutAddMemberListToCategory(ulong categoryId, string[] aUserHandleList, ISwarmBotChannelsService aSwarmBotChannelsService, CancellationToken? aCancellationToken = default)
-            => await aSwarmBotChannelsService.AddMemberListToChannel(categoryId, aUserHandleList, aCancellationToken.GetValueOrDefault())
+        private async Task<IResult> PutAddMemberListToCategory(ulong categoryId, string[] aUserHandleList, ISwarmBotChannelsService aSwarmBotChannelsService, CancellationToken aCancellationToken = default)
+            => await aSwarmBotChannelsService.AddMemberListToChannel(categoryId, aUserHandleList, aCancellationToken)
             .ToIResult();
 
         /// <summary>
         /// Synchronizes an existing discord category channel with the given category template, removing not matching channels and adding missing ones.
         /// </summary>
-        private async Task<IResult> PutUpdateCategoryFromTemplate(ulong categoryId, CategoryChannelTemplateDTO aTemplate, ISwarmBotChannelsService aSwarmBotChannelsService, CancellationToken? aCancellationToken = default)
-            => await aSwarmBotChannelsService.SyncExistingCategoryWithTemplate(categoryId, aTemplate, aCancellationToken.GetValueOrDefault())
+        private async Task<IResult> PutUpdateCategoryFromTemplate(ulong categoryId, CategoryChannelTemplateDTO aTemplate, ISwarmBotChannelsService aSwarmBotChannelsService, CancellationToken aCancellationToken = default)
+            => await aSwarmBotChannelsService.SyncExistingCategoryWithTemplate(categoryId, aTemplate, aCancellationToken)
             .ToIResult();
 
         /// <summary>
         /// Delete a given category channel and all inner channels. 
         /// </summary>
-        private async Task<IResult> DeleteCategory(ulong categoryId, ISwarmBotChannelsService aSwarmBotChannelsService, CancellationToken? aCancellationToken = default)
-            => await aSwarmBotChannelsService.DeleteCategoryFromId(categoryId, aCancellationToken.GetValueOrDefault())
+        private async Task<IResult> DeleteCategory(ulong categoryId, ISwarmBotChannelsService aSwarmBotChannelsService, CancellationToken aCancellationToken = default)
+            => await aSwarmBotChannelsService.DeleteCategoryFromId(categoryId, aCancellationToken)
             .ToIResult();
 
         #endregion

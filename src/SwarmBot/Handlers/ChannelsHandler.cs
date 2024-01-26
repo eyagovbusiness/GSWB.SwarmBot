@@ -1,6 +1,7 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
-using SwarmBot.Application.DTOs;
+using Common.Application.DTOs.Discord;
+using Common.Domain.ValueObjects;
 using TGF.Common.Extensions;
 using TGF.Common.ROP;
 using TGF.Common.ROP.HttpResult;
@@ -19,7 +20,7 @@ namespace SwarmBot.Handlers
                    .Map(_ => aDiscordGuild.CreateChannelCategoryAsync(aCategoryChannelTemplate.Name, lMakepublicDiscordOverwriteBuilder))
                    .Tap(newCategory => aCategoryChannelTemplate.ChannelList.ParallelForEachAsync(
                                         SwarmBotDiscordBot._maxDegreeOfParallelism,
-                                        x => aDiscordGuild.CreateChannelAsync(x.Name, x.ChannelType, position: x.Position, parent: newCategory, overwrites: lMakepublicDiscordOverwriteBuilder),
+                                        x => aDiscordGuild.CreateChannelAsync(x.Name, (DSharpPlus.ChannelType)x.ChannelType, position: x.Position, parent: newCategory, overwrites: lMakepublicDiscordOverwriteBuilder),
                                         aCancellationToken))
                    .Map(newCategory => newCategory.Id);
 
@@ -76,7 +77,7 @@ namespace SwarmBot.Handlers
                                 .ToList())
                     .Tap(missingTemplateList => missingTemplateList.ParallelForEachAsync(
                                                 SwarmBotDiscordBot._maxDegreeOfParallelism,
-                                                template => aDiscordCategory.Guild.CreateChannelAsync(template.Name, template.ChannelType, parent: aDiscordCategory, reason: "A Category channel was assigned to an event and this channel was missing according to the template."),
+                                                template => aDiscordCategory.Guild.CreateChannelAsync(template.Name, (DSharpPlus.ChannelType)template.ChannelType, parent: aDiscordCategory, reason: "A Category channel was assigned to an event and this channel was missing according to the template."),
                                                 aCancellationToken))
                     .Map(_ => Unit.Value);
 

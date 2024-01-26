@@ -1,5 +1,5 @@
 ﻿using SwarmBot.Application;
-using SwarmBot.Application.DTOs;
+using Common.Application.DTOs.Discord;
 using TGF.CA.Presentation;
 using TGF.CA.Presentation.Middleware;
 using TGF.CA.Presentation.MinimalAPI;
@@ -35,37 +35,37 @@ namespace Maindril.API.Endpoints
         /// <summary>
         /// Gets a list with all the available roles in the guild's server.
         /// </summary>
-        private async Task<IResult> Get_GuildServerRoles(ISwarmBotRolesService aSwarmBotRolesService, CancellationToken? aCancellationToken = default)
-            => await aSwarmBotRolesService.GetGuildServerRoleList(aCancellationToken.GetValueOrDefault())
+        private async Task<IResult> Get_GuildServerRoles(ISwarmBotRolesService aSwarmBotRolesService, CancellationToken aCancellationToken = default)
+            => await aSwarmBotRolesService.GetGuildServerRoleList(aCancellationToken)
             .ToIResult();
 
         /// <summary>
         /// Creates a new role in the discord's guild and response with the Id of the new Discord role created.
         /// </summary>
-        private async Task<IResult> Post_CreateRole(string roleName, ISwarmBotRolesService aSwarmBotRolesService, CancellationToken? aCancellationToken = default)
-            => await aSwarmBotRolesService.CreateRole(roleName, aCancellationToken.GetValueOrDefault())
+        private async Task<IResult> Post_CreateRole(string roleName, ISwarmBotRolesService aSwarmBotRolesService, CancellationToken aCancellationToken = default)
+            => await aSwarmBotRolesService.CreateRole(roleName, aCancellationToken)
             .Map(roleId => roleId.ToString())
             .ToIResult();
 
         /// <summary>
         /// Delete a given discord guild's role by its Id.
         /// </summary>
-        private async Task<IResult> Delete_Role(ulong roleId, ISwarmBotRolesService aSwarmBotRolesService, CancellationToken? aCancellationToken = default)
-            => await aSwarmBotRolesService.DeleteRole(roleId, aCancellationToken.GetValueOrDefault())
+        private async Task<IResult> Delete_Role(ulong roleId, ISwarmBotRolesService aSwarmBotRolesService, CancellationToken aCancellationToken = default)
+            => await aSwarmBotRolesService.DeleteRole(roleId, aCancellationToken)
             .ToIResult();
 
         /// <summary>
         /// Assign the given role by its Id to the given list of discord guild's members.
         /// </summary>
-        private async Task<IResult> Post_AssignRoleToMemberList(ulong roleId, string[] aDiscordHandleList, ISwarmBotRolesService aSwarmBotRolesService, CancellationToken? aCancellationToken = default)
-            => await aSwarmBotRolesService.AssignRoleToMemberList(roleId, aDiscordHandleList, aCancellationToken: aCancellationToken.GetValueOrDefault())
+        private async Task<IResult> Post_AssignRoleToMemberList(ulong roleId, string[] aDiscordHandleList, ISwarmBotRolesService aSwarmBotRolesService, CancellationToken aCancellationToken = default)
+            => await aSwarmBotRolesService.AssignRoleToMemberList(roleId, aDiscordHandleList, aCancellationToken: aCancellationToken)
             .ToIResult();
 
         /// <summary>
         /// Revoke the given role by its Id to the given list of discord guild's members.
         /// </summary>
-        private async Task<IResult> Put_RevokeRoleToMemberList(ulong roleId, string[] aDiscordHandleList, ISwarmBotRolesService aSwarmBotRolesService, CancellationToken? aCancellationToken = default)
-            => await aSwarmBotRolesService.RevokeRoleToMemberList(roleId, aDiscordHandleList, aCancellationToken: aCancellationToken.GetValueOrDefault())
+        private async Task<IResult> Put_RevokeRoleToMemberList(ulong roleId, string[] aDiscordHandleList, ISwarmBotRolesService aSwarmBotRolesService, CancellationToken aCancellationToken = default)
+            => await aSwarmBotRolesService.RevokeRoleToMemberList(roleId, aDiscordHandleList, aCancellationToken: aCancellationToken)
             .ToIResult();
 
         #endregion

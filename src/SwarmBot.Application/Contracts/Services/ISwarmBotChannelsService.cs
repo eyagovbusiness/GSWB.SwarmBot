@@ -1,5 +1,5 @@
 ﻿using DSharpPlus.Entities;
-using SwarmBot.Application.DTOs;
+using Common.Application.DTOs.Discord;
 using TGF.Common.ROP;
 using TGF.Common.ROP.HttpResult;
 
