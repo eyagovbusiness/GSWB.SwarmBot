@@ -5,8 +5,8 @@ pipeline {
     }
     environment {
         REGISTRY='registry.guildswarm.org'
-        ENVIRONMENT='staging'
-        REPO='staging'
+        ENVIRONMENT='production'
+        REPO='production'
         IMAGE='swarm_bot'
     }
     stages{

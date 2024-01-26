@@ -7,7 +7,7 @@ pipeline {
         REGISTRY='registry.guildswarm.org'
         ENVIRONMENT='staging'
         REPO='staging'
-        IMAGE='swarm_bot'
+        IMAGE='common'
     }
     stages{
         stage('Build Docker Images') {
