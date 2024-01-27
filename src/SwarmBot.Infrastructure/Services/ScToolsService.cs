@@ -1,6 +1,4 @@
-﻿using AngleSharp.Dom;
-using SwarmBot.Application;
-using SwarmBot.Domain.ValueObjects;
+﻿using SwarmBot.Domain.ValueObjects;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -10,6 +8,7 @@ using System.Text;
 using TGF.Common.Extensions;
 using TGF.Common.ROP.HttpResult;
 using TGF.Common.ROP.Result;
+using SwarmBot.Application;
 
 namespace SwarmBot.Infrastructure.Services
 {
@@ -46,7 +45,7 @@ namespace SwarmBot.Infrastructure.Services
             string RsiAuthToken = await GetRsiAuthToken();
 
             List<Ship> ListShip = new List<Ship> { new Ship() {
-                Id = "ptv",
+                Id = 99999,
                 Name = "PTV Buggy",
                 Price = 0,
                 FlyableStatus = "flight-ready",
@@ -70,7 +69,7 @@ namespace SwarmBot.Infrastructure.Services
             JToken ShipMatrixData = await GetRsiShipMatrixData(RsiAuthToken);
             ShipMatrixData.ForEach(dataShip =>
             {
-                string Id = dataShip["id"]!.ToString();
+                int Id = int.Parse(dataShip["id"]!.ToString());
                 string Name = dataShip["name"]!.ToString();
                 float Price = 0;
                 ListShip.Add(
@@ -102,13 +101,13 @@ namespace SwarmBot.Infrastructure.Services
 
             ShipCcuData["from"]!["ships"]!.ForEach(dataShip =>
             {
-                var index = ListShip.FindIndex(Ship => Ship.Id == dataShip["id"]!.ToString());
+                var index = ListShip.FindIndex(Ship => Ship.Id == int.Parse(dataShip["id"]!.ToString()));
                 ListShip[index].Price = NormalizePrice(dataShip["msrp"]!.ToString());
             });
 
             ShipCcuData["to"]!["ships"]!.ForEach(dataShip =>
             {
-                var index = ListShip.FindIndex(Ship => Ship.Id == dataShip["id"]!.ToString());
+                var index = ListShip.FindIndex(Ship => Ship.Id == int.Parse(dataShip["id"]!.ToString()));
                 foreach (var CcuData in dataShip["skus"]!)
                 {
                     string CcuId = CcuData["id"]!.ToString();
@@ -121,11 +120,12 @@ namespace SwarmBot.Infrastructure.Services
             JToken ShipStandaloneData = await GetRsiShipStandaloneData(RsiAuthToken);
 
             ShipStandaloneData.ForEach(standalone => {
-                
+
                 string ShipName = Convert.ToBoolean(standalone["isPackage"]!.ToString()) ? NormalizePackageName(standalone["name"]!.ToString()) : NormalizeShipName(standalone["name"]!.ToString());
                 var index = ListShip.FindIndex(Ship => Ship.Name.ToLower().Trim() == ShipName.ToLower().Trim());
 
-                if (ShipName == "PTV Buggy") {
+                if (ShipName == "PTV Buggy")
+                {
                     ListShip[index].Price = NormalizePrice(standalone["nativePrice"]!["amount"]!.ToString());
                     ListShip[index].Link = standalone["url"]!.ToString();
                     ListShip[index].Images = new ShipImages()
@@ -198,7 +198,8 @@ namespace SwarmBot.Infrastructure.Services
             }
         }
 
-        private async Task<JToken> GetRsiShipMatrixData(string RsiAuthToken) {
+        private async Task<JToken> GetRsiShipMatrixData(string RsiAuthToken)
+        {
             HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, _scToolsbaseUrlRsi + "/ship-matrix/index");
             httpRequestMessage.Headers.Add("Cookie", "Rsi-Account-Auth=" + RsiAuthToken);
             HttpClient HttpClient = _httpClientFactory.CreateClient();
@@ -209,7 +210,8 @@ namespace SwarmBot.Infrastructure.Services
             return RsiShipMatrixData;
         }
 
-        private async Task<JToken> GetRsiShipCcuData(string RsiAuthToken) {
+        private async Task<JToken> GetRsiShipCcuData(string RsiAuthToken)
+        {
             HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, _scToolsbaseUrlRsi + "/pledge-store/api/upgrade/graphql");
             httpRequestMessage.Headers.Add("Cookie", "Rsi-Account-Auth=" + RsiAuthToken);
             var query = new
@@ -269,7 +271,8 @@ namespace SwarmBot.Infrastructure.Services
         }
 
 
-        private float NormalizePrice(string Price) {
+        private float NormalizePrice(string Price)
+        {
             return Convert.ToSingle(Price) / 100;
         }
 
@@ -277,7 +280,8 @@ namespace SwarmBot.Infrastructure.Services
         {
             return _shipNameDictionary.ContainsKey(ShipName) ? _shipNameDictionary[ShipName] : ShipName;
         }
-        private string NormalizePackageName (string PackageName) {
+        private string NormalizePackageName(string PackageName)
+        {
             string NormalizePackageName = PackageName.Split(" Starter Pack")[0].Replace(" -", "");
             return _shipNameDictionary.ContainsKey(NormalizePackageName) ? _shipNameDictionary[NormalizePackageName] : NormalizePackageName;
         }
@@ -287,7 +291,8 @@ namespace SwarmBot.Infrastructure.Services
             return TaxDescription.Replace("[", "").Replace("]", "").Replace("\"", "").Trim();
         }
 
-        private async Task SaveRsiDataOnFile (List<Ship> rsiData) {
+        private async Task SaveRsiDataOnFile(List<Ship> rsiData)
+        {
             DirectoryInfo Directory = new DirectoryInfo(_defaultPath);
             Directory.Create();
             string json = System.Text.Json.JsonSerializer.Serialize(rsiData);

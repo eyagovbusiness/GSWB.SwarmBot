@@ -365,3 +365,4 @@ FodyWeavers.xsd
 # Folder data - generate files in background services
 src/Mandril.API/data
 *.tar
+/src/SwarmBot.API/data/
