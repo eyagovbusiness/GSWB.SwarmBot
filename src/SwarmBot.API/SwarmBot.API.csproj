@@ -14,6 +14,15 @@
     
   </PropertyGroup>
 
+  <ItemGroup>
+    <!--FIXING CVE-2017-0247-->
+    <PackageReference Include="System.Net.Security" Version="4.3.1">
+      <TreatAsUsed>true</TreatAsUsed>
+    </PackageReference>
+    <!--FIXING CVE-2019-0980-->
+    <PackageReference Include="System.Private.Uri" Version="4.3.2" />
+  </ItemGroup>
+
   <ItemGroup Condition="'$(DockerBuild)'=='false'">
     <ProjectReference Include="..\SwarmBot.Infrastructure\SwarmBot.Infrastructure.csproj" />
     <ProjectReference Include="..\..\..\GSWB.Common\src\Common.Presentation\Common.Presentation.csproj" />
