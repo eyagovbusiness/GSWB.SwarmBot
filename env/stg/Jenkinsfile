@@ -78,7 +78,7 @@ pipeline {
                 script {
                     container ('dockertainer'){
                         if (env.CHANGE_ID == null) {
-                            build job: 'GuildSwarm/Auto/Backend/backend_deploy_stg/integration', wait: true
+                            build job: 'GuildSwarm/Auto/Backend/backend_deploy_stg/integration', wait: false
                         }
                     }
                 }
