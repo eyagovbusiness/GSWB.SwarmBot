@@ -78,13 +78,7 @@ pipeline {
                 script {
                     container ('dockertainer'){
                         if (env.CHANGE_ID == null) {
-                            withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'feature-builder', usernameVariable: 'autouser', passwordVariable: 'autotoken']]) {
-                                sh'''
-                                #!/bin/sh
-                                crumb=$(curl -s -u "${autouser}:${autotoken}" -XGET https://jenkins.guildswarm.org/crumbIssuer/api/json | jq -r '.crumb')
-                                curl -s -u ${autouser}:${autotoken} -H "Jenkins-Crumb: $crumb" -X POST "https://jenkins.guildswarm.org/job/GuildSwarm/job/Auto/job/Backend/job/backend_deploy_stg/job/integration/build"
-                                '''
-                            }
+                            build job: 'GuildSwarm/Auto/Backend/backend_deploy_stg/integration', wait: true
                         }
                     }
                 }
