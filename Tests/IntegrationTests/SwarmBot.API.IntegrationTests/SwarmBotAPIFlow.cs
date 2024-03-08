@@ -1,8 +1,8 @@
 using SwarmBot.Application;
-using SwarmBot.Application.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using TGF.Common.Extensions;
+using Common.Application.DTOs.Discord;
 
 namespace SwarmBot.API.IntegrationTests
 {
