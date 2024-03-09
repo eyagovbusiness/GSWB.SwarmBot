@@ -16,7 +16,7 @@ namespace SwarmBot.Handlers
         {
             DiscordOverwriteBuilder[] lMakepublicDiscordOverwriteBuilder = default;
             return await Result.CancellationTokenResultAsync(aCancellationToken)
-                   .Tap(_ => lMakepublicDiscordOverwriteBuilder = new DiscordOverwriteBuilder[] { new DiscordOverwriteBuilder(aDiscordEveryoneRole).Deny(Permissions.AccessChannels) })
+                   .Tap(_ => lMakepublicDiscordOverwriteBuilder = [new DiscordOverwriteBuilder(aDiscordEveryoneRole).Deny(Permissions.AccessChannels)])
                    .Map(_ => aDiscordGuild.CreateChannelCategoryAsync(aCategoryChannelTemplate.Name, lMakepublicDiscordOverwriteBuilder))
                    .Tap(newCategory => aCategoryChannelTemplate.ChannelList.ParallelForEachAsync(
                                         SwarmBotDiscordBot._maxDegreeOfParallelism,
@@ -28,8 +28,8 @@ namespace SwarmBot.Handlers
 
         public static async Task<IHttpResult<DiscordChannel>> GetDiscordCategory(DiscordGuild aDiscordGiild, Func<DiscordChannel, bool> aFilterFunc, CancellationToken aCancellationToken = default)
             => await Result.CancellationTokenResultAsync(aCancellationToken)
-                    .Map(_ => aDiscordGiild.Channels)
-                    .Map(discordChannelList => discordChannelList.Values.FirstOrDefault(channel => channel.IsCategory && aFilterFunc(channel)))
+                    .Map(_ => aDiscordGiild.GetChannelsAsync())
+                    .Map(discordChannelList => discordChannelList.FirstOrDefault(channel => channel.IsCategory && aFilterFunc(channel)))
                     .Verify(discordChannel => discordChannel != null, DiscordBotErrors.Channel.NotFound);
 
         public static async Task<IHttpResult<DiscordChannel>> GetDiscordChannelFromId(DiscordGuild aDiscordGuild, ulong aDiscordChannelId, CancellationToken aCancellationToken = default)
@@ -39,8 +39,9 @@ namespace SwarmBot.Handlers
 
         public static async Task<IHttpResult<DiscordChannel>> GetDiscordChannel(DiscordGuild aDiscordGuild, Func<DiscordChannel, bool> aFilterFunc, CancellationToken aCancellationToken = default)
             => await Result.CancellationTokenResultAsync(aCancellationToken)
-                    .Map(_ => aDiscordGuild.Channels)
-                    .Map(discordChannelList => discordChannelList.Values.FirstOrDefault(channel => aFilterFunc(channel)))
+                    .Map(_ => aDiscordGuild.GetChannelsAsync())
+                    .Tap(discordChannelList => { if (discordChannelList.IsNullOrEmpty()) throw new Exception("ERROOOOR! GetDiscordChannel was called and DiscordGuild.Channels was null or empty!!! please report this immediatley!"); })
+                    .Map(discordChannelList => discordChannelList.FirstOrDefault(channel => aFilterFunc(channel)))
                     .Verify(discordChannel => discordChannel != null, DiscordBotErrors.Channel.NotFoundName);
 
         /// <summary>

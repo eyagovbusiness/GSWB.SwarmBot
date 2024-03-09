@@ -16,9 +16,9 @@ namespace SwarmBot.Handelers
             _client = lSwarmBotDiscordBot.Client;
             _guildId = lSwarmBotDiscordBot.BotConfiguration.DiscordTargetGuildId;
         }
-        public async Task<IHttpResult<DiscordGuild>> GetDiscordGuildFromConfigAsync(CancellationToken aCancellationToken = default)
+        public async Task<IHttpResult<DiscordGuild>> GetDiscordGuildFromConfigAsync(CancellationToken aCancellationToken = default, bool? aCallAPI = null)
             => await Result.CancellationTokenResultAsync(aCancellationToken)
-                    .Map(_ => _client.GetGuildAsync(_guildId))
+                    .Map(_ => _client.GetGuildAsync(_guildId, aCallAPI))
                     .Verify(discordGuild => discordGuild != null, DiscordBotErrors.Guild.NotFoundId);
     }
 }
