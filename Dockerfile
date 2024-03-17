@@ -24,4 +24,8 @@ COPY --from=publish /app/publish .
 COPY Infrastructure/SwarmBotEntrypointOverride.sh ./entrypoint.sh
 COPY Infrastructure/ServiceAwait/wait_for_service.sh ./wait_for_service.sh
 COPY Infrastructure/ServiceAwait/IsReadyServer.sh ./IsReadyServer.sh
+USER root 
+RUN chown -R guildswarm:guildswarm /app/ && \
+    chmod -R 700 /app/ 
+USER guildswarm 
 ENTRYPOINT ["sh", "entrypoint.sh"]
