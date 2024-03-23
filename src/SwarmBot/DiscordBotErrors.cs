@@ -17,6 +17,12 @@ namespace SwarmBot
                 new Error("User.NotFound",
                     "The user with the specified UserId was not found."),
                 HttpStatusCode.NotFound);
+
+            public static HttpError NotTester => new HttpError(
+                new Error("User.NotTester",
+                    "The discord user under the provided discordUserId is not in the testers OR does not have the Tester role."),
+                HttpStatusCode.NotFound);
+
         }
 
         public static class Member

@@ -26,6 +26,13 @@ namespace SwarmBot.Application
         public Task<IHttpResult<DiscordProfileDTO>> GetMemberProfileFromId(ulong aDiscordUserId, CancellationToken aCancellationToken = default);
 
         /// <summary>
+        /// Get the tester DiscordMember if exist, otherwise 404. A discord user ID is tester if it is a member of the testers guild and it has the "Tester" role assigned.
+        /// </summary>
+        /// <param name="aDiscordUserId">Discord user id.</param>
+        /// <returns>The DiscordMember who is a Tester or 404 if the provided discord user id is not a tester.</returns>
+        public Task<IHttpResult<DiscordMember>> GetTester(ulong aDiscordUserId, CancellationToken aCancellationToken = default);
+
+        /// <summary>
         /// Returns a list of guild members that satisfied the filter function conditions.
         /// </summary>
         /// <param name="aFilterFunc"></param>
