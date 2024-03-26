@@ -5,6 +5,7 @@ using TGF.CA.Presentation;
 using TGF.CA.Presentation.Middleware;
 using TGF.CA.Presentation.MinimalAPI;
 using TGF.Common.ROP.HttpResult;
+using Common.Infrastructure.Communication.ApiRoutes;
 
 namespace Maindril.API.Endpoints
 {

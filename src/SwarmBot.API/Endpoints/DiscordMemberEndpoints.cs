@@ -3,6 +3,7 @@ using Common.Application.DTOs.Discord;
 using TGF.CA.Presentation;
 using TGF.CA.Presentation.Middleware;
 using TGF.CA.Presentation.MinimalAPI;
+using Common.Infrastructure.Communication.ApiRoutes;
 
 namespace Maindril.API.Endpoints
 {
