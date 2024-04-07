@@ -28,4 +28,4 @@ USER root
 RUN chown -R guildswarm:guildswarm /app/ && \
     chmod -R 700 /app/ 
 USER guildswarm 
-ENTRYPOINT ["sh", "entrypoint.sh"]
+ENTRYPOINT ["/app/entrypoint.sh"]
