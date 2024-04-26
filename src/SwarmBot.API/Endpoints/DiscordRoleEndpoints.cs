@@ -17,11 +17,11 @@ namespace Maindril.API.Endpoints
         /// <inheritdoc/>
         public void DefineEndpoints(WebApplication aWebApplication)
         {
-            aWebApplication.MapGet(SwarmBotApiRoutes.roles_serverRoles, Get_GuildServerRoles).SetResponseMetadata<DiscordRoleDTO[]>(200);
-            aWebApplication.MapPost(SwarmBotApiRoutes.roles_create, Post_CreateRole).SetResponseMetadata<ulong>(200, 404);
-            aWebApplication.MapDelete(SwarmBotApiRoutes.roles_delete, Delete_Role).SetResponseMetadata(200, 404);
-            aWebApplication.MapPut(SwarmBotApiRoutes.roles_assignToMemberList, Post_AssignRoleToMemberList).SetResponseMetadata(200, 404);
-            aWebApplication.MapPut(SwarmBotApiRoutes.roles_revokeForMemberList, Put_RevokeRoleToMemberList).SetResponseMetadata(200, 404);
+            aWebApplication.MapGet(SwarmBotApiRoutes.roles, Get_GuildServerRoles).SetResponseMetadata<DiscordRoleDTO[]>(200);
+            aWebApplication.MapPost(SwarmBotApiRoutes.roles, Post_CreateRole).SetResponseMetadata<ulong>(200, 404);
+            aWebApplication.MapDelete(SwarmBotApiRoutes.roles, Delete_Role).SetResponseMetadata(200, 404);
+            aWebApplication.MapPut(SwarmBotApiRoutes.roles_assign, Post_AssignRoleToMemberList).SetResponseMetadata(200, 404);
+            aWebApplication.MapPut(SwarmBotApiRoutes.roles_revoke, Put_RevokeRoleToMemberList).SetResponseMetadata(200, 404);
         }
 
         /// <inheritdoc/>

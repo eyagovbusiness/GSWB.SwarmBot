@@ -17,7 +17,7 @@ namespace Maindril.API.Endpoints
         /// <inheritdoc/>
         public void DefineEndpoints(WebApplication aWebApplication)
         {
-            aWebApplication.MapGet(SwarmBotApiRoutes.testers_is_tester, GetIsTester).SetResponseMetadata<Unit>(200);
+            aWebApplication.MapGet(SwarmBotApiRoutes.testers, GetIsTester).SetResponseMetadata<Unit>(200);
         }
 
         /// <inheritdoc/>

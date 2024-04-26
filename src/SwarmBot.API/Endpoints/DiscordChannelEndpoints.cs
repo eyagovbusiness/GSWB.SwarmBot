@@ -18,11 +18,11 @@ namespace Maindril.API.Endpoints
         /// <inheritdoc/>
         public void DefineEndpoints(WebApplication aWebApplication)
         {
-            aWebApplication.MapGet(SwarmBotApiRoutes.channels_categories_getId, GetExistingCategoryId).SetResponseMetadata<ulong>(200, 404);
-            aWebApplication.MapPost(SwarmBotApiRoutes.channels_categories_create, PostCreateCategoryFromTemplate).SetResponseMetadata<ulong>(200, 404);
-            aWebApplication.MapPut(SwarmBotApiRoutes.channels_categories_addMemberList, PutAddMemberListToCategory).SetResponseMetadata(200, 404);
-            aWebApplication.MapPut(SwarmBotApiRoutes.channels_categories_update, PutUpdateCategoryFromTemplate).SetResponseMetadata(200, 404);
-            aWebApplication.MapDelete(SwarmBotApiRoutes.channels_categories_delete, DeleteCategory).SetResponseMetadata(200, 404);
+            aWebApplication.MapGet(SwarmBotApiRoutes.channels_categories_byName, GetExistingCategoryId).SetResponseMetadata<ulong>(200, 404);
+            aWebApplication.MapPost(SwarmBotApiRoutes.channels_categories, PostCreateCategoryFromTemplate).SetResponseMetadata<ulong>(200, 404);
+            aWebApplication.MapPut(SwarmBotApiRoutes.channels_categories_members, PutAddMemberListToCategory).SetResponseMetadata(200, 404);
+            aWebApplication.MapPut(SwarmBotApiRoutes.channels_categories, PutUpdateCategoryFromTemplate).SetResponseMetadata(200, 404);
+            aWebApplication.MapDelete(SwarmBotApiRoutes.channels_categories, DeleteCategory).SetResponseMetadata(200, 404);
 
         }
 

@@ -16,7 +16,7 @@ namespace Maindril.API.Endpoints
         /// <inheritdoc/>
         public void DefineEndpoints(WebApplication aWebApplication)
         {
-            aWebApplication.MapGet(SwarmBotApiRoutes.members_numberOnline, GetNumberOfOnlineMembers).SetResponseMetadata<int>(200);
+            aWebApplication.MapGet(SwarmBotApiRoutes.members_countOnline, GetNumberOfOnlineMembers).SetResponseMetadata<int>(200);
             aWebApplication.MapGet(SwarmBotApiRoutes.members_profile, GetMemberProfileFromId).SetResponseMetadata<DiscordProfileDTO>(200, 404);
             aWebApplication.MapGet(SwarmBotApiRoutes.members_roles, GetMemberRoleList).SetResponseMetadata<IEnumerable<DiscordRoleDTO>>(200, 404);
 
