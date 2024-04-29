@@ -29,9 +29,7 @@ namespace SwarmBot.Infrastructure
         {
             aWebApplicationBuilder.Services.AddDiscoveryService(aWebApplicationBuilder.Configuration);
             aWebApplicationBuilder.Services.AddVaultSecretsManager();
-
-            aWebApplicationBuilder.AddCommunicationServices();
-
+            aWebApplicationBuilder.Services.AddMemoryCache();
             aWebApplicationBuilder.Services.AddSingleton<ISwarmBotDiscordBot, SwarmBotDiscordBot>()
                 .AddSwarmBotPassiveServices()
                 .AddSwarmBotActiveServices()
@@ -50,7 +48,6 @@ namespace SwarmBot.Infrastructure
 
             aServiceList.AddSingleton<INewMemberManagementService, NewMemberManagementService>();
             aServiceList.AddHostedService<SwarmBotBackgroundTasks>();
-            aServiceList.AddHostedService<SwarmBotIntegrationMessageProducer>();
 
             return aServiceList;
 
@@ -86,11 +83,6 @@ namespace SwarmBot.Infrastructure
             return aServiceList;
         }
 
-        public static WebApplicationBuilder AddCommunicationServices(this WebApplicationBuilder aWebApplicationBuilder)
-        {
-            aWebApplicationBuilder.Services.AddServiceBusIntegrationPublisher();
-            return aWebApplicationBuilder;
-        }
 
 
         /// <summary>

@@ -9,14 +9,20 @@ using TGF.Common.Extensions;
 using TGF.Common.ROP.HttpResult;
 using TGF.Common.ROP.Result;
 using SwarmBot.Application;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace SwarmBot.Infrastructure.Services
 {
-    internal class ScToolsService : IScToolsService
+    internal class ScToolsService(
+        IHttpClientFactory aHttpClientFactory,
+        IConfiguration aConfiguration,
+        ILogger<ScToolsService> aLogger,
+        IMemoryCache aMemoryCache) : IScToolsService
     {
-        private readonly IHttpClientFactory _httpClientFactory;
-        private readonly string _scToolsbaseUrlRsi;
-        private readonly ILogger _logger;
+        private readonly IHttpClientFactory _httpClientFactory = aHttpClientFactory;
+        private readonly string _scToolsbaseUrlRsi = aConfiguration.GetValue<string>("ScToolsbaseUrlRsi")
+                ?? throw new ArgumentNullException("Failed on fetching 'ScToolsbaseUrlRsi' from config, a value is required.");
+        private readonly ILogger _logger = aLogger;
         private readonly string _defaultFilePath = "/app/data/rsiData.json";
         private readonly string _defaultPath = "/app/data";
         private readonly IDictionary<string, string> _shipNameDictionary = new Dictionary<string, string>{
@@ -24,21 +30,32 @@ namespace SwarmBot.Infrastructure.Services
             { "Hornet F7C", "F7C Hornet" },
             { "Ursa Rover", "Ursa" }
         };
-
-        public ScToolsService(IHttpClientFactory aHttpClientFactory, IConfiguration aConfiguration, ILogger<ScToolsService> aLogger)
-        {
-            _httpClientFactory = aHttpClientFactory;
-            _logger = aLogger;
-            _scToolsbaseUrlRsi = aConfiguration.GetValue<string>("ScToolsbaseUrlRsi")
-                ?? throw new ArgumentNullException("Failed on fetching 'ScToolsbaseUrlRsi' from config, a value is required.");
-        }
-
         public async Task<IHttpResult<List<Ship>>> GetRsiShipList()
         {
+            // Try to get data from cache
+            if (aMemoryCache.TryGetValue("cachedShips", out List<Ship>? cachedData))
+            {
+                // Return data from cache, ensuring it is not null
+                if (cachedData != null)
+                {
+                    return Result.SuccessHttp(cachedData);
+                }
+            }
+
+            // If data is not available in cache or is null, read from the file
             var json = await File.ReadAllTextAsync(_defaultFilePath);
-            var data = System.Text.Json.JsonSerializer.Deserialize<List<Ship>>(json);
-            return Result.SuccessHttp(data)!;
+            var data = System.Text.Json.JsonSerializer.Deserialize<List<Ship>>(json) ?? []; // Handle null deserialization
+
+            // Set cache options
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromMinutes(5)); // Cache data for 30 minutes
+
+            // Save data in cache
+            aMemoryCache.Set("cachedShips", data, cacheEntryOptions);
+
+            return Result.SuccessHttp(data);
         }
+
 
         public async Task GetRsiData()
         {
