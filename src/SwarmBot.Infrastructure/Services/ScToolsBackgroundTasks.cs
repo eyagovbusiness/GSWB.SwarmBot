@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using TGF.Common.Extensions;
 
 namespace SwarmBot.Infrastructure
 {
@@ -38,7 +39,12 @@ namespace SwarmBot.Infrastructure
                         using (var scope = _serviceScopeFactory.CreateScope())
                         {
                             var lScToolsService = scope.ServiceProvider.GetRequiredService<IScToolsService>();
-                            await lScToolsService.GetRsiData();
+                            await RetryUtility.ExecuteWithRetryAsync(
+                                lScToolsService.GetRsiData(),
+                                result => !result.IsSuccess,
+                                aMaxRetries: 5,
+                                aDelayMilliseconds: 2000,
+                                aCancellationToken: aStoppingToken);
                         }
                         await Task.Delay(_backgroundTick_InSeconds * 1000, aStoppingToken);
                     }

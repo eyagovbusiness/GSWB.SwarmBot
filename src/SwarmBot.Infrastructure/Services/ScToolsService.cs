@@ -10,6 +10,8 @@ using TGF.Common.ROP.HttpResult;
 using TGF.Common.ROP.Result;
 using SwarmBot.Application;
 using Microsoft.Extensions.Caching.Memory;
+using TGF.Common.ROP;
+using TGF.Common.ROP.Errors;
 
 namespace SwarmBot.Infrastructure.Services
 {
@@ -57,7 +59,7 @@ namespace SwarmBot.Infrastructure.Services
         }
 
 
-        public async Task GetRsiData()
+        public async Task<IHttpResult<Unit>> GetRsiData()
         {
             string RsiAuthToken = await GetRsiAuthToken();
 
@@ -183,6 +185,10 @@ namespace SwarmBot.Infrastructure.Services
             });
 
             await SaveRsiDataOnFile(ListShip);
+
+            return ListShip.Any()
+                ? Result.SuccessHttp(Unit.Value)
+                : Result.Failure<Unit>(new HttpError(new Error("GetRsiData.Failed", "Get RSI data failed, the ship list after the request was empty."), HttpStatusCode.InternalServerError));
         }
 
         private async Task<string> GetRsiAuthToken()
