@@ -41,15 +41,15 @@ namespace Maindril.API.Endpoints
         /// <summary>
         /// Get the member's server nickname from the Discord user id.
         /// </summary>
-        private async Task<IResult> GetMemberProfileFromId(ulong discordUserId, ISwarmBotMembersService aSwarmBotMembersService, CancellationToken aCancellationToken = default)
-            => await aSwarmBotMembersService.GetMemberProfileFromId(discordUserId, aCancellationToken)
+        private async Task<IResult> GetMemberProfileFromId(ulong id, ISwarmBotMembersService aSwarmBotMembersService, CancellationToken aCancellationToken = default)
+            => await aSwarmBotMembersService.GetMemberProfileFromId(id, aCancellationToken)
             .ToIResult();
 
         /// <summary>
         /// Get the the list of all assigned roles to this member in the guild's server ordered by position.
         /// </summary>
-        private async Task<IResult> GetMemberRoleList(string discordUserId, ISwarmBotMembersService aSwarmBotMembersService, CancellationToken aCancellationToken = default)
-            => await aSwarmBotMembersService.GetMemberRoleList(Convert.ToUInt64(discordUserId), aCancellationToken)
+        private async Task<IResult> GetMemberRoleList(string id, ISwarmBotMembersService aSwarmBotMembersService, CancellationToken aCancellationToken = default)
+            => await aSwarmBotMembersService.GetMemberRoleList(Convert.ToUInt64(id), aCancellationToken)
             .ToIResult();
 
         #endregion
