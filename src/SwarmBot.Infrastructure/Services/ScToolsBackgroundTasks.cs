@@ -34,13 +34,13 @@ namespace SwarmBot.Infrastructure
                 while (!aStoppingToken.IsCancellationRequested)
                 {
                     try
-                    {
-                        await Task.Delay(_backgroundTick_InSeconds * 1000, aStoppingToken);
+                    {           
                         using (var scope = _serviceScopeFactory.CreateScope())
                         {
                             var lScToolsService = scope.ServiceProvider.GetRequiredService<IScToolsService>();
                             await lScToolsService.GetRsiData();
                         }
+                        await Task.Delay(_backgroundTick_InSeconds * 1000, aStoppingToken);
                     }
                     catch (Exception lException)
                     {
