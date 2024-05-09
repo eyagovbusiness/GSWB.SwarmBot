@@ -17,7 +17,7 @@ namespace Maindril.API.Endpoints
         /// <inheritdoc/>
         public void DefineEndpoints(WebApplication aWebApplication)
         {
-            aWebApplication.MapGet(SwarmBotApiRoutes.testers, GetIsTester).SetResponseMetadata<Unit>(200);
+            aWebApplication.MapGet(SwarmBotApiRoutes.private_testers, GetIsTester).SetResponseMetadata<string>(200, 404);
         }
 
         /// <inheritdoc/>
@@ -33,9 +33,9 @@ namespace Maindril.API.Endpoints
         /// Get from a Discord User ID the associated DiscordMember who is a Tester or 404 if the provided discord user id is not a tester.
         /// A discord user ID is tester if it is a member of the testers guild and it has the "Tester" role assigned.
         /// </summary>
-        private async Task<IResult> GetIsTester(string discordUserId, ISwarmBotMembersService aSwarmBotMembersService, CancellationToken aCancellationToken = default)
-            => await aSwarmBotMembersService.GetTester(Convert.ToUInt64(discordUserId), aCancellationToken)
-            .Map(tester => Unit.Value)
+        private async Task<IResult> GetIsTester(string id, ISwarmBotMembersService aSwarmBotMembersService, CancellationToken aCancellationToken = default)
+            => await aSwarmBotMembersService.GetTester(Convert.ToUInt64(id), aCancellationToken)
+            .Map(tester => tester.Id.ToString())
             .ToIResult();
 
         #endregion
