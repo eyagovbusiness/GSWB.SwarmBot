@@ -20,7 +20,7 @@ namespace SwarmBot
 
             public static HttpError NotTester => new HttpError(
                 new Error("User.NotTester",
-                    "The discord user under the provided discordUserId is not in the testers OR does not have the Tester role."),
+                    "The discord user under the provided discordUserId is not in the testers discord server OR does not have the Tester role."),
                 HttpStatusCode.NotFound);
 
         }
