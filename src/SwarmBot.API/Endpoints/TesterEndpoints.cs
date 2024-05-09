@@ -19,7 +19,7 @@ namespace Maindril.API.Endpoints
         {
             aWebApplication.MapGet(SwarmBotApiRoutes.private_testers, GetIsTester).SetResponseMetadata<Unit>(200, 404);
         }
-        s
+        
         /// <inheritdoc/>
         public void DefineRequiredServices(IServiceCollection aRequiredServicesCollection)
         {
