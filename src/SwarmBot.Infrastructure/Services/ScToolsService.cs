@@ -301,7 +301,8 @@ namespace SwarmBot.Infrastructure.Services
 
         private string NormalizeShipName(string ShipName)
         {
-            return _shipNameDictionary.ContainsKey(ShipName) ? _shipNameDictionary[ShipName] : ShipName;
+            string normalizedShipName = ShipName.Replace("- ILW", "").Trim();
+            return _shipNameDictionary.ContainsKey(normalizedShipName) ? _shipNameDictionary[normalizedShipName] : normalizedShipName;
         }
         private string NormalizePackageName(string PackageName)
         {
