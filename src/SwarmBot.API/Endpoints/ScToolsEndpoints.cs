@@ -1,4 +1,5 @@
-﻿using SwarmBot.Application;
+﻿using Common.Infrastructure.Communication.ApiRoutes;
+using SwarmBot.Application;
 using SwarmBot.Domain.ValueObjects;
 using TGF.CA.Presentation;
 using TGF.CA.Presentation.Middleware;
@@ -15,7 +16,7 @@ namespace Maindril.API.Endpoints
         /// <inheritdoc/>
         public void DefineEndpoints(WebApplication aWebApplication)
         {
-            aWebApplication.MapGet(SwarmBotApiRoutes.sc_tools_list_ships, GetListShips).SetResponseMetadata<Ship[]>(200);
+            aWebApplication.MapGet(SwarmBotApiRoutes.scTools_listShips, GetListShips).SetResponseMetadata<Ship[]>(200);
         }
 
         /// <inheritdoc/>

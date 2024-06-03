@@ -1,6 +1,7 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
-using SwarmBot.Application.DTOs;
+using Common.Application.DTOs.Discord;
+using Common.Domain.ValueObjects;
 using TGF.Common.Extensions;
 using TGF.Common.ROP;
 using TGF.Common.ROP.HttpResult;
@@ -15,11 +16,11 @@ namespace SwarmBot.Handlers
         {
             DiscordOverwriteBuilder[] lMakepublicDiscordOverwriteBuilder = default;
             return await Result.CancellationTokenResultAsync(aCancellationToken)
-                   .Tap(_ => lMakepublicDiscordOverwriteBuilder = new DiscordOverwriteBuilder[] { new DiscordOverwriteBuilder(aDiscordEveryoneRole).Deny(Permissions.AccessChannels) })
+                   .Tap(_ => lMakepublicDiscordOverwriteBuilder = [new DiscordOverwriteBuilder(aDiscordEveryoneRole).Deny(Permissions.AccessChannels)])
                    .Map(_ => aDiscordGuild.CreateChannelCategoryAsync(aCategoryChannelTemplate.Name, lMakepublicDiscordOverwriteBuilder))
                    .Tap(newCategory => aCategoryChannelTemplate.ChannelList.ParallelForEachAsync(
                                         SwarmBotDiscordBot._maxDegreeOfParallelism,
-                                        x => aDiscordGuild.CreateChannelAsync(x.Name, x.ChannelType, position: x.Position, parent: newCategory, overwrites: lMakepublicDiscordOverwriteBuilder),
+                                        x => aDiscordGuild.CreateChannelAsync(x.Name, (DSharpPlus.ChannelType)x.ChannelType, position: x.Position, parent: newCategory, overwrites: lMakepublicDiscordOverwriteBuilder),
                                         aCancellationToken))
                    .Map(newCategory => newCategory.Id);
 
@@ -27,8 +28,8 @@ namespace SwarmBot.Handlers
 
         public static async Task<IHttpResult<DiscordChannel>> GetDiscordCategory(DiscordGuild aDiscordGiild, Func<DiscordChannel, bool> aFilterFunc, CancellationToken aCancellationToken = default)
             => await Result.CancellationTokenResultAsync(aCancellationToken)
-                    .Map(_ => aDiscordGiild.Channels)
-                    .Map(discordChannelList => discordChannelList.Values.FirstOrDefault(channel => channel.IsCategory && aFilterFunc(channel)))
+                    .Map(_ => aDiscordGiild.GetChannelsAsync())
+                    .Map(discordChannelList => discordChannelList.FirstOrDefault(channel => channel.IsCategory && aFilterFunc(channel)))
                     .Verify(discordChannel => discordChannel != null, DiscordBotErrors.Channel.NotFound);
 
         public static async Task<IHttpResult<DiscordChannel>> GetDiscordChannelFromId(DiscordGuild aDiscordGuild, ulong aDiscordChannelId, CancellationToken aCancellationToken = default)
@@ -38,8 +39,9 @@ namespace SwarmBot.Handlers
 
         public static async Task<IHttpResult<DiscordChannel>> GetDiscordChannel(DiscordGuild aDiscordGuild, Func<DiscordChannel, bool> aFilterFunc, CancellationToken aCancellationToken = default)
             => await Result.CancellationTokenResultAsync(aCancellationToken)
-                    .Map(_ => aDiscordGuild.Channels)
-                    .Map(discordChannelList => discordChannelList.Values.FirstOrDefault(channel => aFilterFunc(channel)))
+                    .Map(_ => aDiscordGuild.GetChannelsAsync())
+                    .Tap(discordChannelList => { if (discordChannelList.IsNullOrEmpty()) throw new Exception("ERROOOOR! GetDiscordChannel was called and DiscordGuild.Channels was null or empty!!! please report this immediatley!"); })
+                    .Map(discordChannelList => discordChannelList.FirstOrDefault(channel => aFilterFunc(channel)))
                     .Verify(discordChannel => discordChannel != null, DiscordBotErrors.Channel.NotFoundName);
 
         /// <summary>
@@ -76,7 +78,7 @@ namespace SwarmBot.Handlers
                                 .ToList())
                     .Tap(missingTemplateList => missingTemplateList.ParallelForEachAsync(
                                                 SwarmBotDiscordBot._maxDegreeOfParallelism,
-                                                template => aDiscordCategory.Guild.CreateChannelAsync(template.Name, template.ChannelType, parent: aDiscordCategory, reason: "A Category channel was assigned to an event and this channel was missing according to the template."),
+                                                template => aDiscordCategory.Guild.CreateChannelAsync(template.Name, (DSharpPlus.ChannelType)template.ChannelType, parent: aDiscordCategory, reason: "A Category channel was assigned to an event and this channel was missing according to the template."),
                                                 aCancellationToken))
                     .Map(_ => Unit.Value);
 

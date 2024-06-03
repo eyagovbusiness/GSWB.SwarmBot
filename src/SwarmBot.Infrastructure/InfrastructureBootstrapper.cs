@@ -29,6 +29,7 @@ namespace SwarmBot.Infrastructure
         {
             aWebApplicationBuilder.Services.AddDiscoveryService(aWebApplicationBuilder.Configuration);
             aWebApplicationBuilder.Services.AddVaultSecretsManager();
+            aWebApplicationBuilder.Services.AddMemoryCache();
 
             aWebApplicationBuilder.AddCommunicationServices();
 

@@ -1,6 +1,6 @@
 ﻿using DSharpPlus.Entities;
 using SwarmBot.Application;
-using SwarmBot.Application.DTOs;
+using Common.Application.DTOs.Discord;
 using SwarmBot.Application.Mapping;
 using SwarmBot.Handelers;
 using SwarmBot.Handlers;
@@ -23,7 +23,7 @@ namespace SwarmBot.Services
 
 
         public async Task<IHttpResult<DiscordRoleDTO[]>> GetGuildServerRoleList(CancellationToken aCancellationToken = default)
-            => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
+            => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken, aCallAPI:true)
                 .Map(discordGuild => discordGuild.Roles
                                     .Select(rolePair => rolePair.Value)
                                     .Select(role => role.ToDto()).ToArray())

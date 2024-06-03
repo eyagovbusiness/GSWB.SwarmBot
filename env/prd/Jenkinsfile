@@ -5,11 +5,8 @@ pipeline {
     }
     environment {
         REGISTRY='registry.guildswarm.org'
-        ENV="STG"
-        USER=credentials('user_auto')
-        TOKEN=credentials('token_auto')
         ENVIRONMENT='staging'
-        REPO='staging'
+        REPO='production'
         IMAGE='swarm_bot'
     }
     stages{
@@ -23,7 +20,7 @@ pipeline {
                            | tar -cvf projectfiles.tar -T -
                            '''
 						  try {
-						    withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: "harbor-dotnet", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD']]) {
+						    withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: "harbor-${ENVIRONMENT}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD']]) {
                                 sh "docker login -u \'${DOCKER_USERNAME}' -p \'${DOCKER_PASSWORD}' ${REGISTRY}"
 							    sh "docker build . --build-arg ENVIRONMENT='${ENVIRONMENT}' -t ${REGISTRY}/${REPO}/${IMAGE}:${version} -t ${REGISTRY}/${REPO}/${IMAGE}:latest"
 							    sh 'docker logout'
@@ -76,20 +73,7 @@ pipeline {
                         }
                     }
                 }
-        stage('Deploy STG') {
-            agent {
-                label 'python-3.11.6'
-            }
-            steps {
-                script {
-                    container('pytainer') {
-                        sh 'export PYTHONUNBUFFERED=1'
-                        sh "python3 sender.py"
-                    }
-                }
-            }
-        }
-    }  
+            }  
     post {
         always{
             sh 'rm -rf *'

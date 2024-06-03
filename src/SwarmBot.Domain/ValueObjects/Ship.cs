@@ -1,8 +1,10 @@
-﻿namespace SwarmBot.Domain.ValueObjects
+﻿using SwarmBot.Domain.ValueObjects;
+
+namespace SwarmBot.Domain.ValueObjects
 {
     public class Ship
     {
-        public required string Id { get; set; }
+        public required int Id { get; set; }
         public required string Name { get; set; }
         public required float Price { get; set; }
         public required string FlyableStatus { get; set; }

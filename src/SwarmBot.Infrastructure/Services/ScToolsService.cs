@@ -1,6 +1,4 @@
-﻿using AngleSharp.Dom;
-using SwarmBot.Application;
-using SwarmBot.Domain.ValueObjects;
+﻿using SwarmBot.Domain.ValueObjects;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -10,14 +8,23 @@ using System.Text;
 using TGF.Common.Extensions;
 using TGF.Common.ROP.HttpResult;
 using TGF.Common.ROP.Result;
+using SwarmBot.Application;
+using Microsoft.Extensions.Caching.Memory;
+using TGF.Common.ROP;
+using TGF.Common.ROP.Errors;
 
 namespace SwarmBot.Infrastructure.Services
 {
-    internal class ScToolsService : IScToolsService
+    internal class ScToolsService(
+        IHttpClientFactory aHttpClientFactory,
+        IConfiguration aConfiguration,
+        ILogger<ScToolsService> aLogger,
+        IMemoryCache aMemoryCache) : IScToolsService
     {
-        private readonly IHttpClientFactory _httpClientFactory;
-        private readonly string _scToolsbaseUrlRsi;
-        private readonly ILogger _logger;
+        private readonly IHttpClientFactory _httpClientFactory = aHttpClientFactory;
+        private readonly string _scToolsbaseUrlRsi = aConfiguration.GetValue<string>("ScToolsbaseUrlRsi")
+                ?? throw new ArgumentNullException("Failed on fetching 'ScToolsbaseUrlRsi' from config, a value is required.");
+        private readonly ILogger _logger = aLogger;
         private readonly string _defaultFilePath = "/app/data/rsiData.json";
         private readonly string _defaultPath = "/app/data";
         private readonly IDictionary<string, string> _shipNameDictionary = new Dictionary<string, string>{
@@ -25,28 +32,39 @@ namespace SwarmBot.Infrastructure.Services
             { "Hornet F7C", "F7C Hornet" },
             { "Ursa Rover", "Ursa" }
         };
-
-        public ScToolsService(IHttpClientFactory aHttpClientFactory, IConfiguration aConfiguration, ILogger<ScToolsService> aLogger)
-        {
-            _httpClientFactory = aHttpClientFactory;
-            _logger = aLogger;
-            _scToolsbaseUrlRsi = aConfiguration.GetValue<string>("ScToolsbaseUrlRsi")
-                ?? throw new ArgumentNullException("Failed on fetching 'ScToolsbaseUrlRsi' from config, a value is required.");
-        }
-
         public async Task<IHttpResult<List<Ship>>> GetRsiShipList()
         {
+            // Try to get data from cache
+            if (aMemoryCache.TryGetValue("cachedShips", out List<Ship>? cachedData))
+            {
+                // Return data from cache, ensuring it is not null
+                if (cachedData != null)
+                {
+                    return Result.SuccessHttp(cachedData);
+                }
+            }
+
+            // If data is not available in cache or is null, read from the file
             var json = await File.ReadAllTextAsync(_defaultFilePath);
-            var data = System.Text.Json.JsonSerializer.Deserialize<List<Ship>>(json);
-            return Result.SuccessHttp(data)!;
+            var data = System.Text.Json.JsonSerializer.Deserialize<List<Ship>>(json) ?? []; // Handle null deserialization
+
+            // Set cache options
+            var cacheEntryOptions = new MemoryCacheEntryOptions()
+                .SetSlidingExpiration(TimeSpan.FromMinutes(5)); // Cache data for 30 minutes
+
+            // Save data in cache
+            aMemoryCache.Set("cachedShips", data, cacheEntryOptions);
+
+            return Result.SuccessHttp(data);
         }
 
-        public async Task GetRsiData()
+
+        public async Task<IHttpResult<Unit>> GetRsiData()
         {
             string RsiAuthToken = await GetRsiAuthToken();
 
             List<Ship> ListShip = new List<Ship> { new Ship() {
-                Id = "ptv",
+                Id = 99999,
                 Name = "PTV Buggy",
                 Price = 0,
                 FlyableStatus = "flight-ready",
@@ -70,7 +88,7 @@ namespace SwarmBot.Infrastructure.Services
             JToken ShipMatrixData = await GetRsiShipMatrixData(RsiAuthToken);
             ShipMatrixData.ForEach(dataShip =>
             {
-                string Id = dataShip["id"]!.ToString();
+                int Id = int.Parse(dataShip["id"]!.ToString());
                 string Name = dataShip["name"]!.ToString();
                 float Price = 0;
                 ListShip.Add(
@@ -102,13 +120,13 @@ namespace SwarmBot.Infrastructure.Services
 
             ShipCcuData["from"]!["ships"]!.ForEach(dataShip =>
             {
-                var index = ListShip.FindIndex(Ship => Ship.Id == dataShip["id"]!.ToString());
+                var index = ListShip.FindIndex(Ship => Ship.Id == int.Parse(dataShip["id"]!.ToString()));
                 ListShip[index].Price = NormalizePrice(dataShip["msrp"]!.ToString());
             });
 
             ShipCcuData["to"]!["ships"]!.ForEach(dataShip =>
             {
-                var index = ListShip.FindIndex(Ship => Ship.Id == dataShip["id"]!.ToString());
+                var index = ListShip.FindIndex(Ship => Ship.Id == int.Parse(dataShip["id"]!.ToString()));
                 foreach (var CcuData in dataShip["skus"]!)
                 {
                     string CcuId = CcuData["id"]!.ToString();
@@ -121,11 +139,12 @@ namespace SwarmBot.Infrastructure.Services
             JToken ShipStandaloneData = await GetRsiShipStandaloneData(RsiAuthToken);
 
             ShipStandaloneData.ForEach(standalone => {
-                
+
                 string ShipName = Convert.ToBoolean(standalone["isPackage"]!.ToString()) ? NormalizePackageName(standalone["name"]!.ToString()) : NormalizeShipName(standalone["name"]!.ToString());
                 var index = ListShip.FindIndex(Ship => Ship.Name.ToLower().Trim() == ShipName.ToLower().Trim());
 
-                if (ShipName == "PTV Buggy") {
+                if (ShipName == "PTV Buggy")
+                {
                     ListShip[index].Price = NormalizePrice(standalone["nativePrice"]!["amount"]!.ToString());
                     ListShip[index].Link = standalone["url"]!.ToString();
                     ListShip[index].Images = new ShipImages()
@@ -166,6 +185,10 @@ namespace SwarmBot.Infrastructure.Services
             });
 
             await SaveRsiDataOnFile(ListShip);
+
+            return ListShip.Any()
+                ? Result.SuccessHttp(Unit.Value)
+                : Result.Failure<Unit>(new HttpError(new Error("GetRsiData.Failed", "Get RSI data failed, the ship list after the request was empty."), HttpStatusCode.InternalServerError));
         }
 
         private async Task<string> GetRsiAuthToken()
@@ -198,7 +221,8 @@ namespace SwarmBot.Infrastructure.Services
             }
         }
 
-        private async Task<JToken> GetRsiShipMatrixData(string RsiAuthToken) {
+        private async Task<JToken> GetRsiShipMatrixData(string RsiAuthToken)
+        {
             HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, _scToolsbaseUrlRsi + "/ship-matrix/index");
             httpRequestMessage.Headers.Add("Cookie", "Rsi-Account-Auth=" + RsiAuthToken);
             HttpClient HttpClient = _httpClientFactory.CreateClient();
@@ -209,7 +233,8 @@ namespace SwarmBot.Infrastructure.Services
             return RsiShipMatrixData;
         }
 
-        private async Task<JToken> GetRsiShipCcuData(string RsiAuthToken) {
+        private async Task<JToken> GetRsiShipCcuData(string RsiAuthToken)
+        {
             HttpRequestMessage httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, _scToolsbaseUrlRsi + "/pledge-store/api/upgrade/graphql");
             httpRequestMessage.Headers.Add("Cookie", "Rsi-Account-Auth=" + RsiAuthToken);
             var query = new
@@ -269,15 +294,18 @@ namespace SwarmBot.Infrastructure.Services
         }
 
 
-        private float NormalizePrice(string Price) {
+        private float NormalizePrice(string Price)
+        {
             return Convert.ToSingle(Price) / 100;
         }
 
         private string NormalizeShipName(string ShipName)
         {
-            return _shipNameDictionary.ContainsKey(ShipName) ? _shipNameDictionary[ShipName] : ShipName;
+            string normalizedShipName = ShipName.Replace("- ILW", "").Trim();
+            return _shipNameDictionary.ContainsKey(normalizedShipName) ? _shipNameDictionary[normalizedShipName] : normalizedShipName;
         }
-        private string NormalizePackageName (string PackageName) {
+        private string NormalizePackageName(string PackageName)
+        {
             string NormalizePackageName = PackageName.Split(" Starter Pack")[0].Replace(" -", "");
             return _shipNameDictionary.ContainsKey(NormalizePackageName) ? _shipNameDictionary[NormalizePackageName] : NormalizePackageName;
         }
@@ -287,7 +315,8 @@ namespace SwarmBot.Infrastructure.Services
             return TaxDescription.Replace("[", "").Replace("]", "").Replace("\"", "").Trim();
         }
 
-        private async Task SaveRsiDataOnFile (List<Ship> rsiData) {
+        private async Task SaveRsiDataOnFile(List<Ship> rsiData)
+        {
             DirectoryInfo Directory = new DirectoryInfo(_defaultPath);
             Directory.Create();
             string json = System.Text.Json.JsonSerializer.Serialize(rsiData);

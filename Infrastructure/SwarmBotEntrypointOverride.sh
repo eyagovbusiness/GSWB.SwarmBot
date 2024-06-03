@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # This script acts as a custom entrypoint that performs custom operations before and after starting a base Mandril ASP.NET service.
 
@@ -12,7 +12,7 @@ source wait_for_service.sh
 # Execute tasks before the base entrypoint starts
 execute_before_start() {
     echo "Executing scheduled tasks before the base entrypoint starts..."	
-    wait_IsReady vault # Vault waits until consul is ready :)
+    wait_IsReady gswi.vault # Vault waits until consul is ready :)
     echo "Scheduled tasks before the base entrypoint starts..DONE."
 }
 
@@ -33,7 +33,8 @@ main() {
     execute_before_start
 
     echo "Calling base Entrypoint"
-    dotnet SwarmBot.API.dll &
+    #dotnet SwarmBot.API.dll &
+	./SwarmBot.API &
     local baseentry_pid=$!
 	
     execute_after_start &

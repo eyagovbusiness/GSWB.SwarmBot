@@ -1,7 +1,7 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
 using SwarmBot.Application;
-using SwarmBot.Application.DTOs;
+using Common.Application.DTOs.Discord;
 using SwarmBot.Handelers;
 using SwarmBot.Handlers;
 using TGF.Common.Extensions;

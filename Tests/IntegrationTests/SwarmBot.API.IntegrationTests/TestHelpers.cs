@@ -1,5 +1,5 @@
-﻿using DSharpPlus;
-using SwarmBot.Application.DTOs;
+﻿using Common.Application.DTOs.Discord;
+using Common.Domain.ValueObjects;
 
 namespace SwarmBot.API.IntegrationTests
 {

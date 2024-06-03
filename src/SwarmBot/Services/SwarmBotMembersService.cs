@@ -1,6 +1,6 @@
 ﻿using DSharpPlus.Entities;
 using SwarmBot.Application;
-using SwarmBot.Application.DTOs;
+using Common.Application.DTOs.Discord;
 using SwarmBot.Application.Mapping;
 using SwarmBot.Extensions;
 using SwarmBot.Handelers;
@@ -31,6 +31,12 @@ namespace SwarmBot.Services
                     .Bind(discordGuild => MembersHandler.GetAllDiscordMemberListAtmAsync(discordGuild, aCancellationToken))
                     .Map(discordMemberList => discordMemberList.FirstOrDefault(member => member.Id == aDiscordUserId))
                     .Map(discordMember => new DiscordProfileDTO(discordMember.DisplayName, discordMember.GetGuildAvatarUrlOrDefault()));
+
+        public async Task<IHttpResult<DiscordMember>> GetTester(ulong aDiscordUserId, CancellationToken aCancellationToken = default)
+            => await _guildsHandler.GetTestersDiscordGuildFromConfigAsync(aCancellationToken)
+                    .Bind(discordGuild => MembersHandler.GetAllDiscordMemberListAtmAsync(discordGuild, aCancellationToken))
+                    .Map(discordMemberList => discordMemberList.FirstOrDefault(member => member.Id == aDiscordUserId))
+                    .Verify(discordMember => discordMember != null && discordMember.Roles.Any(role => role.Name == "Tester"), DiscordBotErrors.User.NotTester);
 
         public async Task<IHttpResult<IEnumerable<DiscordMember>>> GetMemberList(Func<DiscordMember, bool> aFilterFunc, CancellationToken aCancellationToken = default)
             => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
