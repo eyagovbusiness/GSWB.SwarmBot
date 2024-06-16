@@ -1,4 +1,5 @@
-﻿using HealthChecks.UI.Client;
+﻿using Common.Presentation;
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using System.Reflection;
 using TGF.CA.Application;
@@ -33,16 +34,7 @@ namespace SwarmBot.API
         /// </summary>
         public static void UsePresentation(this WebApplication aWebApplication)
         {
-            if (aWebApplication.Environment.IsDevelopment())
-            {
-                aWebApplication.UseSwagger();
-                aWebApplication.UseSwaggerUI();
-            }
-            aWebApplication.MapHealthChecks(TGFEndpointRoutes.health, new HealthCheckOptions()
-            {
-                Predicate = _ => true,
-                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-            });
+            aWebApplication.UseCommonPresentation();
 
             aWebApplication.UseCustomErrorHandlingMiddleware();
             aWebApplication.UseRouting();
