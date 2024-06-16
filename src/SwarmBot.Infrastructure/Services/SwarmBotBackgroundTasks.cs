@@ -52,7 +52,7 @@ namespace SwarmBot.Infrastructure
                 {
                     try
                     {
-                        var lTimeNow = DateTimeOffset.UtcNow.TimeOfDay;
+                        var lTimeNow = DateTimeOffset.Now.TimeOfDay;
                         if (lTimeNow >= new TimeSpan(5, 0, 0) && lTimeNow < new TimeSpan(5, 0, _backgroundTick_InSeconds * 2))//execute daily task at 5 AM UTC(consider moving to System.Threading.Timer) 
                             await _newMemberManagerService.DoDailyTaskAsync(aStoppingToken);
 

@@ -19,7 +19,7 @@ namespace SwarmBot.BackgroundServices.News.SlaveServices
         private readonly BotNewsConfig _botNewsConfig;
         public CommLinkNewsService(IHttpClientFactory aHttpClientFactory, BotNewsConfig aBotNewsConfig)
         {
-            mLastGetElapsedTime = DateTime.UtcNow;
+            mLastGetElapsedTime = DateTimeOffset.Now;
             _botNewsConfig = aBotNewsConfig;
             mNewsTopicConfig = aBotNewsConfig.CommLink;
             mTimedHttpClientProvider = new TimedHttpClientProvider(aHttpClientFactory, new TimeSpan(1, 0, 0), aBaseAddress: aBotNewsConfig.BaseResourceAddress);

@@ -35,7 +35,7 @@ namespace SwarmBot.BackgroundServices.News.SlaveServices
         private string mLastGeneralStatusNotified;
         public RSIStatusNewsService(IHttpClientFactory aHttpClientFactory, BotNewsConfig aBotNewsConfig)
         {
-            mLastGetElapsedTime = DateTime.UtcNow;
+            mLastGetElapsedTime = DateTimeOffset.Now;
             _botNewsConfig = aBotNewsConfig;
             mNewsTopicConfig = aBotNewsConfig.RSIStatus;
             mTimedHttpClientProvider = new TimedHttpClientProvider(

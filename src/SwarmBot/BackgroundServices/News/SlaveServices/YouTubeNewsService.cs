@@ -25,7 +25,7 @@ namespace SwarmBot.BackgroundServices.News.SlaveServices
         public YouTubeNewsService(ISecretsManager aSecretsManager, BotNewsConfig aBotNewsConfig)
         {
             _secretsManager = aSecretsManager;
-            mLastGetElapsedTime = DateTime.UtcNow;
+            mLastGetElapsedTime = DateTimeOffset.Now;
             mNewsTopicConfig = aBotNewsConfig.YouTubeTracker;
             //To get a channel id GET => https://www.googleapis.com/youtube/v3/channels?key={YOUR_API_KEY}&forUsername={TARGET_CHANNEL_NAME}&part=id
         }
@@ -70,7 +70,7 @@ namespace SwarmBot.BackgroundServices.News.SlaveServices
 
             List<YouTubeNewsMessage> lCurrentContentList = new();
             if (ActivitiesListResponse == null || ActivitiesListResponse.Items.IsNullOrEmpty())//If could not get the news resource return empty discord message list
-                return new List<YouTubeNewsMessage>(); //mLastGetElapsedTime will not be updated and health check will update health if proceeds
+                return []; //mLastGetElapsedTime will not be updated and health check will update health if proceeds
             mLastGetElapsedTime = DateTimeOffset.Now;
 
             return ActivitiesListResponse.Items
