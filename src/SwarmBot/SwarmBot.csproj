@@ -33,8 +33,4 @@
     <PackageReference Include="TGF.CA.Infrastructure.Comm.RabbitMQ" Version="1.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="BackgroundServices\" />
-  </ItemGroup>
-
 </Project>

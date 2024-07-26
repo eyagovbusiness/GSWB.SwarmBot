@@ -34,6 +34,7 @@ namespace SwarmBot.Infrastructure
                 .AddSwarmBotPassiveServices()
                 .AddSwarmBotActiveServices()
                 .AddSwarmBotHealthChceckServices();
+            aWebApplicationBuilder.Services.AddHostedService<SwarmBotStartupService>();
             aWebApplicationBuilder.Services.AddHostedService<ScToolsBackgroundTasks>();
         }
 

@@ -18,13 +18,6 @@ namespace SwarmBot.Application
         public event AsyncEventHandler<DiscordClient, GuildBanRemoveEventArgs> GuildBanRemoved;
 
         /// <summary>
-        /// Unsubscribe the event handler that do ban new bots joined temporarily.
-        /// </summary>
-        /// <param name="aMinutesAllowed">Number of minutes the new bots will be allowed to join the guild.</param>
-        /// <returns>True if the status changed from not allowed to allowed, false if nothing changed because it was allowed already at this time.</returns>
-        public Task<bool> AllowTemporarilyJoinNewBots(int aMinutesAllowed);
-
-        /// <summary>
         /// Gets a HealthCheck information about this service by attempting to fetch the target discord guild through the bot client.
         /// </summary>
         /// <param name="aCancellationToken"></param>
@@ -38,6 +31,12 @@ namespace SwarmBot.Application
         /// </summary>
         /// <returns>awaitable <see cref="Task"/></returns>
         public Task StartAsync();
+
+        /// <summary>
+        /// Attempts asynchronously to properly stop the discord bot disposing all the objects and closing all the connections.
+        /// </summary>
+        /// <returns>awaitable <see cref="Task"/></returns>
+        public Task StopAsync();
     }
 
 }
