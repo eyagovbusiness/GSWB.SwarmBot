@@ -3,9 +3,7 @@ using DSharpPlus.AsyncEvents;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.EventArgs;
 using SwarmBot.Application;
-using SwarmBot.BackgroundServices.NewMemberManager;
 using SwarmBot.Commands;
-using SwarmBot.Configuration;
 using SwarmBot.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -177,7 +175,6 @@ namespace SwarmBot
             lServices.AddSingleton<ISwarmBotDiscordBot>(this);
             lServices.AddScoped<ISwarmBotMembersService, SwarmBotMembersService>();
             lServices.AddScoped<ISwarmBotRolesService, SwarmBotRolesService>();
-            lServices.AddScoped<INewMemberManagementService, NewMemberManagementService>();
             lServices.AddSingleton<IConfiguration>(lNewConfiguration); // Register lNewConfiguration as IConfiguration
             return lServices.BuildServiceProvider();
         }

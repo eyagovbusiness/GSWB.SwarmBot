@@ -1,9 +1,6 @@
 ﻿using SwarmBot.Application;
 using SwarmBot.Infrastructure.Communication.MessageProducer;
 using SwarmBot.Infrastructure.Services;
-using SwarmBot;
-using SwarmBot.BackgroundServices.NewMemberManager;
-using SwarmBot.BackgroundServices.News;
 using SwarmBot.HealthChecks;
 using SwarmBot.Services;
 using Microsoft.AspNetCore.Builder;
@@ -45,14 +42,7 @@ namespace SwarmBot.Infrastructure
         /// </summary>
         public static IServiceCollection AddSwarmBotPassiveServices(this IServiceCollection aServiceList)
         {
-            //Required by DiscordBotNewsService.
-            aServiceList.AddHttpClient()
-            .AddSingleton<IDiscordBotNewsService, DiscordBotNewsMasterService>();
-
-            aServiceList.AddSingleton<INewMemberManagementService, NewMemberManagementService>();
-            aServiceList.AddHostedService<SwarmBotBackgroundTasks>();
             aServiceList.AddHostedService<SwarmBotIntegrationMessageProducer>();
-
             return aServiceList;
 
         }
@@ -82,8 +72,7 @@ namespace SwarmBot.Infrastructure
             aServiceList
                 .AddHealthChecks()
                 .AddCheck<SwarmBot_HealthCheck>(nameof(SwarmBot_HealthCheck))
-                .AddCheck<SwarmBotAPI_HealthCheck>(nameof(SwarmBotAPI_HealthCheck))
-                .AddCheck<DiscordBotNewsService_HealthCheck>(nameof(DiscordBotNewsService_HealthCheck));
+                .AddCheck<SwarmBotAPI_HealthCheck>(nameof(SwarmBotAPI_HealthCheck));
             return aServiceList;
         }
 
