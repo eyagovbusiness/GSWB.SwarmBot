@@ -95,6 +95,7 @@ namespace SwarmBot.Infrastructure
             {
                 MinimumSameSitePolicy = SameSiteMode.Lax
             });
+            aWebApplication.UseHttpsRedirection();
         }
 
     }
