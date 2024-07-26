@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TGF.CA.Infrastructure.Communication.RabbitMQ;
 using TGF.CA.Infrastructure.Discovery;
 using TGF.CA.Infrastructure.Security.Secrets;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace SwarmBot.Infrastructure
 {
@@ -96,6 +97,10 @@ namespace SwarmBot.Infrastructure
                 MinimumSameSitePolicy = SameSiteMode.Lax
             });
             aWebApplication.UseHttpsRedirection();
+            aWebApplication.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
         }
 
     }
