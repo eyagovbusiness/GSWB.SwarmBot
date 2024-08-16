@@ -7,7 +7,7 @@ pipeline {
         TOOL_LABEL = "swarmbot"
         ENVIRONMENT = "${env.BRANCH_NAME}"
         REPO = "${env.BRANCH_NAME}"
-        IMAGE = 'swarmbot'
+        IMAGE = 'swarm_bot'
     }
     stages {
         stage('Build Docker Images') {
