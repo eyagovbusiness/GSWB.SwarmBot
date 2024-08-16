@@ -5,7 +5,7 @@ pipeline {
     environment {
         REGISTRY = 'registry.guildswarm.org'
         TOOL_LABEL = "swarmbot"
-        ENVIRONMENT = 'testportal'
+        ENVIRONMENT = 'Testportal'
         REPO = "${env.BRANCH_NAME}"
         IMAGE = 'swarmbot'
     }
