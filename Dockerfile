@@ -4,6 +4,7 @@ FROM registry.guildswarm.org/$ENVIRONMENT/common:latest AS base-packages
 FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build 
 ARG BUILD_CONFIGURATION
 ARG VAULT_ADDR_ENTRYPOINT
+ENV VAULT_ADDR_ENTRYPOINT=$VAULT_ADDR_ENTRYPOINT
 
 WORKDIR /src
 # Copy NuGet packages and project files from the base-packages image
