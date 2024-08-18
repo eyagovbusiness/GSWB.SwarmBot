@@ -3,6 +3,8 @@ FROM registry.guildswarm.org/$ENVIRONMENT/common:latest AS base-packages
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build 
 ARG BUILD_CONFIGURATION
+ARG VAULT_ADDR_ENTRYPOINT
+
 WORKDIR /src
 # Copy NuGet packages and project files from the base-packages image
 COPY --from=base-packages /app/BasePackages ./BasePackages
@@ -28,4 +30,4 @@ USER root
 RUN chown -R guildswarm:guildswarm /app/ && \
     chmod -R 700 /app/ 
 USER guildswarm 
-ENTRYPOINT ["/app/entrypoint.sh"]
+ENTRYPOINT ["/app/entrypoint.sh ${VAULT_ADDR_ENTRYPOINT}"]
