@@ -6,15 +6,13 @@
 set -e
 #set -x
 
-VAULT_ADDR_ENTRYPOINT=$1
-
 # "import" service await functions
 source wait_for_service.sh
 
 # Execute tasks before the base entrypoint starts
 execute_before_start() {
     echo "Executing scheduled tasks before the base entrypoint starts..."	
-    wait_IsReady ${VAULT_ADDR_ENTRYPOINT} # Vault waits until consul is ready :)
+    wait_IsReady "${VAULT_ADDR_ENTRYPOINT}" # Vault waits until consul is ready :)
     echo "Scheduled tasks before the base entrypoint starts..DONE."
 }
 

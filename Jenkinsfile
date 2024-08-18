@@ -8,7 +8,6 @@ pipeline {
         ENVIRONMENT = "${env.BRANCH_NAME}"
         REPO = "${env.BRANCH_NAME}"
         IMAGE = 'swarm_bot'
-        VAULT_ADDR_ENTRYPOINT = credentials('vault-addr-entrypoint')
     }
     stages {
         stage('Build Docker Images') {
@@ -21,7 +20,6 @@ pipeline {
                         withCredentials([usernamePassword(credentialsId: "backend${REPO}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                             sh "docker login -u '${DOCKER_USERNAME}' -p '${DOCKER_PASSWORD}' ${REGISTRY}"
                             sh "docker build . --build-arg ENVIRONMENT='${ENVIRONMENT}' \
-                                 --build-arg VAULT_ADDR_ENTRYPOINT=${VAULT_ADDR_ENTRYPOINT} \
                                  -t ${REGISTRY}/${REPO}/${IMAGE}:${version} \
                                  -t ${REGISTRY}/${REPO}/${IMAGE}:latest"
                             sh 'docker logout'
