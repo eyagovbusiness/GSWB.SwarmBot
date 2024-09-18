@@ -5,7 +5,7 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 #set -x
-
+VAULT_ADDR_ENTRYPOINT=$1
 # "import" service await functions
 source wait_for_service.sh
 
