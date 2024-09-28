@@ -16,6 +16,7 @@ namespace SwarmBot.Application
         public event AsyncEventHandler<DiscordClient, GuildRoleUpdateEventArgs> GuildRoleUpdated;
         public event AsyncEventHandler<DiscordClient, GuildBanAddEventArgs> GuildBanAdded;
         public event AsyncEventHandler<DiscordClient, GuildBanRemoveEventArgs> GuildBanRemoved;
+        public event AsyncEventHandler<DiscordClient, GuildCreateEventArgs> GuildAdded;
 
         /// <summary>
         /// Gets a HealthCheck information about this service by attempting to fetch the target discord guild through the bot client.
