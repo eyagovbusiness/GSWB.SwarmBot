@@ -22,6 +22,8 @@ namespace SwarmBot.Infrastructure.Communication.MessageProducer
             aSwarmBot.GuildRoleUpdated += SwarmBotDiscordBot_GuildRoleUpdated;
             aSwarmBot.GuildBanAdded += SwarmBotDiscordBot_GuildBanAdded;
             aSwarmBot.GuildBanRemoved += SwarmBotDiscordBot_GuildBanRemoved;
+            aSwarmBot.GuildAdded += SwarmBotDiscordBot_GuildAdded;
+
             return Task.CompletedTask;
         }
 
@@ -59,6 +61,9 @@ namespace SwarmBot.Infrastructure.Communication.MessageProducer
 
         private async Task SwarmBotDiscordBot_GuildBanAdded(DiscordClient sender, GuildBanAddEventArgs args)
             => await SendMessage(new MemberBanUpdated(args.Member.Id.ToString(), args.Guild.Id.ToString(), false), aRoutingKey: RoutingKeys.SwarmBot.SwarmBot_Members_sync);
+
+        private async Task SwarmBotDiscordBot_GuildAdded(DiscordClient sender, GuildCreateEventArgs args)
+            => await SendMessage(new GuildAdded(args.Guild.Id.ToString(), args.Guild.Name, args.Guild.IconUrl), aRoutingKey: RoutingKeys.Guilds.Guilds_sync);
 
         #endregion
 

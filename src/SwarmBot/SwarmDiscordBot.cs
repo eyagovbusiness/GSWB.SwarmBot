@@ -40,6 +40,7 @@ namespace SwarmBot
         public readonly AsyncEventHandler<DiscordClient, GuildRoleUpdateEventArgs> _guildRoleUpdatedHandler;
         public readonly AsyncEventHandler<DiscordClient, GuildBanAddEventArgs> _guildGuildBanAdded;
         public readonly AsyncEventHandler<DiscordClient, GuildBanRemoveEventArgs> _guildBanRemoved;
+        public readonly AsyncEventHandler<DiscordClient, GuildCreateEventArgs> _guildAdded;
         #endregion
 
         public SwarmBotDiscordBot(ILoggerFactory aLoggerFactory, ISecretsManager aSecretsManager, IConfiguration aConfiguration, IServiceScopeFactory aServiceScopeFactory)
@@ -54,6 +55,8 @@ namespace SwarmBot
             _guildRoleUpdatedHandler = (client, args) => GuildRoleUpdated?.Invoke(client, args);
             _guildGuildBanAdded = (client, args) => GuildBanAdded?.Invoke(client, args);
             _guildBanRemoved = (client, args) => GuildBanRemoved?.Invoke(client, args);
+            _guildAdded = (client, args) => GuildAdded?.Invoke(client, args);
+
 
         }
 
@@ -65,6 +68,7 @@ namespace SwarmBot
         public event AsyncEventHandler<DiscordClient, GuildRoleUpdateEventArgs> GuildRoleUpdated;
         public event AsyncEventHandler<DiscordClient, GuildBanAddEventArgs> GuildBanAdded;
         public event AsyncEventHandler<DiscordClient, GuildBanRemoveEventArgs> GuildBanRemoved;
+        public event AsyncEventHandler<DiscordClient, GuildCreateEventArgs> GuildAdded;
 
         public async Task<HealthCheckResult> GetHealthCheck(CancellationToken aCancellationToken = default)
         {
@@ -208,6 +212,7 @@ namespace SwarmBot
             aDiscordClient.GuildRoleUpdated += _guildRoleUpdatedHandler;
             aDiscordClient.GuildBanAdded += _guildGuildBanAdded;
             aDiscordClient.GuildBanRemoved += _guildBanRemoved;
+            aDiscordClient.GuildCreated += _guildAdded;
         }
 
         private void RemoveEventHandlers(DiscordClient aDiscordClient)
@@ -221,6 +226,8 @@ namespace SwarmBot
             aDiscordClient.GuildRoleUpdated -= _guildRoleUpdatedHandler;
             aDiscordClient.GuildBanAdded -= _guildGuildBanAdded;
             aDiscordClient.GuildBanRemoved -= _guildBanRemoved;
+            aDiscordClient.GuildCreated -= _guildAdded; ;
+
         }
 
         /// <summary>
