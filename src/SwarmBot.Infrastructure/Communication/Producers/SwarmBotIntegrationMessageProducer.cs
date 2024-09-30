@@ -81,9 +81,9 @@ namespace SwarmBot.Infrastructure.Communication.MessageProducer
             var lRemovedRoles = aGuildMemberUpdateEventArgs.RolesBefore.Except(aGuildMemberUpdateEventArgs.RolesAfter).ToList();
 
             if (lAddedRoles.Count != 0)
-                await SendMessage(new MemberRoleAssigned(aGuildMemberUpdateEventArgs.MemberAfter.Id.ToString(), lAddedRoles.Select(role => role.ToDto()).ToArray()), aRoutingKey: RoutingKeys.SwarmBot.SwarmBot_Members_sync);
+                await SendMessage(new MemberRoleAssigned(aGuildMemberUpdateEventArgs.MemberAfter.Id.ToString(), aGuildMemberUpdateEventArgs.MemberAfter.Guild.Id.ToString(), lAddedRoles.Select(role => role.ToDto()).ToArray()), aRoutingKey: RoutingKeys.SwarmBot.SwarmBot_Members_sync);
             if (lRemovedRoles.Count != 0)
-                await SendMessage(new MemberRoleRevoked(aGuildMemberUpdateEventArgs.MemberAfter.Id.ToString(), lRemovedRoles.Select(role => role.ToDto()).ToArray()), aRoutingKey: RoutingKeys.SwarmBot.SwarmBot_Members_sync);
+                await SendMessage(new MemberRoleRevoked(aGuildMemberUpdateEventArgs.MemberAfter.Id.ToString(), aGuildMemberUpdateEventArgs.MemberAfter.Guild.Id.ToString(), lRemovedRoles.Select(role => role.ToDto()).ToArray()), aRoutingKey: RoutingKeys.SwarmBot.SwarmBot_Members_sync);
         }
 
         private async Task SendIfGuildMemberDisplayNameUpdate(GuildMemberUpdateEventArgs aGuildMemberUpdateEventArgs)
@@ -91,7 +91,7 @@ namespace SwarmBot.Infrastructure.Communication.MessageProducer
             //TO-DO: GSWB-46
             if (aGuildMemberUpdateEventArgs.NicknameAfter != aGuildMemberUpdateEventArgs.NicknameBefore
                 || aGuildMemberUpdateEventArgs.UsernameAfter != aGuildMemberUpdateEventArgs.UsernameBefore)
-                await SendMessage(new MemberRenamed(aGuildMemberUpdateEventArgs.MemberAfter.Id.ToString(), aGuildMemberUpdateEventArgs.MemberAfter.DisplayName), aRoutingKey: RoutingKeys.SwarmBot.SwarmBot_Members_sync);
+                await SendMessage(new MemberRenamed(aGuildMemberUpdateEventArgs.MemberAfter.Id.ToString(), aGuildMemberUpdateEventArgs.MemberAfter.Guild.Id.ToString(), aGuildMemberUpdateEventArgs.MemberAfter.DisplayName), aRoutingKey: RoutingKeys.SwarmBot.SwarmBot_Members_sync);
         }
 
         private async Task SendIfGuildMemberAvatarUpdate(GuildMemberUpdateEventArgs aGuildMemberUpdateEventArgs)
@@ -99,7 +99,7 @@ namespace SwarmBot.Infrastructure.Communication.MessageProducer
             //TO-DO: GSWB-28
             if (aGuildMemberUpdateEventArgs.GuildAvatarHashAfter != aGuildMemberUpdateEventArgs.GuildAvatarHashBefore
                 || aGuildMemberUpdateEventArgs.AvatarHashAfter != aGuildMemberUpdateEventArgs.AvatarHashBefore)
-                await SendMessage(new MemberAvatarUpdated(aGuildMemberUpdateEventArgs.MemberAfter.Id.ToString(), aGuildMemberUpdateEventArgs.MemberAfter.GetGuildAvatarUrlOrDefault()), aRoutingKey: RoutingKeys.SwarmBot.SwarmBot_Members_sync);
+                await SendMessage(new MemberAvatarUpdated(aGuildMemberUpdateEventArgs.MemberAfter.Id.ToString(), aGuildMemberUpdateEventArgs.MemberAfter.Guild.Id.ToString(), aGuildMemberUpdateEventArgs.MemberAfter.GetGuildAvatarUrlOrDefault()), aRoutingKey: RoutingKeys.SwarmBot.SwarmBot_Members_sync);
         }
 
         #endregion
