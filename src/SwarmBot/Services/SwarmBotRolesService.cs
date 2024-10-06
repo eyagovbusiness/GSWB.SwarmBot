@@ -14,13 +14,10 @@ namespace SwarmBot.Services
     /// SwarmBot bot service that gives support to DiscordRole related operations.
     /// </summary>
     /// <remarks>Depends on <see cref="ISwarmBotDiscordBot"/>.</remarks>
-    public partial class SwarmBotRolesService : ISwarmBotRolesService
+    public partial class SwarmBotRolesService(ISwarmBotDiscordBot aSwarmBotDiscordBot) : ISwarmBotRolesService
     {
 
-        private readonly GuildsHandler _guildsHandler;
-        public SwarmBotRolesService(ISwarmBotDiscordBot aSwarmBotDiscordBot)
-            => _guildsHandler = new GuildsHandler(aSwarmBotDiscordBot);
-
+        private readonly GuildsHandler _guildsHandler = new(aSwarmBotDiscordBot);
 
         public async Task<IHttpResult<DiscordRoleDTO[]>> GetGuildServerRoleList(CancellationToken aCancellationToken = default)
             => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken, aCallAPI:true)

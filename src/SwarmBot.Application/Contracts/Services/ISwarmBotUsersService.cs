@@ -1,4 +1,5 @@
-﻿using TGF.Common.ROP.HttpResult;
+﻿using Common.Application.DTOs.Guilds;
+using TGF.Common.ROP.HttpResult;
 
 namespace SwarmBot.Application
 {
@@ -23,5 +24,12 @@ namespace SwarmBot.Application
         /// <param name="aUserId">Id of the User.</param>
         /// <returns><see cref="IHttpResult{DateTimeOffset}"/> with the date of creation of the given user account and information about success or failure on this operation.</returns>
         public Task<IHttpResult<DateTimeOffset>> GetUserCreationDate(ulong aUserId, CancellationToken aCancellationToken = default);
+
+        /// <summary>
+        /// Commands this discord bot to get the list of guild where both the bot and the user under the provided id are in.
+        /// </summary>
+        /// <param name="userId">Id of the User.</param>
+        /// <returns><see cref="IHttpResult{GuildDTO}"/> with the list of guild where both the bot and the user under the provided id are in.</returns>
+        public Task<IHttpResult<IEnumerable<GuildDTO>>> GetUserGuilds(ulong userId, CancellationToken cancellationToken = default);
     }
 }

@@ -1,5 +1,8 @@
-﻿using SwarmBot.Application;
+﻿using Common.Application.DTOs.Guilds;
+using DSharpPlus.Entities;
+using SwarmBot.Application;
 using SwarmBot.Handlers;
+using SwarmBot.Mappings;
 using TGF.Common.ROP.HttpResult;
 using TGF.Common.ROP.Result;
 
@@ -30,6 +33,11 @@ namespace SwarmBot.Services
                     .Bind(discordUser => Task.FromResult(discordUser != null
                                                          ? Result.SuccessHttp(discordUser.CreationTimestamp)
                                                          : Result.Failure<DateTimeOffset>(DiscordBotErrors.User.NotFoundId)));
+
+
+        public async Task<IHttpResult<IEnumerable<GuildDTO>>> GetUserGuilds(ulong userId, CancellationToken cancellationToken = default)
+            => await _usersHandler.GetUserGuildListAsync(userId, cancellationToken)
+            .Map(guilds => guilds.Select(guild => guild.ToDto()));
 
     }
 }

@@ -1,6 +1,8 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
 using SwarmBot.Application;
+using System.Collections.Concurrent;
+using TGF.Common.Extensions;
 using TGF.Common.ROP.HttpResult;
 using TGF.Common.ROP.Result;
 
@@ -26,5 +28,34 @@ namespace SwarmBot.Handelers
             => await Result.CancellationTokenResultAsync(aCancellationToken)
             .Map(_ => _client.GetGuildAsync(_testersGuildId, aCallAPI))
             .Verify(discordGuild => discordGuild != null, DiscordBotErrors.Guild.NotFoundId);
+
+        public async Task<IHttpResult<IEnumerable<DiscordGuild>>> GetUserGuildListAsync(ulong userId, CancellationToken cancellationToken = default)
+        {
+            var guildsWithUser = new ConcurrentBag<DiscordGuild>();
+
+            await _client.Guilds.Values.ParallelForEachAsync(
+                SwarmBotDiscordBot._maxDegreeOfParallelism, // Adjust this based on your performance needs
+                async guild =>
+                {
+                    try
+                    {
+                        var members = await guild.GetAllMembersAsync();
+                        if (members.Any(member => member.Id == userId))
+                        {
+                            guildsWithUser.Add(guild);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error fetching members for guild {guild.Name}: {ex.Message}");
+                    }
+                },
+                aCancellationToken: cancellationToken
+            );
+
+            // Return the result as IHttpResult
+            return Result.SuccessHttp(guildsWithUser as IEnumerable<DiscordGuild>);
+        }
+
     }
 }
