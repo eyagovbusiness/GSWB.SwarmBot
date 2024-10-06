@@ -3,9 +3,7 @@ using DSharpPlus.AsyncEvents;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.EventArgs;
 using SwarmBot.Application;
-using SwarmBot.BackgroundServices.NewMemberManager;
 using SwarmBot.Commands;
-using SwarmBot.Configuration;
 using SwarmBot.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +24,6 @@ namespace SwarmBot
         private readonly ILoggerFactory _loggerFactory;
         private readonly IConfiguration _configuration;
         private readonly ISecretsManager _secretsManager;
-        private readonly IServiceScopeFactory _serviceScopeFactory;
         #endregion
 
         #region Bot
@@ -50,7 +47,6 @@ namespace SwarmBot
             _loggerFactory = aLoggerFactory;
             _secretsManager = aSecretsManager;
             _configuration = aConfiguration;
-            _serviceScopeFactory = aServiceScopeFactory;
 
             _guildMemberUpdatedHandler = (client, args) => GuildMemberUpdated?.Invoke(client, args);
             _guildRoleCreatedHandler = (client, args) => GuildRoleCreated?.Invoke(client, args);
@@ -109,14 +105,30 @@ namespace SwarmBot
             }
         }
 
-        public async Task<bool> AllowTemporarilyJoinNewBots(int aMinutesAllowed)
+        public async Task StopAsync()
         {
-            if (!mIsAutoBanBotsEnabled)
-                return mIsAutoBanBotsEnabled;
-            mIsAutoBanBotsEnabled = !mIsAutoBanBotsEnabled;
-            await Task.Delay(TimeSpan.FromMinutes(aMinutesAllowed));
-            mIsAutoBanBotsEnabled = !mIsAutoBanBotsEnabled;
-            return mIsAutoBanBotsEnabled;
+            try
+            {
+                _loggerFactory.CreateLogger(typeof(SwarmBotDiscordBot)).LogInformation("Stopping Discord bot client.");
+                RemoveEventHandlers(Client);
+
+                if (Client != null)
+                {
+                    await Client.DisconnectAsync();
+                    Client.Dispose();
+                }
+
+                Commands?.Dispose();
+                _loggerFactory.CreateLogger(typeof(SwarmBotDiscordBot)).LogInformation("Discord bot client stopped successfully.");
+            }
+            catch (Exception ex)
+            {
+                _loggerFactory.CreateLogger(typeof(SwarmBotDiscordBot)).LogError("An error occurred while stopping the Discord bot client: {0}", ex.ToString());
+            }
+            finally
+            {
+                Dispose();
+            }
         }
 
 
@@ -177,7 +189,6 @@ namespace SwarmBot
             lServices.AddSingleton<ISwarmBotDiscordBot>(this);
             lServices.AddScoped<ISwarmBotMembersService, SwarmBotMembersService>();
             lServices.AddScoped<ISwarmBotRolesService, SwarmBotRolesService>();
-            lServices.AddScoped<INewMemberManagementService, NewMemberManagementService>();
             lServices.AddSingleton<IConfiguration>(lNewConfiguration); // Register lNewConfiguration as IConfiguration
             return lServices.BuildServiceProvider();
         }

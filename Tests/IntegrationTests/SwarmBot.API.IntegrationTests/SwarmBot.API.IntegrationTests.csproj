@@ -30,4 +30,8 @@
     <ProjectReference Include="../../../src/SwarmBot/SwarmBot.csproj" />
   </ItemGroup>
   
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\GSWB.Common\src\Common.Infrastructure\Common.Infrastructure.csproj" />
+  </ItemGroup>
+  
 </Project>

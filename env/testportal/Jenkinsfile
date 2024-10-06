@@ -5,11 +5,12 @@ pipeline {
     }
     environment {
         REGISTRY='registry.guildswarm.org'
-        ENV="STG"
+        ENV="testportal"
         USER=credentials('user_auto')
         TOKEN=credentials('token_auto')
-        ENVIRONMENT='staging'
-        REPO='staging'
+        TOOL_LABEL="swarmbot"
+        ENVIRONMENT='testportal'
+        REPO='testportal'
         IMAGE='swarm_bot'
     }
     stages{
@@ -53,7 +54,7 @@ pipeline {
                 script {
                     container ('dockertainer'){
                         if (env.CHANGE_ID == null) {
-                                withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'harbor-staging', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD']]) {
+                                withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'harbor-dotnet', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD']]) {
                                     sh "docker login -u \'${DOCKER_USERNAME}' -p \'${DOCKER_PASSWORD}' ${REGISTRY}"
                                     sh "docker push ${REGISTRY}/${REPO}/${IMAGE}:$version"
                                     sh "docker push ${REGISTRY}/${REPO}/${IMAGE}:latest"
@@ -76,16 +77,17 @@ pipeline {
                         }
                     }
                 }
-        stage('Deploy STG') {
-            agent {
-                label 'python-3.11.6'
-            }
+        stage('Delete Pods') {
             steps {
                 script {
-                    container('pytainer') {
-                        withCredentials([usernamePassword(credentialsId: 'test-cred-for', passwordVariable: 'TOKEN', usernameVariable: 'USER')]) {
-                            sh 'export PYTHONUNBUFFERED=1'
-                            sh "python3 sender.py"
+                    node ('kubectl-1.28'){
+                        container ('kube'){
+                            sh 'mkdir -p ~/.kube/'
+                            withCredentials([file(credentialsId: 'backend-testportal', variable: 'KUBECONFIG_FILE')]) {
+                            // Move the credentials to a temporary location
+                            sh "mv ${KUBECONFIG_FILE} ~/.kube/config"
+                            }
+                            sh "cd /home/guildswarm/ && ./kubectl delete pods -l app=${TOOL_LABEL}"
                         }
                     }
                 }

@@ -5,9 +5,9 @@ pipeline {
     environment {
         REGISTRY = 'registry.guildswarm.org'
         TOOL_LABEL = "swarmbot"
-        ENVIRONMENT = 'testportal'
+        ENVIRONMENT = "${env.BRANCH_NAME}"
         REPO = "${env.BRANCH_NAME}"
-        IMAGE = 'swarmbot'
+        IMAGE = 'swarm_bot'
     }
     stages {
         stage('Build Docker Images') {
@@ -19,7 +19,9 @@ pipeline {
                     try {
                         withCredentials([usernamePassword(credentialsId: "backend${REPO}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                             sh "docker login -u '${DOCKER_USERNAME}' -p '${DOCKER_PASSWORD}' ${REGISTRY}"
-                            sh "docker build . --build-arg ENVIRONMENT='${ENVIRONMENT}' -t ${REGISTRY}/${REPO}/${IMAGE}:${version} -t ${REGISTRY}/${REPO}/${IMAGE}:latest"
+                            sh "docker build . --build-arg ENVIRONMENT='${ENVIRONMENT}' \
+                                 -t ${REGISTRY}/${REPO}/${IMAGE}:${version} \
+                                 -t ${REGISTRY}/${REPO}/${IMAGE}:latest"
                             sh 'docker logout'
                         }
                     } finally {
@@ -55,15 +57,19 @@ pipeline {
         stage('Delete Pods') {
             steps {
                 script {
-                    node('alpine_kubectl') {
-                        sh 'mkdir -p ~/.kube/'
-                        withCredentials([file(credentialsId: "kubernetes-${REPO}", variable: 'KUBECONFIG_FILE')]) {
-                            // Move the credentials to a temporary location
-                            sh "mv ${KUBECONFIG_FILE} ~/.kube/config"
+                    if (env.CHANGE_ID == null) {
+                        node('alpine_kubectl') {
+                            sh 'mkdir -p ~/.kube/'
+                            withCredentials([file(credentialsId: "kubernetes-${REPO}", variable: 'KUBECONFIG_FILE')]) {
+                                // Move the credentials to a temporary location
+                                sh "mv ${KUBECONFIG_FILE} ~/.kube/config"
+                            }
+                            sh "kubectl -n backend delete pods -l app=${TOOL_LABEL}"
+                            // Clean up the kube config
+                            sh "rm -f ~/.kube/config"
                         }
-                        sh "kubectl delete pods -l app=${TOOL_LABEL}"
-                        // Clean up the kube config
-                        sh "rm -f ~/.kube/config"
+                    } else {
+                        echo "Avoiding pod deletion for PR"
                     }
                 }
             }

@@ -1,8 +1,9 @@
-ARG BUILD_CONFIGURATION=Release ENVIRONMENT=staging
+ARG BUILD_CONFIGURATION=Release ENVIRONMENT=development
 FROM registry.guildswarm.org/$ENVIRONMENT/common:latest AS base-packages
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build 
 ARG BUILD_CONFIGURATION
+
 WORKDIR /src
 # Copy NuGet packages and project files from the base-packages image
 COPY --from=base-packages /app/BasePackages ./BasePackages
@@ -18,7 +19,7 @@ FROM build AS publish
 ARG BUILD_CONFIGURATION
 RUN dotnet publish "src/SwarmBot.API/SwarmBot.API.csproj" -c $BUILD_CONFIGURATION --no-build -o /app/publish /p:UseAppHost=true /p:DockerBuild=true -r linux-musl-x64
 
-FROM registry.guildswarm.org/baseimages/dotnet_base AS final  
+FROM registry.guildswarm.org/baseimages/dotnet/aspnet:8.0 AS final  
 WORKDIR /app
 COPY --from=publish /app/publish .
 COPY Infrastructure/SwarmBotEntrypointOverride.sh ./entrypoint.sh
@@ -26,6 +27,7 @@ COPY Infrastructure/ServiceAwait/wait_for_service.sh ./wait_for_service.sh
 COPY Infrastructure/ServiceAwait/IsReadyServer.sh ./IsReadyServer.sh
 USER root 
 RUN chown -R guildswarm:guildswarm /app/ && \
-    chmod -R 700 /app/ 
+    chmod -R 700 /app/
+RUN apk update && apk add --no-cache curl
 USER guildswarm 
 ENTRYPOINT ["/app/entrypoint.sh"]

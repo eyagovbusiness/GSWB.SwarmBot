@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using TGF.Common.Extensions;
 using Common.Application.DTOs.Discord;
+using Common.Infrastructure.Communication.ApiRoutes;
 
 namespace SwarmBot.API.IntegrationTests
 {
@@ -19,19 +20,19 @@ namespace SwarmBot.API.IntegrationTests
             var lExpectedStatusCode = HttpStatusCode.OK;
 
             //GetUserExist
-            var lGetUserExistRply = await TestCommon._httpClient.GetAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.users_exist)}?userId={1074678110991163402}");
+            var lGetUserExistRply = await TestCommon._httpClient.GetAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.users_exist.Replace("{id}", "1074678110991163402"))}");
             _ = await TestCommon.AssertResponseWithContentAsync(lGetUserExistRply, lExpectedStatusCode, (bool lRes) => lRes);
 
             //GetUserIsVerified
-            var lGetUserIsVerifiedRply = await TestCommon._httpClient.GetAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.users_isVerified)}?userId={1074678110991163402}");
+            var lGetUserIsVerifiedRply = await TestCommon._httpClient.GetAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.users_isVerified.Replace("{id}", "1074678110991163402"))}");
             _ = await TestCommon.AssertResponseWithContentAsync(lGetUserIsVerifiedRply, lExpectedStatusCode, (bool lRes) => !lRes);
 
             //GetUserCreationDate
-            var lGetUserCreationDateRply = await TestCommon._httpClient.GetAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.users_creationDate)}?userId={1074678110991163402}");
+            var lGetUserCreationDateRply = await TestCommon._httpClient.GetAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.users_creationDate.Replace("{id}", "1074678110991163402"))}");
             _ = await TestCommon.AssertResponseWithContentAsync(lGetUserCreationDateRply, lExpectedStatusCode, (DateTimeOffset lRes) => lRes > DateTimeOffset.MinValue && lRes < DateTimeOffset.MaxValue);
 
             //GetNumberOfUsersOnline
-            var lGetNumberOfUsersOnlineRply = await TestCommon._httpClient.GetAsync(TestCommon.GetFullRoute(SwarmBotApiRoutes.members_numberOnline));
+            var lGetNumberOfUsersOnlineRply = await TestCommon._httpClient.GetAsync(TestCommon.GetFullRoute(SwarmBotApiRoutes.members_countOnline));
             _ = await TestCommon.AssertResponseWithContentAsync(lGetNumberOfUsersOnlineRply, lExpectedStatusCode, (int lRes) => lRes >= 0);
 
         }
@@ -42,19 +43,19 @@ namespace SwarmBot.API.IntegrationTests
             var lExpectedStatusCode = HttpStatusCode.OK;
 
             //CreateNewRole
-            var lCreateRoleRply = await TestCommon._httpClient.PostAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.roles_create)}?roleName=IntegrationTestRole", default);
+            var lCreateRoleRply = await TestCommon._httpClient.PostAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.roles)}?name=IntegrationTestRole", default);
             var lCreateRoleRes = await TestCommon.AssertResponseWithContentAsync(lCreateRoleRply, lExpectedStatusCode, (string lRes) => !lRes.IsNullOrEmpty());
 
             //AssignRoleToAllMembers
-            var lAssignRoleToMemberListRply = await TestCommon._httpClient.PutAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.roles_assignToMemberList)}?roleId={lCreateRoleRes}", TestCommon.GetJsonStringContent(new string[3] { "alpacaintrouble#0", "inquisidor211#0", "drewdj#0" }));
+            var lAssignRoleToMemberListRply = await TestCommon._httpClient.PutAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.roles_assign.Replace("{id}", lCreateRoleRes))}", TestCommon.GetJsonStringContent(new string[2] { "alpacaintrouble#0", "inquisidor211#0" }));
             _ = await TestCommon.AssertResponseWithContentAsync(lAssignRoleToMemberListRply, lExpectedStatusCode, (object lRes) => true);
 
             //ThenRevokeRoleToAllMembers
-            var lRevokeRoleRply = await TestCommon._httpClient.PutAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.roles_revokeForMemberList)}?roleId={lCreateRoleRes}", TestCommon.GetJsonStringContent(new string[3] { "alpacaintrouble#0", "inquisidor211#0", "drewdj#0" }));
+            var lRevokeRoleRply = await TestCommon._httpClient.PutAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.roles_revoke.Replace("{id}", lCreateRoleRes))}", TestCommon.GetJsonStringContent(new string[2] { "alpacaintrouble#0", "inquisidor211#0" }));
             _ = await TestCommon.AssertResponseWithContentAsync(lRevokeRoleRply, lExpectedStatusCode, (object lRes) => true);
 
             //DeleteRole
-            var lDeleteRoleRply = await TestCommon._httpClient.DeleteAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.roles_delete)}?roleId={lCreateRoleRes}", default);
+            var lDeleteRoleRply = await TestCommon._httpClient.DeleteAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.roles.Replace("{id}", lCreateRoleRes))}", default);
             _ = await TestCommon.AssertResponseWithContentAsync(lDeleteRoleRply, lExpectedStatusCode, (object lRes) => true);
 
         }
@@ -65,19 +66,19 @@ namespace SwarmBot.API.IntegrationTests
             var lExpectedStatusCode = HttpStatusCode.OK;
 
             //CreateNewRole
-            var lCreateRoleRply = await TestCommon._httpClient.PostAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.roles_create)}?roleName=IntegrationTestRoleSingle", default);
+            var lCreateRoleRply = await TestCommon._httpClient.PostAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.roles)}?name=IntegrationTestRoleSingle", default);
             var lCreateRoleRes = await TestCommon.AssertResponseWithContentAsync(lCreateRoleRply, lExpectedStatusCode, (string lRes) => !lRes.IsNullOrEmpty());
 
             //AssignRoleToMember
-            var lAssignRoleToMemberListRply = await TestCommon._httpClient.PutAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.roles_assignToMemberList)}?roleId={lCreateRoleRes}", TestCommon.GetJsonStringContent(new string[1] { "inquisidor211#0" }));
+            var lAssignRoleToMemberListRply = await TestCommon._httpClient.PutAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.roles_assign.Replace("{id}", lCreateRoleRes))}", TestCommon.GetJsonStringContent(new string[1] { "inquisidor211#0" }));
             _ = await TestCommon.AssertResponseWithContentAsync(lAssignRoleToMemberListRply, lExpectedStatusCode, (object lRes) => true);
 
             //ThenRevokeRoleToMember
-            var lRevokeRoleRply = await TestCommon._httpClient.PutAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.roles_revokeForMemberList)}?roleId={lCreateRoleRes}", TestCommon.GetJsonStringContent(new string[1] { "inquisidor211#0" }));
+            var lRevokeRoleRply = await TestCommon._httpClient.PutAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.roles_revoke.Replace("{id}", lCreateRoleRes))}", TestCommon.GetJsonStringContent(new string[1] { "inquisidor211#0" }));
             _ = await TestCommon.AssertResponseWithContentAsync(lRevokeRoleRply, lExpectedStatusCode, (object lRes) => true);
 
             //DeleteRole
-            var lDeleteRoleRply = await TestCommon._httpClient.DeleteAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.roles_delete)}?roleId={lCreateRoleRes}", default);
+            var lDeleteRoleRply = await TestCommon._httpClient.DeleteAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.roles.Replace("{id}", lCreateRoleRes))}", default);
             _ = await TestCommon.AssertResponseWithContentAsync(lDeleteRoleRply, lExpectedStatusCode, (object lRes) => true);
 
         }
@@ -90,30 +91,30 @@ namespace SwarmBot.API.IntegrationTests
             var lExpectedStatusCode = HttpStatusCode.OK;
 
             //CheckIfEqualTemplateCategoryExist
-            var lGetExistingCategoryIdRply = await TestCommon._httpClient.GetAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.channels_categories_getId)}?categoryName={lTemplateSample.Name}");
-            _ = await TestCommon.AssertResponseWithContentAsync(lGetExistingCategoryIdRply, HttpStatusCode.NotFound, (ProblemDetails lRes) => lRes?.Status == (int)HttpStatusCode.NotFound, aJsonMediaTypeOverride: "application/problem+json");
+            var lGetExistingidRply = await TestCommon._httpClient.GetAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.channels_categories_byName.Replace("{name}", lTemplateSample.Name))}");
+            _ = await TestCommon.AssertResponseWithContentAsync(lGetExistingidRply, HttpStatusCode.NotFound, (ProblemDetails lRes) => lRes?.Status == (int)HttpStatusCode.NotFound, aJsonMediaTypeOverride: "application/problem+json");
 
             //CreateCategoryFromTemplate
-            var lCreateCategoryFromTemplateRply = await TestCommon._httpClient.PostAsync(TestCommon.GetFullRoute(SwarmBotApiRoutes.channels_categories_create), TestCommon.GetJsonStringContent(lTemplateSample));
+            var lCreateCategoryFromTemplateRply = await TestCommon._httpClient.PostAsync(TestCommon.GetFullRoute(SwarmBotApiRoutes.channels_categories), TestCommon.GetJsonStringContent(lTemplateSample));
             var lCreateCategoryFromTemplateRes = await TestCommon.AssertResponseWithContentAsync(lCreateCategoryFromTemplateRply, lExpectedStatusCode, (string lRes) => !lRes.IsNullOrEmpty());
 
             //JoinAllMembersToCategory
             var lAddMemberListToCategoryRply = await TestCommon._httpClient.PutAsync(
-                                                                                $"{TestCommon.GetFullRoute(SwarmBotApiRoutes.channels_categories_addMemberList)}?categoryId={lCreateCategoryFromTemplateRes}",
+                                                                                $"{TestCommon.GetFullRoute(SwarmBotApiRoutes.channels_categories_members.Replace("{id}", lCreateCategoryFromTemplateRes))}",
                                                                                 TestCommon.GetJsonStringContent(new string[] { "All" }));
             _ = await TestCommon.AssertResponseWithContentAsync(lAddMemberListToCategoryRply, lExpectedStatusCode, (object lRes) => true);
 
             //UpdateCategoryFromTemplate
             lTemplateSample.RandomModifyTemplate();
-            var lUpdateCategoryFromTemplateRply = await TestCommon._httpClient.PutAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.channels_categories_update)}?categoryId={lCreateCategoryFromTemplateRes}", TestCommon.GetJsonStringContent(lTemplateSample));
+            var lUpdateCategoryFromTemplateRply = await TestCommon._httpClient.PutAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.channels_categories.Replace("{id}", lCreateCategoryFromTemplateRes))}", TestCommon.GetJsonStringContent(lTemplateSample));
             _ = await TestCommon.AssertResponseWithContentAsync(lUpdateCategoryFromTemplateRply, lExpectedStatusCode, (object lRes) => true);
 
             //CheckIfCreatedCategoryExist
-            var lCheckIfCreatedCategoryExistRply = await TestCommon._httpClient.GetAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.channels_categories_getId)}?categoryName={lTemplateSample.Name}");
+            var lCheckIfCreatedCategoryExistRply = await TestCommon._httpClient.GetAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.channels_categories_byName.Replace("{name}", lTemplateSample.Name))}");
             _ = await TestCommon.AssertResponseWithContentAsync(lCheckIfCreatedCategoryExistRply, lExpectedStatusCode, (string lRes) => !lRes.IsNullOrEmpty());
 
             //DeleteCategory
-            var lDeleteCategoryRply = await TestCommon._httpClient.DeleteAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.channels_categories_delete)}?categoryId={lCreateCategoryFromTemplateRes}");
+            var lDeleteCategoryRply = await TestCommon._httpClient.DeleteAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.channels_categories.Replace("{id}", lCreateCategoryFromTemplateRes))}");
             _ = await TestCommon.AssertResponseWithContentAsync(lDeleteCategoryRply, lExpectedStatusCode, (object lRes) => true);
 
         }

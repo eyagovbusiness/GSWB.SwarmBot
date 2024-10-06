@@ -1,4 +1,4 @@
-﻿namespace SwarmBot.Configuration
+﻿namespace SwarmBot
 {
     /// <summary>
     /// Secret deserialization type, Secret's keys have to match JsonPropery names

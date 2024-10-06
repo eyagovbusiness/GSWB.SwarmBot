@@ -1,9 +1,6 @@
 ﻿using SwarmBot.Application;
 using SwarmBot.Infrastructure.Communication.MessageProducer;
 using SwarmBot.Infrastructure.Services;
-using SwarmBot;
-using SwarmBot.BackgroundServices.NewMemberManager;
-using SwarmBot.BackgroundServices.News;
 using SwarmBot.HealthChecks;
 using SwarmBot.Services;
 using Microsoft.AspNetCore.Builder;
@@ -12,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TGF.CA.Infrastructure.Communication.RabbitMQ;
 using TGF.CA.Infrastructure.Discovery;
 using TGF.CA.Infrastructure.Security.Secrets;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace SwarmBot.Infrastructure
 {
@@ -37,6 +35,7 @@ namespace SwarmBot.Infrastructure
                 .AddSwarmBotPassiveServices()
                 .AddSwarmBotActiveServices()
                 .AddSwarmBotHealthChceckServices();
+            aWebApplicationBuilder.Services.AddHostedService<SwarmBotStartupService>();
             aWebApplicationBuilder.Services.AddHostedService<ScToolsBackgroundTasks>();
         }
 
@@ -45,14 +44,7 @@ namespace SwarmBot.Infrastructure
         /// </summary>
         public static IServiceCollection AddSwarmBotPassiveServices(this IServiceCollection aServiceList)
         {
-            //Required by DiscordBotNewsService.
-            aServiceList.AddHttpClient()
-            .AddSingleton<IDiscordBotNewsService, DiscordBotNewsMasterService>();
-
-            aServiceList.AddSingleton<INewMemberManagementService, NewMemberManagementService>();
-            aServiceList.AddHostedService<SwarmBotBackgroundTasks>();
             aServiceList.AddHostedService<SwarmBotIntegrationMessageProducer>();
-
             return aServiceList;
 
         }
@@ -82,8 +74,7 @@ namespace SwarmBot.Infrastructure
             aServiceList
                 .AddHealthChecks()
                 .AddCheck<SwarmBot_HealthCheck>(nameof(SwarmBot_HealthCheck))
-                .AddCheck<SwarmBotAPI_HealthCheck>(nameof(SwarmBotAPI_HealthCheck))
-                .AddCheck<DiscordBotNewsService_HealthCheck>(nameof(DiscordBotNewsService_HealthCheck));
+                .AddCheck<SwarmBotAPI_HealthCheck>(nameof(SwarmBotAPI_HealthCheck));
             return aServiceList;
         }
 
@@ -104,6 +95,11 @@ namespace SwarmBot.Infrastructure
             aWebApplication.UseCookiePolicy(new CookiePolicyOptions()//call before any middelware with auth
             {
                 MinimumSameSitePolicy = SameSiteMode.Lax
+            });
+            aWebApplication.UseHttpsRedirection();
+            aWebApplication.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
         }
 
