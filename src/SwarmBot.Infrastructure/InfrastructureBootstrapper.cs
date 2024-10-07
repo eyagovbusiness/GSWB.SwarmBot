@@ -7,9 +7,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using TGF.CA.Infrastructure.Communication.RabbitMQ;
-using TGF.CA.Infrastructure.Discovery;
-using TGF.CA.Infrastructure.Security.Secrets;
 using Microsoft.AspNetCore.HttpOverrides;
+using Common.Infrastructure;
 
 namespace SwarmBot.Infrastructure
 {
@@ -23,11 +22,11 @@ namespace SwarmBot.Infrastructure
         /// </summary>
         /// <param name="aWebApplicationBuilder">The web application builder.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
-        public static void ConfigureInfrastructure(this WebApplicationBuilder aWebApplicationBuilder)
+        public static async Task ConfigureInfrastructure(this WebApplicationBuilder aWebApplicationBuilder)
         {
-            aWebApplicationBuilder.Services.AddDiscoveryService(aWebApplicationBuilder.Configuration);
-            aWebApplicationBuilder.Services.AddVaultSecretsManager();
             aWebApplicationBuilder.Services.AddMemoryCache();
+
+            await aWebApplicationBuilder.ConfigureCommonInfrastructureAsync();
 
             aWebApplicationBuilder.AddCommunicationServices();
 
