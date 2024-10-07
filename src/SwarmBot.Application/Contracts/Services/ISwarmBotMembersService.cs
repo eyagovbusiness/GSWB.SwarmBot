@@ -43,9 +43,6 @@ namespace SwarmBot.Application
         /// <summary>
         /// Returns the highest DiscordRole(from the hierarchy order) assigned to the UserId in the guild.
         /// </summary>
-        /// <param name="aDiscordUserId"></param>
-        /// <param name="aCancellationToken"></param>
-        /// <returns></returns>
-        public Task<IHttpResult<DiscordRoleDTO[]>> GetMemberRoleList(ulong aDiscordUserId, CancellationToken aCancellationToken = default);
+        public Task<IHttpResult<DiscordRoleDTO[]>> GetMemberRoleList(ulong guildId, ulong userId, CancellationToken cancellationToken = default);
     }
 }

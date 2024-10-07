@@ -43,10 +43,10 @@ namespace SwarmBot.Services
                     .Bind(discordGuild => MembersHandler.GetAllDiscordMemberListAtmAsync(discordGuild, aCancellationToken))
                     .Map(allMemberList => allMemberList.Where(member => aFilterFunc(member)));
 
-        public async Task<IHttpResult<DiscordRoleDTO[]>> GetMemberRoleList(ulong aDiscordUserId, CancellationToken aCancellationToken = default)
-            => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
+        public async Task<IHttpResult<DiscordRoleDTO[]>> GetMemberRoleList(ulong guildId, ulong userId, CancellationToken aCancellationToken = default)
+            => await _guildsHandler.GetGuildById(guildId, aCancellationToken)
                 .Bind(discordGuild => MembersHandler.GetAllDiscordMemberListAtmAsync(discordGuild, aCancellationToken))
-                .Map(allMemberList => allMemberList.FirstOrDefault(member => member.Id == aDiscordUserId))
+                .Map(allMemberList => allMemberList.FirstOrDefault(member => member.Id == userId))
                 .Verify(member => member is not null, DiscordBotErrors.Member.NotFoundId)
                 .Verify(member => member.Roles.Any(), DiscordBotErrors.Member.NotFoundAnyRole)
                 .Map(existingMember => existingMember.Roles
