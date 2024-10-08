@@ -37,7 +37,8 @@ namespace SwarmBot.API
             aWebApplication.UseCommonPresentation();
 
             aWebApplication.UseCustomErrorHandlingMiddleware();
-            aWebApplication.UseRouting();
+            aWebApplication.UseRouting();//UseRouting() must be called before UseAuthentication() and UseAuthorization() which is UseIdentity().
+            aWebApplication.UseIdentity();
 
             aWebApplication.MapHealthChecksUI(options => options.UIPath = TGFEndpointRoutes.healthUi);
             aWebApplication.UseEndpointDefinitions();

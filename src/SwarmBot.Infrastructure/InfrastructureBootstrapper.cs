@@ -89,17 +89,14 @@ namespace SwarmBot.Infrastructure
         /// </summary>
         /// <param name="aWebApplication">The Web application instance.</param>
         /// <returns>A task that represents the asynchronous operation.</returns>
-        public static void UseInfrastructure(this WebApplication aWebApplication)
+        public static async Task UseInfrastructure(this WebApplication aWebApplication)
         {
-            aWebApplication.UseCookiePolicy(new CookiePolicyOptions()//call before any middelware with auth
-            {
-                MinimumSameSitePolicy = SameSiteMode.Lax
-            });
-            aWebApplication.UseHttpsRedirection();
             aWebApplication.UseForwardedHeaders(new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
+            aWebApplication.UseHttpsRedirection();
+            await aWebApplication.UseCommonInfrastructure();
         }
 
     }

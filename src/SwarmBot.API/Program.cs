@@ -12,7 +12,7 @@ lSwarmBotApplicationBuilder.ConfigurePresentation();
 
 var lSwarmBotWebApplication = lSwarmBotApplicationBuilder.Build();
 
-lSwarmBotWebApplication.UseInfrastructure();
+await lSwarmBotWebApplication.UseInfrastructure();
 lSwarmBotWebApplication.UsePresentation();
 
 await lSwarmBotWebApplication.RunAsync();
