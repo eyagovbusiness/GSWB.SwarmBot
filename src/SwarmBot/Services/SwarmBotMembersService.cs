@@ -21,26 +21,26 @@ namespace SwarmBot.Services
 
         #region ISwarmBotMembersService
 
-        public async Task<IHttpResult<int>> GetNumberOfOnlineMembers(CancellationToken aCancellationToken = default)
-            => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
+        public async Task<IHttpResult<int>> GetNumberOfOnlineMembers(ulong guildId, CancellationToken aCancellationToken = default)
+            => await _guildsHandler.GetGuildById(guildId, true, aCancellationToken)
                     .Bind(discordGuild => MembersHandler.GetAllDiscordMemberListAtmAsync(discordGuild, aCancellationToken))
                     .Map(discordMemberList => discordMemberList.Count(x => x.Presence != null
                                                                             && x.Presence.Status == UserStatus.Online
                                                                             && x.VoiceState?.Channel != null));
-        public async Task<IHttpResult<DiscordProfileDTO>> GetMemberProfileFromId(ulong aDiscordUserId, CancellationToken aCancellationToken = default)
-            => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
+        public async Task<IHttpResult<DiscordProfileDTO>> GetMemberProfileFromId(ulong guildId, ulong aDiscordUserId, CancellationToken aCancellationToken = default)
+            => await _guildsHandler.GetGuildById(guildId, true, aCancellationToken)
                     .Bind(discordGuild => MembersHandler.GetAllDiscordMemberListAtmAsync(discordGuild, aCancellationToken))
                     .Map(discordMemberList => discordMemberList.FirstOrDefault(member => member.Id == aDiscordUserId))
                     .Map(discordMember => new DiscordProfileDTO(discordMember?.DisplayName!, discordMember!.GetGuildAvatarUrlOrDefault()));
 
-        public async Task<IHttpResult<DiscordMember>> GetTester(ulong aDiscordUserId, CancellationToken aCancellationToken = default)
-            => await _guildsHandler.GetTestersDiscordGuildFromConfigAsync(aCancellationToken)
+        public async Task<IHttpResult<DiscordMember>> GetTester(ulong guildId, ulong aDiscordUserId, CancellationToken aCancellationToken = default)
+            => await _guildsHandler.GetGuildById(guildId, true, aCancellationToken)
                     .Bind(discordGuild => MembersHandler.GetAllDiscordMemberListAtmAsync(discordGuild, aCancellationToken))
                     .Map(discordMemberList => discordMemberList.FirstOrDefault(member => member.Id == aDiscordUserId)!)
                     .Verify(discordMember => discordMember != null && discordMember.Roles.Any(role => role.Name == "Tester"), DiscordBotErrors.User.NotTester);
 
-        public async Task<IHttpResult<IEnumerable<DiscordMember>>> GetMemberList(Func<DiscordMember, bool> aFilterFunc, CancellationToken aCancellationToken = default)
-            => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
+        public async Task<IHttpResult<IEnumerable<DiscordMember>>> GetMemberList(ulong guildId, Func<DiscordMember, bool> aFilterFunc, CancellationToken aCancellationToken = default)
+            => await _guildsHandler.GetGuildById(guildId, true, aCancellationToken)
                     .Bind(discordGuild => MembersHandler.GetAllDiscordMemberListAtmAsync(discordGuild, aCancellationToken))
                     .Map(allMemberList => allMemberList.Where(member => aFilterFunc(member)));
 

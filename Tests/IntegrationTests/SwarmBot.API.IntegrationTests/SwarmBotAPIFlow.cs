@@ -1,4 +1,3 @@
-using SwarmBot.Application;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using TGF.Common.Extensions;
@@ -32,7 +31,7 @@ namespace SwarmBot.API.IntegrationTests
             _ = await TestCommon.AssertResponseWithContentAsync(lGetUserCreationDateRply, lExpectedStatusCode, (DateTimeOffset lRes) => lRes > DateTimeOffset.MinValue && lRes < DateTimeOffset.MaxValue);
 
             //GetNumberOfUsersOnline
-            var lGetNumberOfUsersOnlineRply = await TestCommon._httpClient.GetAsync(TestCommon.GetFullRoute(SwarmBotApiRoutes.members_countOnline));
+            var lGetNumberOfUsersOnlineRply = await TestCommon._httpClient.GetAsync(TestCommon.GetFullRoute(SwarmBotApiRoutes.private_guilds_members_countOnline.Replace("{}", "1075122834155769866")));
             _ = await TestCommon.AssertResponseWithContentAsync(lGetNumberOfUsersOnlineRply, lExpectedStatusCode, (int lRes) => lRes >= 0);
 
         }
@@ -91,30 +90,30 @@ namespace SwarmBot.API.IntegrationTests
             var lExpectedStatusCode = HttpStatusCode.OK;
 
             //CheckIfEqualTemplateCategoryExist
-            var lGetExistingidRply = await TestCommon._httpClient.GetAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.channels_categories_byName.Replace("{name}", lTemplateSample.Name))}");
+            var lGetExistingidRply = await TestCommon._httpClient.GetAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.private_channels_categories_byName.Replace("{name}", lTemplateSample.Name))}");
             _ = await TestCommon.AssertResponseWithContentAsync(lGetExistingidRply, HttpStatusCode.NotFound, (ProblemDetails lRes) => lRes?.Status == (int)HttpStatusCode.NotFound, aJsonMediaTypeOverride: "application/problem+json");
 
             //CreateCategoryFromTemplate
-            var lCreateCategoryFromTemplateRply = await TestCommon._httpClient.PostAsync(TestCommon.GetFullRoute(SwarmBotApiRoutes.channels_categories), TestCommon.GetJsonStringContent(lTemplateSample));
+            var lCreateCategoryFromTemplateRply = await TestCommon._httpClient.PostAsync(TestCommon.GetFullRoute(SwarmBotApiRoutes.private_channels_categories), TestCommon.GetJsonStringContent(lTemplateSample));
             var lCreateCategoryFromTemplateRes = await TestCommon.AssertResponseWithContentAsync(lCreateCategoryFromTemplateRply, lExpectedStatusCode, (string lRes) => !lRes.IsNullOrEmpty());
 
             //JoinAllMembersToCategory
             var lAddMemberListToCategoryRply = await TestCommon._httpClient.PutAsync(
-                                                                                $"{TestCommon.GetFullRoute(SwarmBotApiRoutes.channels_categories_members.Replace("{id}", lCreateCategoryFromTemplateRes))}",
+                                                                                $"{TestCommon.GetFullRoute(SwarmBotApiRoutes.private_channels_categories_members.Replace("{id}", lCreateCategoryFromTemplateRes))}",
                                                                                 TestCommon.GetJsonStringContent(new string[] { "All" }));
             _ = await TestCommon.AssertResponseWithContentAsync(lAddMemberListToCategoryRply, lExpectedStatusCode, (object lRes) => true);
 
             //UpdateCategoryFromTemplate
             lTemplateSample.RandomModifyTemplate();
-            var lUpdateCategoryFromTemplateRply = await TestCommon._httpClient.PutAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.channels_categories.Replace("{id}", lCreateCategoryFromTemplateRes))}", TestCommon.GetJsonStringContent(lTemplateSample));
+            var lUpdateCategoryFromTemplateRply = await TestCommon._httpClient.PutAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.private_channels_categories.Replace("{id}", lCreateCategoryFromTemplateRes))}", TestCommon.GetJsonStringContent(lTemplateSample));
             _ = await TestCommon.AssertResponseWithContentAsync(lUpdateCategoryFromTemplateRply, lExpectedStatusCode, (object lRes) => true);
 
             //CheckIfCreatedCategoryExist
-            var lCheckIfCreatedCategoryExistRply = await TestCommon._httpClient.GetAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.channels_categories_byName.Replace("{name}", lTemplateSample.Name))}");
+            var lCheckIfCreatedCategoryExistRply = await TestCommon._httpClient.GetAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.private_channels_categories_byName.Replace("{name}", lTemplateSample.Name))}");
             _ = await TestCommon.AssertResponseWithContentAsync(lCheckIfCreatedCategoryExistRply, lExpectedStatusCode, (string lRes) => !lRes.IsNullOrEmpty());
 
             //DeleteCategory
-            var lDeleteCategoryRply = await TestCommon._httpClient.DeleteAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.channels_categories.Replace("{id}", lCreateCategoryFromTemplateRes))}");
+            var lDeleteCategoryRply = await TestCommon._httpClient.DeleteAsync($"{TestCommon.GetFullRoute(SwarmBotApiRoutes.private_channels_categories.Replace("{id}", lCreateCategoryFromTemplateRes))}");
             _ = await TestCommon.AssertResponseWithContentAsync(lDeleteCategoryRply, lExpectedStatusCode, (object lRes) => true);
 
         }

@@ -21,11 +21,11 @@ namespace Maindril.API.Endpoints
         /// <inheritdoc/>
         public void DefineEndpoints(WebApplication aWebApplication)
         {
-            aWebApplication.MapGet(SwarmBotApiRoutes.channels_categories_byName, GetExistingCategoryId).RequireJWTBearer().SetResponseMetadata<ulong>(200, 404);
-            aWebApplication.MapPost(SwarmBotApiRoutes.channels_categories, PostCreateCategoryFromTemplate).RequireJWTBearer().SetResponseMetadata<ulong>(200, 404);
-            aWebApplication.MapPut(SwarmBotApiRoutes.channels_categories_members, PutAddMemberListToCategory).RequireJWTBearer().SetResponseMetadata(200, 404);
-            aWebApplication.MapPut(SwarmBotApiRoutes.channels_categories, PutUpdateCategoryFromTemplate).RequireJWTBearer().SetResponseMetadata(200, 404);
-            aWebApplication.MapDelete(SwarmBotApiRoutes.channels_categories, DeleteCategory).RequireJWTBearer().SetResponseMetadata(200, 404);
+            aWebApplication.MapGet(SwarmBotApiRoutes.private_channels_categories_byName, GetExistingCategoryId).RequireJWTBearer().SetResponseMetadata<ulong>(200, 404);
+            aWebApplication.MapPost(SwarmBotApiRoutes.private_channels_categories, PostCreateCategoryFromTemplate).RequireJWTBearer().SetResponseMetadata<ulong>(200, 404);
+            aWebApplication.MapPut(SwarmBotApiRoutes.private_channels_categories_members, PutAddMemberListToCategory).RequireJWTBearer().SetResponseMetadata(200, 404);
+            aWebApplication.MapPut(SwarmBotApiRoutes.private_channels_categories, PutUpdateCategoryFromTemplate).RequireJWTBearer().SetResponseMetadata(200, 404);
+            aWebApplication.MapDelete(SwarmBotApiRoutes.private_channels_categories, DeleteCategory).RequireJWTBearer().SetResponseMetadata(200, 404);
 
         }
 
