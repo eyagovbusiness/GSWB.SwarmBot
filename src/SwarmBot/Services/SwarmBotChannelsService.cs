@@ -15,19 +15,17 @@ namespace SwarmBot.Services
     /// SwarmBot bot service that gives support to DiscordChannel related operations.
     /// </summary>
     /// <remarks>Depends on <see cref="ISwarmBotDiscordBot"/>.</remarks>
-    public class SwarmBotChannelsService : ISwarmBotChannelsService
+    public class SwarmBotChannelsService(ISwarmBotDiscordBot aSwarmBotDiscordBot) : ISwarmBotChannelsService
     {
-        private readonly GuildsHandler _guildsHandler;
-        public SwarmBotChannelsService(ISwarmBotDiscordBot aSwarmBotDiscordBot)
-            => _guildsHandler = new GuildsHandler(aSwarmBotDiscordBot);
+        private readonly GuildsHandler _guildsHandler = new(aSwarmBotDiscordBot);
 
         /// <summary>
         /// Commands the discord bot to create a new category in the context server from the provided template. 
         /// </summary>
         /// <param name="aCategoryChannelTemplate"><see cref="CategoryChannelTemplateDTO"/> template to follow on creating the new category.</param>
         /// <returns><see cref="IHttpResult{ulong}"/> with the Id of the created category channel and information about success or failure on this operation.</returns>
-        public async Task<IHttpResult<ulong>> CreateCategoryFromTemplate(CategoryChannelTemplateDTO aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
-            => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
+        public async Task<IHttpResult<ulong>> CreateCategoryFromTemplate(ulong guildId, CategoryChannelTemplateDTO aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
+            => await _guildsHandler.GetGuildById(guildId, true, aCancellationToken)
                     .Bind(discordGuild => RolesHandler.GetDiscordRoleAtm(discordGuild, discordGuild.Id, aCancellationToken)
                     .Bind(discordEveryoneRole => ChannelsHandler.CreateTemplateChannelsAtmAsync(discordGuild, discordEveryoneRole, aCategoryChannelTemplate, aCancellationToken)));
 
@@ -37,8 +35,8 @@ namespace SwarmBot.Services
         /// <param name="aFilterFunc">Filter function to get the required channel.</param>
         /// <param name="aCancellationToken"></param>
         /// <returns><see cref="DiscordChannel"/></returns>
-        public async Task<IHttpResult<DiscordChannel>> GetDiscordChannel(Func<DiscordChannel, bool> aFilterFunc, CancellationToken aCancellationToken = default)
-            => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
+        public async Task<IHttpResult<DiscordChannel>> GetDiscordChannel(ulong guildId, Func<DiscordChannel, bool> aFilterFunc, CancellationToken aCancellationToken = default)
+            => await _guildsHandler.GetGuildById(guildId, true, aCancellationToken)
                     .Bind(discordGuild => ChannelsHandler.GetDiscordChannel(discordGuild, aFilterFunc, aCancellationToken));
 
         /// <summary>
@@ -47,8 +45,8 @@ namespace SwarmBot.Services
         /// <param name="aDiscordCategoryName">Name of the category from which to get the Id</param>
         /// <param name="aCancellationToken"></param>
         /// <returns><see cref="IHttpResult{ulong}"/> with valid DiscordChannel Id and information about success or failure on this operation.</returns>
-        public async Task<IHttpResult<ulong>> GetExistingCategoryId(string aDiscordCategoryName, CancellationToken aCancellationToken = default)
-            => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
+        public async Task<IHttpResult<ulong>> GetExistingCategoryId(ulong guildId, string aDiscordCategoryName, CancellationToken aCancellationToken = default)
+            => await _guildsHandler.GetGuildById(guildId, true, aCancellationToken)
                     .Bind(discordGuild => ChannelsHandler.GetDiscordCategory(discordGuild, channel => channel.Name == aDiscordCategoryName, aCancellationToken))
                     .Map(discordChannel => discordChannel.Id);
 
@@ -59,8 +57,8 @@ namespace SwarmBot.Services
         /// <param name="aCategoryChannelTemplate"></param>
         /// <param name="aCancellationToken"></param>
         /// <returns>awaitable <see cref="Task"/> with <see cref="IHttpResult{Unit}"/> informing about success or failure in operation.</returns>
-        public async Task<IHttpResult<Unit>> SyncExistingCategoryWithTemplate(ulong aDiscordCategoryId, CategoryChannelTemplateDTO aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
-            => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
+        public async Task<IHttpResult<Unit>> SyncExistingCategoryWithTemplate(ulong guildId, ulong aDiscordCategoryId, CategoryChannelTemplateDTO aCategoryChannelTemplate, CancellationToken aCancellationToken = default)
+            => await _guildsHandler.GetGuildById(guildId, true, aCancellationToken)
                     .Bind(discordGuild => ChannelsHandler.GetDiscordChannelFromId(discordGuild, aDiscordCategoryId))
                     .Bind(discordCategory => ChannelsHandler.SyncExistingCategoryWithTemplate_Delete(discordCategory, aCategoryChannelTemplate, aCancellationToken))
                     .Bind(discordCategory => ChannelsHandler.SyncExistingCategoryWithTemplate_Create(discordCategory, aCategoryChannelTemplate, aCancellationToken));
@@ -71,8 +69,8 @@ namespace SwarmBot.Services
         /// <param name="aBot">Current discord bot that will execute the commands.</param>
         /// <param name="aEventCategorylId">Id of the category channel</param>
         /// <returns><see cref="IHttpResult{Unit}"/> with information about success or fail on this operation.</returns>
-        public async Task<IHttpResult<Unit>> DeleteCategoryFromId(ulong aEventCategorylId, CancellationToken aCancellationToken = default)
-            => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
+        public async Task<IHttpResult<Unit>> DeleteCategoryFromId(ulong guildId, ulong aEventCategorylId, CancellationToken aCancellationToken = default)
+            => await _guildsHandler.GetGuildById(guildId, true, aCancellationToken)
                     .Bind(discordGuild => ChannelsHandler.GetDiscordChannelFromId(discordGuild, aEventCategorylId))
                     .Bind(discordChannel => ChannelsHandler.DeleteCategoryFromId(discordChannel, aCancellationToken));
 
@@ -81,12 +79,12 @@ namespace SwarmBot.Services
         /// </summary>
         /// /// <param name="aUserFullHandleList">List of discord full handles</param>
         /// <returns><see cref="IHttpResult{Unit}"/> with information about success or fail on this operation.</returns>
-        public async Task<IHttpResult<Unit>> AddMemberListToChannel(ulong aChannelId, string[] aUserFullHandleList, CancellationToken aCancellationToken = default)
+        public async Task<IHttpResult<Unit>> AddMemberListToChannel(ulong guildId, ulong aChannelId, string[] aUserFullHandleList, CancellationToken aCancellationToken = default)
         {
             DiscordGuild aDiscordGuild = default!;
             DiscordChannel aDiscordChannel = default!;
             return await Result.CancellationTokenResultAsync(aCancellationToken)
-            .Bind(_ => _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken))
+            .Bind(_ => _guildsHandler.GetGuildById(guildId, true, aCancellationToken))
             .Tap(discordGuild => aDiscordGuild = discordGuild)
             .Bind(discordGuild => ChannelsHandler.GetDiscordChannelFromId(discordGuild, aChannelId, aCancellationToken))
             .Tap(discordGuild => aDiscordChannel = discordGuild)

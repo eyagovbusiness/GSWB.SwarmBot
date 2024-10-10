@@ -21,7 +21,7 @@ namespace SwarmBot.Handelers
             _testersGuildId = lSwarmBotDiscordBot.BotConfiguration.TestersDiscordTargetGuildId;
         }
 
-        public async Task<IHttpResult<DiscordGuild>> GetGuildById(ulong id, CancellationToken cancellationToken = default, bool? callAPI = null)
+        public async Task<IHttpResult<DiscordGuild>> GetGuildById(ulong id, bool callAPI, CancellationToken cancellationToken = default)
              => await Result.CancellationTokenResultAsync(cancellationToken)
             .Map(_ => _client.GetGuildAsync(id, callAPI))
             .Verify(discordGuild => discordGuild != null, DiscordBotErrors.Guild.NotFoundId);

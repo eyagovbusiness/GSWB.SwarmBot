@@ -17,7 +17,6 @@ namespace Maindril.API.Endpoints
         /// <inheritdoc/>
         public void DefineEndpoints(WebApplication aWebApplication)
         {
-            aWebApplication.MapGet(SwarmBotApiRoutes.roles, Get_GuildServerRoles).SetResponseMetadata<DiscordRoleDTO[]>(200);
             aWebApplication.MapPost(SwarmBotApiRoutes.roles, Post_CreateRole).SetResponseMetadata<ulong>(200, 404);
             aWebApplication.MapDelete(SwarmBotApiRoutes.roles, Delete_Role).SetResponseMetadata(200, 404);
             aWebApplication.MapPut(SwarmBotApiRoutes.roles_assign, Post_AssignRoleToMemberList).SetResponseMetadata(200, 404);
@@ -32,13 +31,6 @@ namespace Maindril.API.Endpoints
         #endregion
 
         #region EndpointMethods
-
-        /// <summary>
-        /// Gets a list with all the available roles in the guild's server.
-        /// </summary>
-        private async Task<IResult> Get_GuildServerRoles(ISwarmBotRolesService aSwarmBotRolesService, CancellationToken aCancellationToken = default)
-            => await aSwarmBotRolesService.GetGuildServerRoleList(aCancellationToken)
-            .ToIResult();
 
         /// <summary>
         /// Creates a new role in the discord's guild and response with the Id of the new Discord role created.
