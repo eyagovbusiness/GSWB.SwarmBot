@@ -6,7 +6,7 @@ using TGF.Common.Extensions;
 using TGF.Common.ROP.HttpResult;
 using TGF.Common.ROP.Result;
 
-namespace SwarmBot.Handelers
+namespace SwarmBot.Handlers
 {
     internal class GuildsHandler
     {
@@ -16,7 +16,7 @@ namespace SwarmBot.Handelers
         public GuildsHandler(ISwarmBotDiscordBot aSwarmBotDiscordBot)
         {
             var lSwarmBotDiscordBot = aSwarmBotDiscordBot as SwarmBotDiscordBot;
-            _client = lSwarmBotDiscordBot.Client;
+            _client = lSwarmBotDiscordBot?.Client ?? throw new ArgumentNullException(nameof(aSwarmBotDiscordBot));
             _guildId = lSwarmBotDiscordBot.BotConfiguration.DiscordTargetGuildId;
             _testersGuildId = lSwarmBotDiscordBot.BotConfiguration.TestersDiscordTargetGuildId;
         }

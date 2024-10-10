@@ -29,7 +29,7 @@ namespace SwarmBot.Commands
             var lMemberListToMove = await Move_GetMemberList(aContext, aTargetChannel, aBaseRole);
 
             //Filter members who are in the same channel as the command caller
-            var lCallerChannel = aContext.Member.VoiceState?.Channel;
+            var lCallerChannel = aContext.Member?.VoiceState?.Channel;
             if (lCallerChannel == null)
             {
                 await aContext.RespondAsync("You must be in a voice channel to use the non-global move!");
@@ -46,10 +46,10 @@ namespace SwarmBot.Commands
             [Description("Channel to move members to.")] DiscordChannel aTargetChannel,
             [Description("List of Roles to determine which members to move.")] params DiscordRole[] aRoleList)
         {
-            var lMemberListToMove = await Move_GetMemberList(aContext, aTargetChannel, default, aRoleList);
+            var lMemberListToMove = await Move_GetMemberList(aContext, aTargetChannel, default!, aRoleList);
 
             //Filter members who are in the same channel as the command caller
-            var lCallerChannel = aContext.Member.VoiceState?.Channel;
+            var lCallerChannel = aContext.Member?.VoiceState?.Channel;
             if (lCallerChannel == null)
             {
                 await aContext.RespondAsync("You must be in a voice channel to use the non-global move!");
@@ -76,7 +76,7 @@ namespace SwarmBot.Commands
             [Description("Channel to move members to.")] DiscordChannel aTargetChannel,
             [Description("List of Roles to determine which members to move.")] params DiscordRole[] aRoleList)
         {
-            var lMemberListToMove = await Move_GetMemberList(aContext, aTargetChannel, default, aRoleList);
+            var lMemberListToMove = await Move_GetMemberList(aContext, aTargetChannel, default!, aRoleList);
             await Move_Execute(aContext, aTargetChannel, lMemberListToMove);
         }
 
@@ -96,15 +96,15 @@ namespace SwarmBot.Commands
         /// </list>
         /// </remarks>
         /// <returns>list of members to be moved to the target channel.</returns>
-        private async Task<IEnumerable<DiscordMember>> Move_GetMemberList(CommandContext aContext, DiscordChannel aTargetChannel, DiscordRole aRoleOrHigher = default, params DiscordRole[] aRoleList)
+        private async Task<IEnumerable<DiscordMember>> Move_GetMemberList(CommandContext aContext, DiscordChannel aTargetChannel, DiscordRole aRoleOrHigher = default!, params DiscordRole[] aRoleList)
         {
-            if (!await IsMemberAuthorized(aContext.Member))
-                return Array.Empty<DiscordMember>();
+            if (!await IsMemberAuthorized(aContext.Member!))
+                return [];
 
             if (aTargetChannel.Type != ChannelType.Voice)
             {
                 await aContext.RespondAsync("Please specify a valid voice channel!");
-                return Array.Empty<DiscordMember>();
+                return [];
             }
 
             var lAllMemberList = await aContext.Guild.GetAllMembersAsync();

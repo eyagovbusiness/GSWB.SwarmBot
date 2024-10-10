@@ -26,9 +26,9 @@ namespace SwarmBot.Services
                                     .Select(role => role.ToDto()).ToArray())
                 .Verify(roleList => roleList != null && roleList.Length > 0, DiscordBotErrors.Role.GuildRolesFetchFailed);
 
-        public async Task<IHttpResult<Unit>> AssignRoleToMember(ulong aRoleId, string aFullDiscordHandle, string aReason = null, CancellationToken aCancellationToken = default)
+        public async Task<IHttpResult<Unit>> AssignRoleToMember(ulong aRoleId, string aFullDiscordHandle, string aReason = null!, CancellationToken aCancellationToken = default)
         {
-            DiscordGuild lDiscordGuild = default; DiscordRole lDiscordRole = default;
+            DiscordGuild lDiscordGuild = default!; DiscordRole lDiscordRole = default!;
             return await MembersHandler.ValidateMemberHandle(aFullDiscordHandle)
                         .Bind(_ => _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken))
                         .Tap(discordGuild => lDiscordGuild = discordGuild)
@@ -69,7 +69,7 @@ namespace SwarmBot.Services
 
         public async Task<IHttpResult<Unit>> RevokeRoleToMemberList(ulong aRoleId, string[] aFullHandleList, CancellationToken aCancellationToken = default)
         {
-            DiscordRole lDiscordRole = default;
+            DiscordRole lDiscordRole = default!;
             return await MembersHandler.ValidateMemberHandleList(aFullHandleList)
                         .Bind(_ => _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken))
                         .Bind(discordGuild => RolesHandler.GetDiscordRoleAtm(discordGuild, aRoleId, aCancellationToken)
@@ -86,7 +86,7 @@ namespace SwarmBot.Services
 
         public async Task<IHttpResult<Unit>> RevokeRoleToMemberList(ulong aRoleId, ulong[] aMemberIdList, CancellationToken aCancellationToken = default)
         {
-            DiscordRole lDiscordRole = default;
+            DiscordRole lDiscordRole = default!;
             return await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
                         .Bind(discordGuild => RolesHandler.GetDiscordRoleAtm(discordGuild, aRoleId, aCancellationToken)
                         .Tap(discordRole => lDiscordRole = discordRole)

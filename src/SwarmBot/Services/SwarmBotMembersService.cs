@@ -5,6 +5,7 @@ using SwarmBot.Application.Mapping;
 using SwarmBot.Extensions;
 using SwarmBot.Handelers;
 using TGF.Common.ROP.HttpResult;
+using SwarmBot.Handlers;
 
 namespace SwarmBot.Services
 {
@@ -30,12 +31,12 @@ namespace SwarmBot.Services
             => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
                     .Bind(discordGuild => MembersHandler.GetAllDiscordMemberListAtmAsync(discordGuild, aCancellationToken))
                     .Map(discordMemberList => discordMemberList.FirstOrDefault(member => member.Id == aDiscordUserId))
-                    .Map(discordMember => new DiscordProfileDTO(discordMember.DisplayName, discordMember.GetGuildAvatarUrlOrDefault()));
+                    .Map(discordMember => new DiscordProfileDTO(discordMember?.DisplayName!, discordMember!.GetGuildAvatarUrlOrDefault()));
 
         public async Task<IHttpResult<DiscordMember>> GetTester(ulong aDiscordUserId, CancellationToken aCancellationToken = default)
             => await _guildsHandler.GetTestersDiscordGuildFromConfigAsync(aCancellationToken)
                     .Bind(discordGuild => MembersHandler.GetAllDiscordMemberListAtmAsync(discordGuild, aCancellationToken))
-                    .Map(discordMemberList => discordMemberList.FirstOrDefault(member => member.Id == aDiscordUserId))
+                    .Map(discordMemberList => discordMemberList.FirstOrDefault(member => member.Id == aDiscordUserId)!)
                     .Verify(discordMember => discordMember != null && discordMember.Roles.Any(role => role.Name == "Tester"), DiscordBotErrors.User.NotTester);
 
         public async Task<IHttpResult<IEnumerable<DiscordMember>>> GetMemberList(Func<DiscordMember, bool> aFilterFunc, CancellationToken aCancellationToken = default)
@@ -48,8 +49,8 @@ namespace SwarmBot.Services
                 .Bind(discordGuild => MembersHandler.GetAllDiscordMemberListAtmAsync(discordGuild, aCancellationToken))
                 .Map(allMemberList => allMemberList.FirstOrDefault(member => member.Id == userId))
                 .Verify(member => member is not null, DiscordBotErrors.Member.NotFoundId)
-                .Verify(member => member.Roles.Any(), DiscordBotErrors.Member.NotFoundAnyRole)
-                .Map(existingMember => existingMember.Roles
+                .Verify(member => member!.Roles.Any(), DiscordBotErrors.Member.NotFoundAnyRole)
+                .Map(existingMember => existingMember!.Roles
                                         .Select(role => role.ToDto())
                                         .OrderByDescending(role => role.Position).ToArray());
 

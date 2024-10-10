@@ -22,10 +22,10 @@ namespace SwarmBot.Handlers
 
         public static async Task<IHttpResult<Unit>> DeleteRoleAtmAsync(DiscordGuild aDiscordGuild, ulong aRoleId, CancellationToken aCancellationToken = default)
         => await Result.CancellationTokenResultAsync(aCancellationToken)
-                .Tap(_ => aDiscordGuild.Roles.FirstOrDefault(r => r.Key == aRoleId).Value?.DeleteAsync());
+                .Tap(_ => aDiscordGuild.Roles.FirstOrDefault(r => r.Key == aRoleId).Value?.DeleteAsync()!);
 
 
-        public static async Task<IHttpResult<Unit>> GrantRoleToMemberAtmAsync(DiscordMember aDiscordMember, DiscordRole aDiscordRole, string aReason = null, CancellationToken aCancellationToken = default)
+        public static async Task<IHttpResult<Unit>> GrantRoleToMemberAtmAsync(DiscordMember aDiscordMember, DiscordRole aDiscordRole, string aReason = null!, CancellationToken aCancellationToken = default)
             => await Result.CancellationTokenResultAsync(aCancellationToken)
                     .Tap(_ => aDiscordMember.GrantRoleAsync(aDiscordRole, aReason));
 

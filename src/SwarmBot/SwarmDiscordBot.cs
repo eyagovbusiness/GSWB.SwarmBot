@@ -16,7 +16,7 @@ namespace SwarmBot
     /// <summary>
     /// Class designed as a service to provide communication with an internal Discord bot in this service, with functionality accessible through the public interface.
     /// </summary>
-    public partial class SwarmBotDiscordBot : ISwarmBotDiscordBot, IDisposable
+    public class SwarmBotDiscordBot : ISwarmBotDiscordBot, IDisposable
     {
         public static readonly byte _maxDegreeOfParallelism = Convert.ToByte(Math.Ceiling(Environment.ProcessorCount * 0.75));
 
@@ -27,7 +27,7 @@ namespace SwarmBot
         #endregion
 
         #region Bot
-        private bool mIsAutoBanBotsEnabled = true;
+        private readonly bool _isAutoBanBotsEnabled = true;
         internal BotConfig BotConfiguration { get; private set; }
         internal DiscordClient Client { get; private set; }
         internal CommandsNextExtension Commands { get; private set; }
@@ -43,7 +43,9 @@ namespace SwarmBot
         public readonly AsyncEventHandler<DiscordClient, GuildCreateEventArgs> _guildAdded;
         #endregion
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         public SwarmBotDiscordBot(ILoggerFactory aLoggerFactory, ISecretsManager aSecretsManager, IConfiguration aConfiguration, IServiceScopeFactory aServiceScopeFactory)
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         {
             _loggerFactory = aLoggerFactory;
             _secretsManager = aSecretsManager;
@@ -165,14 +167,14 @@ namespace SwarmBot
         private async Task SetBotConfigurationAsync()
         {
             BotConfiguration = await _secretsManager.Get<BotConfig>("swarmbot");
-            BotConfiguration.BotCommandPrefix = _configuration.GetValue<string>("BotCommandPrefix");
+            BotConfiguration.BotCommandPrefix = _configuration.GetValue<string>("BotCommandPrefix") ?? throw new NullReferenceException();
         }
 
         private void ConfigureDiscordBotCommands()
         {
             var lCommandsConfig = new CommandsNextConfiguration
             {
-                StringPrefixes = new string[] { BotConfiguration.BotCommandPrefix },
+                StringPrefixes = [BotConfiguration.BotCommandPrefix!],
                 EnableDms = false,
                 EnableMentionPrefix = true,
                 Services = GetCommandsServiceProvider(),
@@ -235,7 +237,7 @@ namespace SwarmBot
         /// </summary>
         private async Task OnGuildMemberAdded(DiscordClient sender, GuildMemberAddEventArgs e)
         {
-            if (mIsAutoBanBotsEnabled && e.Guild.Id == BotConfiguration.DiscordTargetGuildId && e.Member.IsBot)
+            if (_isAutoBanBotsEnabled && e.Guild.Id == BotConfiguration.DiscordTargetGuildId && e.Member.IsBot)
                 await e.Member.BanAsync(reason: "Bot detected.");
         }
 

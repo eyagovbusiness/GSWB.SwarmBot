@@ -38,7 +38,7 @@ namespace SwarmBot.Handelers
         {
             var lDiscordHandleParts = aFullDiscordHandle.Split('#');
             var lAllMemberList = await aDiscordGuild.GetAllMembersAsync();
-            return lAllMemberList?.FirstOrDefault(x => x.Username == lDiscordHandleParts[0] && x.Discriminator == lDiscordHandleParts[1]);
+            return lAllMemberList?.FirstOrDefault(x => x.Username == lDiscordHandleParts[0] && x.Discriminator == lDiscordHandleParts[1]) ?? throw new NullReferenceException();
         }
 
         public static async Task<IHttpResult<DiscordMember>> GetDiscordMemberAtmAsync(DiscordGuild aDiscordGuild, string aFullDiscordHandle, CancellationToken aCancellationToken = default)
@@ -48,7 +48,7 @@ namespace SwarmBot.Handelers
 
         public static async Task<IHttpResult<ImmutableArray<DiscordMember>>> GetDiscordMemberListAtmAsync(DiscordGuild aDiscordGuild, string[] aMemberFullHandleList, CancellationToken aCancellationToken = default)
         {
-            IEnumerable<string[]> lDiscordHandleParts = default;
+            IEnumerable<string[]> lDiscordHandleParts = default!;
             return await Result.CancellationTokenResultAsync(aCancellationToken)
                         .Tap(_ => lDiscordHandleParts = aMemberFullHandleList
                                                         .Union(aMemberFullHandleList)
@@ -57,7 +57,7 @@ namespace SwarmBot.Handelers
                         .Map(allMemberList => lDiscordHandleParts
                                           .Select(
                                             x => allMemberList
-                                                 .FirstOrDefault(y => y != null && y.Username == x[0] && y.Discriminator == x[1]))
+                                                 .FirstOrDefault(y => y != null && y.Username == x[0] && y.Discriminator == x[1])!)
                                           .ToImmutableArray())
                         .Verify(selectedMemberList => selectedMemberList.All(m => m != null), DiscordBotErrors.Member.OneNotFoundHandle);
 

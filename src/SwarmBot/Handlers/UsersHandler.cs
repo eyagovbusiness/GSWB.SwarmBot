@@ -1,17 +1,15 @@
 ﻿using DSharpPlus;
 using DSharpPlus.Entities;
 using SwarmBot.Application;
-using SwarmBot.Handelers;
 using TGF.Common.ROP.HttpResult;
 using TGF.Common.ROP.Result;
-using static SwarmBot.DiscordBotErrors;
 
 namespace SwarmBot.Handlers
 {
     internal class UsersHandler(ISwarmBotDiscordBot aSwarmBotDiscordBot)
     {
 
-        private readonly DiscordClient _client = (aSwarmBotDiscordBot as SwarmBotDiscordBot).Client;
+        private readonly DiscordClient _client = (aSwarmBotDiscordBot as SwarmBotDiscordBot)?.Client ?? throw new ArgumentNullException(nameof(aSwarmBotDiscordBot));
         private readonly GuildsHandler _guildsHandler = new(aSwarmBotDiscordBot);
 
         internal async Task<IHttpResult<DiscordUser>> GetUserAsync(ulong aUserId)
@@ -22,7 +20,7 @@ namespace SwarmBot.Handlers
             }
             catch (DSharpPlus.Exceptions.NotFoundException)
             {
-                return Result.SuccessHttp<DiscordUser>(null);
+                return Result.SuccessHttp<DiscordUser>(null!);
             }
 
         }
