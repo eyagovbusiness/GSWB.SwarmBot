@@ -8,6 +8,8 @@ using TGF.CA.Presentation.Middleware;
 using TGF.CA.Infrastructure.Security.Identity.Authentication;
 using System.Security.Claims;
 using Common.Application.DTOs.Discord;
+using TGF.Common.ROP.Result;
+using TGF.Common.ROP.HttpResult;
 
 namespace SwarmBot.API.Endpoints
 {
@@ -18,7 +20,7 @@ namespace SwarmBot.API.Endpoints
         public void DefineEndpoints(WebApplication aWebApplication)
         {
             aWebApplication.MapGet(SwarmBotApiRoutes.private_users_me_guilds, Get_UserGuilds).RequireDiscord().SetResponseMetadata<GuildDTO[]>(200).ProducesValidationProblem();
-            aWebApplication.MapGet(SwarmBotApiRoutes.private_guilds_id_roles, Get_GuildServerRoles).SetResponseMetadata<DiscordRoleDTO[]>(200);
+            aWebApplication.MapGet(SwarmBotApiRoutes.private_guilds_roles, Get_GuildServerRoles).SetResponseMetadata<DiscordRoleDTO[]>(200);
 
         }
 
@@ -38,9 +40,10 @@ namespace SwarmBot.API.Endpoints
         /// <summary>
         /// Gets a list with all the available roles in the guild's server.
         /// </summary>
-        private async Task<IResult> Get_GuildServerRoles(ISwarmBotRolesService aSwarmBotRolesService, CancellationToken aCancellationToken = default)
-            => await aSwarmBotRolesService.GetGuildServerRoleList(aCancellationToken)
-            .ToIResult();
+        private async Task<IResult> Get_GuildServerRoles(string id, DiscordIdValidator discordIdValidator, ISwarmBotRolesService aSwarmBotRolesService, CancellationToken aCancellationToken = default)
+        => await Result.ValidationResult(discordIdValidator.Validate(id))
+        .Bind(_ => aSwarmBotRolesService.GetGuildServerRoleList(ulong.Parse(id), aCancellationToken))
+        .ToIResult();
 
     }
 }

@@ -98,34 +98,34 @@ namespace SwarmBot.Commands
         /// <returns>list of members to be moved to the target channel.</returns>
         private async Task<IEnumerable<DiscordMember>> Move_GetMemberList(CommandContext aContext, DiscordChannel aTargetChannel, DiscordRole aRoleOrHigher = default!, params DiscordRole[] aRoleList)
         {
-            if (!await IsMemberAuthorized(aContext.Member!))
-                return [];
+            //if (!await IsMemberAuthorized(aContext.Member!))
+            //    return [];
 
-            if (aTargetChannel.Type != ChannelType.Voice)
-            {
-                await aContext.RespondAsync("Please specify a valid voice channel!");
-                return [];
-            }
+            //if (aTargetChannel.Type != ChannelType.Voice)
+            //{
+            //    await aContext.RespondAsync("Please specify a valid voice channel!");
+            //    return [];
+            //}
 
-            var lAllMemberList = await aContext.Guild.GetAllMembersAsync();
+            //var lAllMemberList = await aContext.Guild.GetAllMembersAsync();
 
-            if (aRoleOrHigher != null)
-            {
-                int lBaseRolePosition = aRoleOrHigher.Position;
-                return lAllMemberList.Where(m => m.Roles.Any(r => r.Position >= lBaseRolePosition) && m.VoiceState?.Channel != null).ToList();
-            }
-            if (aRoleList.Length > 0)
-            {
-                var lRoleIdList = aRoleList.Select(role => role.Id).ToList();
-                return lAllMemberList
-                .Where(member =>
-                    member.VoiceState?.Channel != null
-                    && lRoleIdList.Intersect(
-                        member.Roles.Select(role => role.Id))
-                    .Any()
-                ).ToList();
-            }
-            return Array.Empty<DiscordMember>();
+            //if (aRoleOrHigher != null)
+            //{
+            //    int lBaseRolePosition = aRoleOrHigher.Position;
+            //    return lAllMemberList.Where(m => m.Roles.Any(r => r.Position >= lBaseRolePosition) && m.VoiceState?.Channel != null).ToList();
+            //}
+            //if (aRoleList.Length > 0)
+            //{
+            //    var lRoleIdList = aRoleList.Select(role => role.Id).ToList();
+            //    return lAllMemberList
+            //    .Where(member =>
+            //        member.VoiceState?.Channel != null
+            //        && lRoleIdList.Intersect(
+            //            member.Roles.Select(role => role.Id))
+            //        .Any()
+            //    ).ToList();
+            //}
+            return await Task.FromResult(Array.Empty<DiscordMember>());
         }
 
         /// <summary>

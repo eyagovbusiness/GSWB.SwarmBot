@@ -22,9 +22,14 @@ namespace Maindril.API.Endpoints
         /// <inheritdoc/>
         public void DefineEndpoints(WebApplication aWebApplication)
         {
-            aWebApplication.MapGet(SwarmBotApiRoutes.private_guilds_members_countOnline, GetNumberOfOnlineMembers).SetResponseMetadata<int>(200);
-            aWebApplication.MapGet(SwarmBotApiRoutes.private_currentGuild_members_profile, GetMemberProfileFromId).RequireJWTBearer().SetResponseMetadata<DiscordProfileDTO>(200, 404);
-            aWebApplication.MapGet(SwarmBotApiRoutes.private_guilds_members_roles, GetMemberRoleList).SetResponseMetadata<IEnumerable<DiscordRoleDTO>>(200, 404);
+            aWebApplication.MapGet(SwarmBotApiRoutes.private_guilds_members_countOnline, GetNumberOfOnlineMembers)
+                .SetResponseMetadata<int>(200);
+
+            aWebApplication.MapGet(SwarmBotApiRoutes.private_currentGuild_members_profile, GetMemberProfileFromId)
+                .SetResponseMetadata<DiscordProfileDTO>(200, 404);
+
+            aWebApplication.MapGet(SwarmBotApiRoutes.private_guilds_members_roles, GetMemberRoleList)
+                .SetResponseMetadata<IEnumerable<DiscordRoleDTO>>(200, 404);
 
         }
 
@@ -41,25 +46,25 @@ namespace Maindril.API.Endpoints
         /// Get the number of guild members online.
         /// </summary>
         private async Task<IResult> GetNumberOfOnlineMembers(string id, DiscordIdValidator discordIdValidator, ISwarmBotMembersService aSwarmBotMembersService, CancellationToken aCancellationToken = default)
-              => await Result.ValidationResult(discordIdValidator.Validate(id))
-            .Bind(_ => aSwarmBotMembersService.GetNumberOfOnlineMembers(ulong.Parse(id), aCancellationToken))
-            .ToIResult();
+         => await Result.ValidationResult(discordIdValidator.Validate(id))
+        .Bind(_ => aSwarmBotMembersService.GetNumberOfOnlineMembers(ulong.Parse(id), aCancellationToken))
+        .ToIResult();
 
         /// <summary>
         /// Get the member's server nickname from the Discord user id.
         /// </summary>
-        private async Task<IResult> GetMemberProfileFromId(ClaimsPrincipal claimsPrincipal, ulong id, ISwarmBotMembersService aSwarmBotMembersService, CancellationToken aCancellationToken = default)
-            => await aSwarmBotMembersService.GetMemberProfileFromId(ulong.Parse(claimsPrincipal.FindFirstValue(GuildSwarmClaims.GuildId)!),id, aCancellationToken)
-            .ToIResult();
+        private async Task<IResult> GetMemberProfileFromId(string guildId, ulong userId, ISwarmBotMembersService aSwarmBotMembersService, CancellationToken aCancellationToken = default)
+        => await aSwarmBotMembersService.GetMemberProfileFromId(ulong.Parse(guildId), userId, aCancellationToken)
+        .ToIResult();
 
         /// <summary>
         /// Get the the list of all assigned roles to this member in the guild's server ordered by position.
         /// </summary>
         private async Task<IResult> GetMemberRoleList(string guildId, string userId, DiscordIdValidator discordIdValidator, ISwarmBotMembersService aSwarmBotMembersService, CancellationToken aCancellationToken = default)
-            => await Result.ValidationResult(discordIdValidator.Validate(guildId))
-            .Validate(userId, discordIdValidator)
-            .Bind(_ => aSwarmBotMembersService.GetMemberRoleList(Convert.ToUInt64(guildId), Convert.ToUInt64(userId), aCancellationToken))
-            .ToIResult();
+        => await Result.ValidationResult(discordIdValidator.Validate(guildId))
+        .Validate(userId, discordIdValidator)
+        .Bind(_ => aSwarmBotMembersService.GetMemberRoleList(Convert.ToUInt64(guildId), Convert.ToUInt64(userId), aCancellationToken))
+        .ToIResult();
 
         #endregion
 

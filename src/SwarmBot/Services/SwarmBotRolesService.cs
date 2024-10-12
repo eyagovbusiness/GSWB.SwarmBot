@@ -19,18 +19,18 @@ namespace SwarmBot.Services
 
         private readonly GuildsHandler _guildsHandler = new(aSwarmBotDiscordBot);
 
-        public async Task<IHttpResult<DiscordRoleDTO[]>> GetGuildServerRoleList(CancellationToken aCancellationToken = default)
-            => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken, aCallAPI:true)
+        public async Task<IHttpResult<DiscordRoleDTO[]>> GetGuildServerRoleList(ulong guildId, CancellationToken aCancellationToken = default)
+            => await _guildsHandler.GetGuildById(guildId, true, aCancellationToken)
                 .Map(discordGuild => discordGuild.Roles
                                     .Select(rolePair => rolePair.Value)
                                     .Select(role => role.ToDto()).ToArray())
                 .Verify(roleList => roleList != null && roleList.Length > 0, DiscordBotErrors.Role.GuildRolesFetchFailed);
 
-        public async Task<IHttpResult<Unit>> AssignRoleToMember(ulong aRoleId, string aFullDiscordHandle, string aReason = null!, CancellationToken aCancellationToken = default)
+        public async Task<IHttpResult<Unit>> AssignRoleToMember(ulong guildId, ulong aRoleId, string aFullDiscordHandle, string aReason = null!, CancellationToken aCancellationToken = default)
         {
             DiscordGuild lDiscordGuild = default!; DiscordRole lDiscordRole = default!;
             return await MembersHandler.ValidateMemberHandle(aFullDiscordHandle)
-                        .Bind(_ => _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken))
+                        .Bind(_ => _guildsHandler.GetGuildById(guildId, true, aCancellationToken))
                         .Tap(discordGuild => lDiscordGuild = discordGuild)
                         .Bind(discordGuild => RolesHandler.GetDiscordRoleAtm(discordGuild, aRoleId, aCancellationToken))
                         .Tap(discordRole => lDiscordRole = discordRole)
@@ -39,11 +39,11 @@ namespace SwarmBot.Services
 
         }
 
-        public async Task<IHttpResult<Unit>> AssignRoleToMemberList(ulong aRoleId, string[] aFullHandleList, CancellationToken aCancellationToken = default)
+        public async Task<IHttpResult<Unit>> AssignRoleToMemberList(ulong guildId, ulong aRoleId, string[] aFullHandleList, CancellationToken aCancellationToken = default)
         {
             DiscordRole lDiscordRole = default!;
             return await MembersHandler.ValidateMemberHandleList(aFullHandleList)
-                        .Bind(_ => _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken))
+                        .Bind(_ => _guildsHandler.GetGuildById(guildId, true, aCancellationToken))
                         .Bind(discordGuild => RolesHandler.GetDiscordRoleAtm(discordGuild, aRoleId, aCancellationToken)
                             .Tap(discordRole => lDiscordRole = discordRole)
                             .Bind(_ => MembersHandler.GetDiscordMemberListAtmAsync(discordGuild, aFullHandleList, aCancellationToken))
@@ -51,15 +51,15 @@ namespace SwarmBot.Services
 
         }
 
-        public async Task<IHttpResult<Unit>> AssignRoleToMemberList(ulong aRoleId, IEnumerable<DiscordMember> aDiscordMemberList, CancellationToken aCancellationToken = default)
-            => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
+        public async Task<IHttpResult<Unit>> AssignRoleToMemberList(ulong guildId, ulong aRoleId, IEnumerable<DiscordMember> aDiscordMemberList, CancellationToken aCancellationToken = default)
+            => await _guildsHandler.GetGuildById(guildId, true, aCancellationToken)
                 .Bind(discordGuild => RolesHandler.GetDiscordRoleAtm(discordGuild, aRoleId, aCancellationToken))
                 .Bind(discordRole => RolesHandler.GrantRoleToMemberListAtmAsync(aDiscordMemberList, discordRole));
 
-        public async Task<IHttpResult<Unit>> AssignRoleToMemberList(ulong aRoleId, ulong[] aMemberIdList, CancellationToken aCancellationToken = default)
+        public async Task<IHttpResult<Unit>> AssignRoleToMemberList(ulong guildId, ulong aRoleId, ulong[] aMemberIdList, CancellationToken aCancellationToken = default)
         {
             DiscordRole lDiscordRole = default!;
-            return await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
+            return await _guildsHandler.GetGuildById(guildId, true, aCancellationToken)
                         .Bind(discordGuild => RolesHandler.GetDiscordRoleAtm(discordGuild, aRoleId, aCancellationToken)
                         .Tap(discordRole => lDiscordRole = discordRole)
                         .Bind(_ => MembersHandler.GetDiscordMemberList(discordGuild, member => aMemberIdList.Contains(member.Id), aCancellationToken))
@@ -67,11 +67,11 @@ namespace SwarmBot.Services
 
         }
 
-        public async Task<IHttpResult<Unit>> RevokeRoleToMemberList(ulong aRoleId, string[] aFullHandleList, CancellationToken aCancellationToken = default)
+        public async Task<IHttpResult<Unit>> RevokeRoleToMemberList(ulong guildId, ulong aRoleId, string[] aFullHandleList, CancellationToken aCancellationToken = default)
         {
             DiscordRole lDiscordRole = default!;
             return await MembersHandler.ValidateMemberHandleList(aFullHandleList)
-                        .Bind(_ => _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken))
+                        .Bind(_ => _guildsHandler.GetGuildById(guildId, true, aCancellationToken))
                         .Bind(discordGuild => RolesHandler.GetDiscordRoleAtm(discordGuild, aRoleId, aCancellationToken)
                         .Tap(discordRole => lDiscordRole = discordRole)
                         .Bind(_ => MembersHandler.GetDiscordMemberListAtmAsync(discordGuild, aFullHandleList, aCancellationToken))
@@ -79,27 +79,27 @@ namespace SwarmBot.Services
 
         }
 
-        public async Task<IHttpResult<Unit>> RevokeRoleToMemberList(ulong aRoleId, IEnumerable<DiscordMember> aDiscordMemberList, CancellationToken aCancellationToken = default)
-            => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
+        public async Task<IHttpResult<Unit>> RevokeRoleToMemberList(ulong guildId, ulong aRoleId, IEnumerable<DiscordMember> aDiscordMemberList, CancellationToken aCancellationToken = default)
+            => await _guildsHandler.GetGuildById(guildId, true, aCancellationToken)
                 .Bind(discordGuild => RolesHandler.GetDiscordRoleAtm(discordGuild, aRoleId, aCancellationToken))
                 .Bind(discordRole => RolesHandler.RevokeRoleToMemberListAtmAsync(aDiscordMemberList, discordRole));
 
-        public async Task<IHttpResult<Unit>> RevokeRoleToMemberList(ulong aRoleId, ulong[] aMemberIdList, CancellationToken aCancellationToken = default)
+        public async Task<IHttpResult<Unit>> RevokeRoleToMemberList(ulong guildId,ulong aRoleId, ulong[] aMemberIdList, CancellationToken aCancellationToken = default)
         {
             DiscordRole lDiscordRole = default!;
-            return await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
+            return await _guildsHandler.GetGuildById(guildId, true, aCancellationToken)
                         .Bind(discordGuild => RolesHandler.GetDiscordRoleAtm(discordGuild, aRoleId, aCancellationToken)
                         .Tap(discordRole => lDiscordRole = discordRole)
                         .Bind(_ => MembersHandler.GetDiscordMemberList(discordGuild, member => aMemberIdList.Contains(member.Id), aCancellationToken))
                         .Bind(discordMemberList => RolesHandler.RevokeRoleToMemberListAtmAsync(discordMemberList, lDiscordRole)));
         }
 
-        public async Task<IHttpResult<ulong>> CreateRole(string aRoleName, CancellationToken aCancellationToken = default)
-            => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
+        public async Task<IHttpResult<ulong>> CreateRole(ulong guildId, string aRoleName, CancellationToken aCancellationToken = default)
+            => await _guildsHandler.GetGuildById(guildId, true, aCancellationToken)
                     .Bind(discordGuild => RolesHandler.CreateRoleAtmAsync(discordGuild, aRoleName, aCancellationToken));
 
-        public async Task<IHttpResult<Unit>> DeleteRole(ulong aRoleId, CancellationToken aCancellationToken = default)
-            => await _guildsHandler.GetDiscordGuildFromConfigAsync(aCancellationToken)
+        public async Task<IHttpResult<Unit>> DeleteRole(ulong guildId, ulong aRoleId, CancellationToken aCancellationToken = default)
+            => await _guildsHandler.GetGuildById(guildId, true, aCancellationToken)
                     .Bind(discordGuild => RolesHandler.DeleteRoleAtmAsync(discordGuild, aRoleId, aCancellationToken));
 
     }
