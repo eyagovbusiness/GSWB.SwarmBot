@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using TGF.Common.Extensions;
 using Common.Application.DTOs.Discord;
-using Common.Infrastructure.Communication.ApiRoutes;
+using Common.Application.Communication.Routing;
 
 namespace SwarmBot.API.IntegrationTests
 {

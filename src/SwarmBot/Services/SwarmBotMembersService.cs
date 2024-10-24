@@ -51,7 +51,7 @@ namespace SwarmBot.Services
                 .Verify(member => member is not null, DiscordBotErrors.Member.NotFoundId)
                 .Verify(member => member!.Roles.Any(), DiscordBotErrors.Member.NotFoundAnyRole)
                 .Map(existingMember => existingMember!.Roles
-                                        .Select(role => role.ToDto())
+                                        .Select(role => role.ToDto(guildId))
                                         .OrderByDescending(role => role.Position).ToArray());
 
         #endregion 

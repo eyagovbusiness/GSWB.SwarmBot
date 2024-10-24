@@ -1,4 +1,4 @@
-﻿using Common.Infrastructure.Communication.ApiRoutes;
+﻿using Common.Application.Communication.Routing;
 using SwarmBot.Application;
 using SwarmBot.Domain.ValueObjects;
 using TGF.CA.Presentation;

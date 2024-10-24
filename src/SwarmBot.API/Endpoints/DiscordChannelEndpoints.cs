@@ -5,10 +5,10 @@ using TGF.CA.Presentation;
 using TGF.CA.Presentation.Middleware;
 using TGF.CA.Presentation.MinimalAPI;
 using TGF.Common.ROP.HttpResult;
-using Common.Infrastructure.Communication.ApiRoutes;
 using System.Security.Claims;
 using TGF.CA.Infrastructure.Security.Identity.Authentication;
 using Common.Infrastructure.Security;
+using Common.Application.Communication.Routing;
 
 namespace Maindril.API.Endpoints
 {

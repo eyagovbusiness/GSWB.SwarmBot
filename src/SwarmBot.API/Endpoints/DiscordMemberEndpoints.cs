@@ -3,13 +3,13 @@ using Common.Application.DTOs.Discord;
 using TGF.CA.Presentation;
 using TGF.CA.Presentation.Middleware;
 using TGF.CA.Presentation.MinimalAPI;
-using Common.Infrastructure.Communication.ApiRoutes;
 using TGF.Common.ROP.Result;
 using Common.Domain.Validation;
 using TGF.Common.ROP.HttpResult;
 using System.Security.Claims;
 using Common.Infrastructure.Security;
 using TGF.CA.Infrastructure.Security.Identity.Authentication;
+using Common.Application.Communication.Routing;
 
 namespace Maindril.API.Endpoints
 {

@@ -23,7 +23,7 @@ namespace SwarmBot.Services
             => await _guildsHandler.GetGuildById(guildId, true, aCancellationToken)
                 .Map(discordGuild => discordGuild.Roles
                                     .Select(rolePair => rolePair.Value)
-                                    .Select(role => role.ToDto()).ToArray())
+                                    .Select(role => role.ToDto(guildId)).ToArray())
                 .Verify(roleList => roleList != null && roleList.Length > 0, DiscordBotErrors.Role.GuildRolesFetchFailed);
 
         public async Task<IHttpResult<Unit>> AssignRoleToMember(ulong guildId, ulong aRoleId, string aFullDiscordHandle, string aReason = null!, CancellationToken aCancellationToken = default)

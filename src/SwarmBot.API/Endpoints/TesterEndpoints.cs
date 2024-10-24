@@ -1,4 +1,4 @@
-﻿using Common.Infrastructure.Communication.ApiRoutes;
+﻿using Common.Application.Communication.Routing;
 using SwarmBot.Application;
 using TGF.CA.Presentation;
 using TGF.CA.Presentation.Middleware;

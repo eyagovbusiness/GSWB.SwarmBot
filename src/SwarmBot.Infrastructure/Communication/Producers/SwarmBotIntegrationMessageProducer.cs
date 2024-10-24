@@ -3,11 +3,12 @@ using DSharpPlus.EventArgs;
 using SwarmBot.Application;
 using Common.Application.DTOs.Discord;
 using SwarmBot.Application.Mapping;
-using TGF.CA.Infrastructure.Communication.Messages.Discord;
+using Common.Application.Contracts.Communication.Messages.Discord;
 using SwarmBot.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using TGF.CA.Infrastructure.Communication.Publisher.Integration;
+using Common.Application.Contracts.Communication;
+using TGF.CA.Application.Contracts.Communication;
 
 namespace SwarmBot.Infrastructure.Communication.MessageProducer
 {
@@ -48,13 +49,13 @@ namespace SwarmBot.Infrastructure.Communication.MessageProducer
         }
 
         private async Task SwarmBotDiscordBot_GuildRoleUpdated(DiscordClient sender, GuildRoleUpdateEventArgs args)
-            => await SendMessage(new RoleUpdated(new DiscordRoleDTO(args.RoleAfter.Id.ToString(), args.RoleAfter.Name, (byte)args.RoleAfter.Position)), aRoutingKey: RoutingKeys.SwarmBot.SwarmBot_Roles_sync);
+            => await SendMessage(new RoleUpdated(args.Guild.Id.ToString(), new DiscordRoleDTO(args.Guild.Id.ToString(), args.RoleAfter.Id.ToString(), args.RoleAfter.Name, (byte)args.RoleAfter.Position)), aRoutingKey: RoutingKeys.SwarmBot.SwarmBot_Roles_sync);
 
         private async Task SwarmBotDiscordBot_GuildRoleDeleted(DiscordClient sender, GuildRoleDeleteEventArgs args)
-            => await SendMessage(new RoleDeleted(args.Role.Id.ToString()), aRoutingKey: RoutingKeys.SwarmBot.SwarmBot_Roles_sync);
+            => await SendMessage(new RoleDeleted(args.Guild.Id.ToString(), args.Role.Id.ToString()), aRoutingKey: RoutingKeys.SwarmBot.SwarmBot_Roles_sync);
 
         private async Task SwarmBotDiscordBot_GuildRoleCreated(DiscordClient sender, GuildRoleCreateEventArgs args)
-            => await SendMessage(new RoleCreated(new DiscordRoleDTO(args.Role.Id.ToString(), args.Role.Name, (byte)args.Role.Position)), aRoutingKey: RoutingKeys.SwarmBot.SwarmBot_Roles_sync);
+            => await SendMessage(new RoleCreated(args.Guild.Id.ToString(),new DiscordRoleDTO(args.Guild.Id.ToString(), args.Role.Id.ToString(), args.Role.Name, (byte)args.Role.Position)), aRoutingKey: RoutingKeys.SwarmBot.SwarmBot_Roles_sync);
 
         private async Task SwarmBotDiscordBot_GuildBanRemoved(DiscordClient sender, GuildBanRemoveEventArgs args)
             => await SendMessage(new MemberBanUpdated(args.Member.Id.ToString(), args.Guild.Id.ToString(), true), aRoutingKey: RoutingKeys.SwarmBot.SwarmBot_Members_sync);
@@ -81,9 +82,9 @@ namespace SwarmBot.Infrastructure.Communication.MessageProducer
             var lRemovedRoles = aGuildMemberUpdateEventArgs.RolesBefore.Except(aGuildMemberUpdateEventArgs.RolesAfter).ToList();
 
             if (lAddedRoles.Count != 0)
-                await SendMessage(new MemberRoleAssigned(aGuildMemberUpdateEventArgs.MemberAfter.Id.ToString(), aGuildMemberUpdateEventArgs.MemberAfter.Guild.Id.ToString(), lAddedRoles.Select(role => role.ToDto()).ToArray()), aRoutingKey: RoutingKeys.SwarmBot.SwarmBot_Members_sync);
+                await SendMessage(new MemberRoleAssigned(aGuildMemberUpdateEventArgs.MemberAfter.Id.ToString(), aGuildMemberUpdateEventArgs.MemberAfter.Guild.Id.ToString(), lAddedRoles.Select(role => role.ToDto(aGuildMemberUpdateEventArgs.Guild.Id)).ToArray()), aRoutingKey: RoutingKeys.SwarmBot.SwarmBot_Members_sync);
             if (lRemovedRoles.Count != 0)
-                await SendMessage(new MemberRoleRevoked(aGuildMemberUpdateEventArgs.MemberAfter.Id.ToString(), aGuildMemberUpdateEventArgs.MemberAfter.Guild.Id.ToString(), lRemovedRoles.Select(role => role.ToDto()).ToArray()), aRoutingKey: RoutingKeys.SwarmBot.SwarmBot_Members_sync);
+                await SendMessage(new MemberRoleRevoked(aGuildMemberUpdateEventArgs.MemberAfter.Id.ToString(), aGuildMemberUpdateEventArgs.MemberAfter.Guild.Id.ToString(), lRemovedRoles.Select(role => role.ToDto(aGuildMemberUpdateEventArgs.Guild.Id)).ToArray()), aRoutingKey: RoutingKeys.SwarmBot.SwarmBot_Members_sync);
         }
 
         private async Task SendIfGuildMemberDisplayNameUpdate(GuildMemberUpdateEventArgs aGuildMemberUpdateEventArgs)

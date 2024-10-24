@@ -1,5 +1,4 @@
 ﻿using Common.Domain.Validation;
-using Common.Infrastructure.Communication.ApiRoutes;
 using TGF.CA.Presentation;
 using SwarmBot.Application;
 using TGF.CA.Presentation.MinimalAPI;
@@ -8,6 +7,7 @@ using TGF.CA.Presentation.Middleware;
 using Common.Application.DTOs.Discord;
 using TGF.Common.ROP.Result;
 using TGF.Common.ROP.HttpResult;
+using Common.Application.Communication.Routing;
 
 namespace SwarmBot.API.Endpoints
 {
