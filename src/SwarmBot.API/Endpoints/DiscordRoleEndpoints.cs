@@ -22,6 +22,10 @@ namespace Maindril.API.Endpoints
                 .SetResponseMetadata<ulong>(200, 404)
                 .ProducesValidationProblem();
 
+            aWebApplication.MapPost(SwarmBotApiRoutes.private_guilds_roles_createGuildSwarmAdmin, Post_CreateGuildSwarmAdminRole)
+                .SetResponseMetadata<ulong>(200, 404)
+                .ProducesValidationProblem();
+
             aWebApplication.MapDelete(SwarmBotApiRoutes.private_guilds_role, Delete_Role)
                 .SetResponseMetadata(200, 404)
                 .ProducesValidationProblem();
@@ -51,6 +55,14 @@ namespace Maindril.API.Endpoints
         => await Result.ValidationResult(discordIdValidator.Validate(guildId))
         .Bind(_ => aSwarmBotRolesService.CreateRole(ulong.Parse(guildId), name, aCancellationToken))
         .Map(roleId => roleId.ToString())
+        .ToIResult();
+
+        /// <summary>
+        /// Creates the GuildSwarmAdmin role in the discord's guild and return the updated list of all guild roles.
+        /// </summary>
+        private async Task<IResult> Post_CreateGuildSwarmAdminRole(string guildId, DiscordIdValidator discordIdValidator, ISwarmBotRolesService aSwarmBotRolesService, CancellationToken aCancellationToken = default)
+        => await Result.ValidationResult(discordIdValidator.Validate(guildId))
+        .Bind(_ => aSwarmBotRolesService.CreateGuildSwarmAdminRole(ulong.Parse(guildId), aCancellationToken))
         .ToIResult();
 
         /// <summary>

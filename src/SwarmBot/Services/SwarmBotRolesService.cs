@@ -7,6 +7,7 @@ using SwarmBot.Handlers;
 using TGF.Common.ROP;
 using TGF.Common.ROP.HttpResult;
 using TGF.Common.ROP.Result;
+using Common.Domain.Validation;
 
 namespace SwarmBot.Services
 {
@@ -97,7 +98,18 @@ namespace SwarmBot.Services
         public async Task<IHttpResult<ulong>> CreateRole(ulong guildId, string aRoleName, CancellationToken aCancellationToken = default)
             => await _guildsHandler.GetGuildById(guildId, true, aCancellationToken)
                     .Bind(discordGuild => RolesHandler.CreateRoleAtmAsync(discordGuild, aRoleName, aCancellationToken));
+        public async Task<IHttpResult<IEnumerable<DiscordRoleDTO>>> CreateGuildSwarmAdminRole(ulong guildId, CancellationToken aCancellationToken = default)
+        {
+            DiscordGuild discordGuild = default!;
+            return await _guildsHandler.GetGuildById(guildId, true, aCancellationToken)
+                .Tap(guild => discordGuild = guild)
+                .Bind(discordGuild => RolesHandler.CreateRoleAtmAsync(discordGuild, InvariantConstants.Role_Name_IsGuildSwarmAdmin, aCancellationToken))
+                .Map(_ => discordGuild.Roles
+                    .Select(rolePair => rolePair.Value)
+                    .Select(role => role.ToDto(guildId)).ToArray() as IEnumerable<DiscordRoleDTO>
+                );
 
+        }
         public async Task<IHttpResult<Unit>> DeleteRole(ulong guildId, ulong aRoleId, CancellationToken aCancellationToken = default)
             => await _guildsHandler.GetGuildById(guildId, true, aCancellationToken)
                     .Bind(discordGuild => RolesHandler.DeleteRoleAtmAsync(discordGuild, aRoleId, aCancellationToken));

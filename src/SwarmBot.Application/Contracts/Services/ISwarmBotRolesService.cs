@@ -81,6 +81,12 @@ namespace SwarmBot.Application
         public Task<IHttpResult<ulong>> CreateRole(ulong guildId, string aRoleName, CancellationToken aCancellationToken = default);
 
         /// <summary>
+        /// Commands this discord bot to create the GuildSwarmAdmin Role in the context server and return the updated list of roles after that.
+        /// </summary>
+        /// <returns>List the updated list of roles after the new role creation if succeed.</returns>
+        public Task<IHttpResult<IEnumerable<DiscordRoleDTO>>> CreateGuildSwarmAdminRole(ulong guildId, CancellationToken aCancellationToken = default);
+
+        /// <summary>
         /// Commands this discord bot to delete a given Role in the context server.
         /// </summary>
         /// <param name="aRoleId">string that represents the name the Role to delete.</param>
