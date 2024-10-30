@@ -4,7 +4,6 @@ using SwarmBot.Infrastructure.Services;
 using SwarmBot.HealthChecks;
 using SwarmBot.Services;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using TGF.CA.Infrastructure.Communication.RabbitMQ;
 using Microsoft.AspNetCore.HttpOverrides;
