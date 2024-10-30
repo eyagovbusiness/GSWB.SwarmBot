@@ -24,14 +24,13 @@
 
   <ItemGroup Condition="'$(DockerBuild)'=='false'">
     <ProjectReference Include="..\..\..\src\SwarmBot\SwarmBot.csproj" />
+    <ProjectReference Include="..\..\..\..\GSWB.Common\src\Common.Infrastructure\Common.Infrastructure.csproj" />
+
   </ItemGroup>
   
   <ItemGroup Condition="'$(DockerBuild)'=='true'">
     <ProjectReference Include="../../../src/SwarmBot/SwarmBot.csproj" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\GSWB.Common\src\Common.Infrastructure\Common.Infrastructure.csproj" />
+    <PackageReference Include="Common.Infrastructure" Version="1.0.0" />
   </ItemGroup>
   
 </Project>
