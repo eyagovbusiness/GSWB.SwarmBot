@@ -29,6 +29,13 @@ pipeline {
                 }
             }
         }
+        stage('Test Vulnerabilities') {
+            steps {
+                // Trivy can't download the database from the internet, so we need to provide it. 
+                // Solution: https://github.com/aquasecurity/trivy/discussions/7668
+                sh "trivy image --db-repository public.ecr.aws/aquasecurity/trivy-db --java-db-repository public.ecr.aws/aquasecurity/trivy-java-db --exit-code 1 --quiet ${REGISTRY}/${REPO}/${IMAGE}:latest"
+            }
+        }
         stage('Push Docker Images') {
             steps {
                 script {
