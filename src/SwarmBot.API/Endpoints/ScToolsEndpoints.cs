@@ -1,14 +1,14 @@
-﻿using Common.Application.Communication.Routing;
+﻿using BGSFX.CA.Presentation.MinimalAPI;
+using Common.Application.Communication.Routing;
 using SwarmBot.Application;
 using SwarmBot.Domain.ValueObjects;
 using TGF.CA.Presentation;
-using TGF.CA.Presentation.Middleware;
 using TGF.CA.Presentation.MinimalAPI;
 
 namespace Maindril.API.Endpoints
 {
     /// <inheritdoc/>
-    public class ScToolsEndpoints : IEndpointDefinition
+    public class ScToolsEndpoints : IEndpointsDefinition
     {
 
         #region IEndpointDefinition

@@ -1,15 +1,15 @@
-﻿using Common.Application.Communication.Routing;
+﻿using BGSFX.CA.Presentation.MinimalAPI;
+using Common.Application.Communication.Routing;
 using SwarmBot.Application;
 using TGF.CA.Presentation;
-using TGF.CA.Presentation.Middleware;
 using TGF.CA.Presentation.MinimalAPI;
 using TGF.Common.ROP;
-using TGF.Common.ROP.HttpResult;
+using TGF.Common.ROP.HttpResult.RailwaySwitches;
 
 namespace Maindril.API.Endpoints
 {
     /// <inheritdoc/>
-    public class TesterEndpoints : IEndpointDefinition
+    public class TesterEndpoints : IEndpointsDefinition
     {
 
         #region IEndpointDefinition

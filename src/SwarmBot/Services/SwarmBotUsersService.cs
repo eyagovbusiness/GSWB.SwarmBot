@@ -1,5 +1,5 @@
 ﻿using Common.Application.DTOs.Guilds;
-using DSharpPlus.Entities;
+using TGF.Common.ROP.HttpResult.RailwaySwitches;
 using SwarmBot.Application;
 using SwarmBot.Handlers;
 using SwarmBot.Mappings;

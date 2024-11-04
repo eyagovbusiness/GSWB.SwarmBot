@@ -3,16 +3,16 @@ using TGF.CA.Presentation;
 using SwarmBot.Application;
 using TGF.CA.Presentation.MinimalAPI;
 using Common.Application.DTOs.Guilds;
-using TGF.CA.Presentation.Middleware;
 using Common.Application.DTOs.Discord;
 using TGF.Common.ROP.Result;
-using TGF.Common.ROP.HttpResult;
+using TGF.Common.ROP.HttpResult.RailwaySwitches;
 using Common.Application.Communication.Routing;
+using BGSFX.CA.Presentation.MinimalAPI;
 
 namespace SwarmBot.API.Endpoints
 {
     /// List of private endpoint only reached from the internal private docker network.
-    public class PrivateEndpoints : IEndpointDefinition
+    public class PrivateEndpoints : IEndpointsDefinition
     {
         /// <inheritdoc/>
         public void DefineEndpoints(WebApplication aWebApplication)

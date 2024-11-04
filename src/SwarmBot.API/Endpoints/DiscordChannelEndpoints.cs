@@ -2,18 +2,18 @@
 using Common.Application.DTOs.Discord;
 using Microsoft.AspNetCore.Mvc;
 using TGF.CA.Presentation;
-using TGF.CA.Presentation.Middleware;
 using TGF.CA.Presentation.MinimalAPI;
-using TGF.Common.ROP.HttpResult;
 using System.Security.Claims;
-using TGF.CA.Infrastructure.Security.Identity.Authentication;
+using TGF.Common.ROP.HttpResult.RailwaySwitches;
 using Common.Infrastructure.Security;
 using Common.Application.Communication.Routing;
+using BGSFX.CA.Presentation.MinimalAPI;
+using TGF.CA.Infrastructure.Identity.Authentication;
 
 namespace Maindril.API.Endpoints
 {
     /// <inheritdoc/>
-    public class DiscordChannelEndpoints : IEndpointDefinition
+    public class DiscordChannelEndpoints : IEndpointsDefinition
     {
 
         #region IEndpointDefinition

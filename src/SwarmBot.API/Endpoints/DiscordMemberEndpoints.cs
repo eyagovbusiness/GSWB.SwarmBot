@@ -1,20 +1,17 @@
 ﻿using SwarmBot.Application;
 using Common.Application.DTOs.Discord;
 using TGF.CA.Presentation;
-using TGF.CA.Presentation.Middleware;
 using TGF.CA.Presentation.MinimalAPI;
 using TGF.Common.ROP.Result;
 using Common.Domain.Validation;
-using TGF.Common.ROP.HttpResult;
-using System.Security.Claims;
-using Common.Infrastructure.Security;
-using TGF.CA.Infrastructure.Security.Identity.Authentication;
+using TGF.Common.ROP.HttpResult.RailwaySwitches;
 using Common.Application.Communication.Routing;
+using BGSFX.CA.Presentation.MinimalAPI;
 
 namespace Maindril.API.Endpoints
 {
     /// <inheritdoc/>
-    public class DiscordMemberEndpoints : IEndpointDefinition
+    public class DiscordMemberEndpoints : IEndpointsDefinition
     {
 
         #region IEndpointDefinition

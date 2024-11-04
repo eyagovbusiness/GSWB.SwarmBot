@@ -8,6 +8,7 @@ using TGF.Common.ROP;
 using TGF.Common.ROP.HttpResult;
 using TGF.Common.ROP.Result;
 using Common.Domain.Validation;
+using TGF.Common.ROP.HttpResult.RailwaySwitches;
 
 namespace SwarmBot.Services
 {

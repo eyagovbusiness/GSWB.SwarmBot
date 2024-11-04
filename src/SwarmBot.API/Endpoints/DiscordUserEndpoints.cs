@@ -1,13 +1,13 @@
-﻿using Common.Application.Communication.Routing;
+﻿using BGSFX.CA.Presentation.MinimalAPI;
+using Common.Application.Communication.Routing;
 using SwarmBot.Application;
 using TGF.CA.Presentation;
-using TGF.CA.Presentation.Middleware;
 using TGF.CA.Presentation.MinimalAPI;
 
 namespace Maindril.API.Endpoints
 {
     /// <inheritdoc/>
-    public class DiscordUserEndpoints : IEndpointDefinition
+    public class DiscordUserEndpoints : IEndpointsDefinition
     {
 
         #region IEndpointDefinition
