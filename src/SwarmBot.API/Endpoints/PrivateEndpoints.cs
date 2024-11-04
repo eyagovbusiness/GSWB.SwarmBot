@@ -7,7 +7,6 @@ using Common.Application.DTOs.Discord;
 using TGF.Common.ROP.Result;
 using TGF.Common.ROP.HttpResult.RailwaySwitches;
 using Common.Application.Communication.Routing;
-using BGSFX.CA.Presentation.MinimalAPI;
 
 namespace SwarmBot.API.Endpoints
 {

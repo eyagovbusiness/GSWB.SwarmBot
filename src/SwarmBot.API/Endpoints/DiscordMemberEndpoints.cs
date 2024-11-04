@@ -6,7 +6,6 @@ using TGF.Common.ROP.Result;
 using Common.Domain.Validation;
 using TGF.Common.ROP.HttpResult.RailwaySwitches;
 using Common.Application.Communication.Routing;
-using BGSFX.CA.Presentation.MinimalAPI;
 
 namespace Maindril.API.Endpoints
 {

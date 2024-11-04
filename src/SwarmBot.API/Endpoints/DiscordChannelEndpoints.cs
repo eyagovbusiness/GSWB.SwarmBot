@@ -7,7 +7,6 @@ using System.Security.Claims;
 using TGF.Common.ROP.HttpResult.RailwaySwitches;
 using Common.Infrastructure.Security;
 using Common.Application.Communication.Routing;
-using BGSFX.CA.Presentation.MinimalAPI;
 using TGF.CA.Infrastructure.Identity.Authentication;
 
 namespace Maindril.API.Endpoints

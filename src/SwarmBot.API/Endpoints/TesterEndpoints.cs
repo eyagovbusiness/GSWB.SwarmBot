@@ -1,5 +1,4 @@
-﻿using BGSFX.CA.Presentation.MinimalAPI;
-using Common.Application.Communication.Routing;
+﻿using Common.Application.Communication.Routing;
 using SwarmBot.Application;
 using TGF.CA.Presentation;
 using TGF.CA.Presentation.MinimalAPI;
