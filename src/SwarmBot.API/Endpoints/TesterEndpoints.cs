@@ -5,7 +5,7 @@ using TGF.CA.Presentation.MinimalAPI;
 using TGF.Common.ROP;
 using TGF.Common.ROP.HttpResult.RailwaySwitches;
 
-namespace Maindril.API.Endpoints
+namespace SwarmBot.API.Endpoints
 {
     /// <inheritdoc/>
     public class TesterEndpoints : IEndpointsDefinition
@@ -18,7 +18,7 @@ namespace Maindril.API.Endpoints
         {
             aWebApplication.MapGet(SwarmBotApiRoutes.private_guilds_testers, GetIsTester).SetResponseMetadata<Unit>(200, 404);
         }
-        
+
         /// <inheritdoc/>
         public void DefineRequiredServices(IServiceCollection aRequiredServicesCollection)
         {

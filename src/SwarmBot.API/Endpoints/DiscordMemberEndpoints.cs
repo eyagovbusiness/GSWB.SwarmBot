@@ -7,7 +7,7 @@ using Common.Domain.Validation;
 using TGF.Common.ROP.HttpResult.RailwaySwitches;
 using Common.Application.Communication.Routing;
 
-namespace Maindril.API.Endpoints
+namespace SwarmBot.API.Endpoints
 {
     /// <inheritdoc/>
     public class DiscordMemberEndpoints : IEndpointsDefinition

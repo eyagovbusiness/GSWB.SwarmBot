@@ -6,7 +6,7 @@ using TGF.Common.ROP.HttpResult.RailwaySwitches;
 using Common.Domain.Validation;
 using Common.Application.Communication.Routing;
 
-namespace Maindril.API.Endpoints
+namespace SwarmBot.API.Endpoints
 {
     /// <inheritdoc/>
     public class DiscordRoleEndpoints : IEndpointsDefinition
@@ -69,7 +69,7 @@ namespace Maindril.API.Endpoints
         /// </summary>
         private async Task<IResult> Delete_Role(string guildId, ulong roleId, DiscordIdValidator discordIdValidator, ISwarmBotRolesService aSwarmBotRolesService, CancellationToken aCancellationToken = default)
         => await Result.ValidationResult(discordIdValidator.Validate(guildId))
-        .Bind(_ =>  aSwarmBotRolesService.DeleteRole(ulong.Parse(guildId), roleId, aCancellationToken))
+        .Bind(_ => aSwarmBotRolesService.DeleteRole(ulong.Parse(guildId), roleId, aCancellationToken))
         .ToIResult();
 
         /// <summary>

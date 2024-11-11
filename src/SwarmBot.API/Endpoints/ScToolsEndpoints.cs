@@ -4,7 +4,7 @@ using SwarmBot.Domain.ValueObjects;
 using TGF.CA.Presentation;
 using TGF.CA.Presentation.MinimalAPI;
 
-namespace Maindril.API.Endpoints
+namespace SwarmBot.API.Endpoints
 {
     /// <inheritdoc/>
     public class ScToolsEndpoints : IEndpointsDefinition
